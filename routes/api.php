@@ -19,7 +19,7 @@ use App\Http\Controllers\GroupController;
 //     return $request->user();
 // });
 
-// Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/register', [AuthController::class, 'register']);
 
 // Route::post('/auth/login', [AuthController::class, 'login']);
 
@@ -29,6 +29,6 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     });
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-    Route::resource('groups', GroupController::class);
+    Route::apiResource('groups', GroupController::class);
     
 });
