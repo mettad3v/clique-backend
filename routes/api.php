@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CategoryController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,5 +32,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::apiResource('groups', GroupController::class);
+    Route::apiResource('projects', ProjectController::class);
+    Route::apiResource('categories', CategoryController::class);
     
 });

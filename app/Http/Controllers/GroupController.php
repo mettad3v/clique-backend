@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use Illuminate\Http\Request;
+use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Resources\GroupsResource;
-use App\Http\Requests\CreateGroupRequest;
+use App\Http\Resources\GroupsCollection;
 use App\Http\Requests\UpdateGroupRequest;
+use App\Http\Groups\Requests\CreateGroupRequest;
 
 class GroupController extends Controller
 {
@@ -17,8 +19,12 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = Group::all();
-        return GroupsResource::collection($groups);
+        $groups = QueryBuilder::for(Group::class)->allowedSorts([
+            'title',
+            'created_at',
+            'updated_at'
+        ])->jsonPaginate();
+        return new GroupsCollection($groups);
     }
 
     /**
@@ -31,6 +37,7 @@ class GroupController extends Controller
     {
         $group = Group::create([
             'title' => $request->input('data.attributes.title'),
+            // 'user_id' => $request->input('data.attributes.user_id'),
         ]);
         return (new GroupsResource($group))->response()->header('Location', route('groups.show', ['group' => $group]));
     }

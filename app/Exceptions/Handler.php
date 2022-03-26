@@ -2,8 +2,13 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Exception;
 use Throwable;
+use Illuminate\Support\Str; 
+use Illuminate\Support\Collection;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
 {
@@ -37,5 +42,48 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        $errors = (new Collection($exception->validator->errors()))
+            ->map(function ($error, $key) {
+                return [
+                    'title' => 'Validation Error',
+                    'details' => $error[0],
+                    'source' => [
+                        'pointer' => '/' . str_replace('.', '/', $key),
+                    ]
+                ];
+            })
+            ->values();
+        return response()->json([
+            'errors' => $errors,
+        ], $exception->status);
+    }
+
+    protected function prepareJsonResponse($request, Throwable $e)
+    {
+        return response()->json([
+            'errors' => [
+                [
+                    'title' => Str::title(Str::snake(class_basename($e), ' ')),
+                    'details' => $e->getMessage(),
+                ]
+            ]
+        ], $this->isHttpException($e) ? $e->getStatusCode() : 500);
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if($request->expectsJson()){
+            return response()->json(['errors' => [
+                [
+                    'title' => 'Unauthenticated',
+                    'details' => 'You are not authenticated',
+                ]
+            ]], 403);
+        }
+        return redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 }

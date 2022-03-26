@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateGroupRequest extends FormRequest
+class UpdateGroupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +25,10 @@ class CreateGroupRequest extends FormRequest
     {
         return [
             'data' => 'required|array',
+            'data.id' => 'required|string',
             'data.type' => 'required|in:groups',
             'data.attributes' => 'required|array',
-            'data.attributes.title' => 'required|string|unique:groups,title',
+            'data.attributes.title' => 'sometimes|required|string|unique:groups,title',
         ];
     }
 }

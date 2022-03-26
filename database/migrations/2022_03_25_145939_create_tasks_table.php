@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateGroupsTable extends Migration
+class CreateTasksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,16 @@ class CreateGroupsTable extends Migration
      */
     public function up()
     {
-        Schema::create('groups', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->unique();
+            $table->string('title');
+            $table->string('unique_id');
+            $table->text('description');
             // $table->foreignId('user_id');
+            // $table->foreignId('category_id');
+            // $table->foreignId('group_id');
+            // $table->foreignId('project_id');
+            $table->timestamp('deadline');
             $table->timestamps();
         });
     }
@@ -28,6 +34,6 @@ class CreateGroupsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('groups');
+        Schema::dropIfExists('tasks');
     }
 }
