@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use GuzzleHttp\Handler\Proxy;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -42,8 +43,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    // public function groups()
-    // {
-    //     return $this->hasMany(Group::class);
-    // }
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function invitations()
+    {
+        return $this->belongsToMany(Project::class);
+    }
 }

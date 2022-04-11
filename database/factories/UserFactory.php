@@ -24,6 +24,10 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
+            // 'username' => $this->faker->username(),
+            'role' => $this->faker->randomElement(['guest', 'admin']),
+            'status' => $this->faker->randomElement([0, 1]),
+            // 'profile_avatar' => $this->faker->sentence(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password

@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Project;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class ProjectsTest extends TestCase
@@ -36,6 +37,145 @@ class ProjectsTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function test_case()
+    {
+        $project = Project::factory()->create();
+
+        dd($project->creator());
+
+    }
+
+    public function test_a_project_creator_can_invite_other_users_to_a_project()
+    {
+        $auth = User::factory()->create();
+        $user = User::factory(3)->create();
+        $project = Project::factory()->create();
+
+        Sanctum::actingAs($auth);
+        $ids = $user->pluck('id');        
+
+        $this->postJson('/api/v1/projects/1/invite', [
+            'data' => [
+                'type' => 'users',
+                'attributes' => [
+                    'id' => $ids
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(200);
+    }
+    
+    public function test_only_a_project_creator_can_delete_a_project()
+    {
+        $auth = User::factory()->create();
+        $project = Project::factory()->create();
+
+        Sanctum::actingAs($auth);
+       
+        $this->delete('/api/v1/projects/1', [], [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
+        ])->assertStatus(403);
+
+    }
+    
+    public function test_a_project_creator_can_revoke_other_users_access_to_a_project()
+    {
+        $auth = User::factory()->create();
+        $user = User::factory(3)->create();
+        $project = Project::factory()->create();
+
+        Sanctum::actingAs($auth);
+        $ids = $user->pluck('id');        
+
+        $this->patchJson('/api/v1/projects/1/revoke', [
+            'data' => [
+                'type' => 'users',
+                'attributes' => [
+                    'id' => $ids
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(204);
+    }
+    
+    public function test_a_project_creator_can_change_ownership_of_a_project()
+    {
+        $auth = User::factory()->create();
+        $user = User::factory()->create();
+        $project = Project::factory()->create(['user_id' => $auth->id]);
+
+        Sanctum::actingAs($auth);
+
+        $this->patchJson('/api/v1/projects/1/change-ownership', [
+            'data' => [
+                'id' => '1',
+                'type' => 'projects',
+                'attributes' => [
+                    'user_id' => $user->id
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(204);
+    }
+    
+    public function test_a_new_project_owner_is_notified_on_change_of_ownership_of_a_project()
+    {
+        $auth = User::factory()->create();
+        $user = User::factory()->create();
+        $project = Project::factory()->create(['user_id' => $auth->id]);
+
+        Sanctum::actingAs($auth);
+
+        $this->patchJson('/api/v1/projects/1/change-ownership', [
+            'data' => [
+                'id' => '1',
+                'type' => 'projects',
+                'attributes' => [
+                    'user_id' => $user->id
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(204);
+        
+        Notification::fake();
+        Notification::assertNotSentTo(
+            [$user], ProjectOwnerShipChange::class
+        );
+    }
+
+    
+    
+    public function test_only_a_project_creator_can_invite_other_users_to_a_project()
+    {
+        $auth = User::factory()->create();
+        $user = User::factory(3)->create();
+        $project = Project::factory()->create(['user_id' => 2]);
+
+        Sanctum::actingAs($auth);
+        $ids = $user->pluck('id');        
+
+        $this->postJson('/api/v1/projects/1/invite', [
+            'data' => [
+                'type' => 'users',
+                'attributes' => [
+                    'id' => $ids
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(403);
     }
 
     public function test_It_returns_all_projects_as_a_collection_of_resource_objects()
@@ -341,6 +481,7 @@ class ProjectsTest extends TestCase
                 'type' => 'projects',
                 'attributes' => [
                     'name' => 'John Doe',
+                    'user_id' => $user->id
                 ]
             ]
         ], [
@@ -353,6 +494,7 @@ class ProjectsTest extends TestCase
                     "type" => "projects",
                     "attributes" => [
                         'name' => 'John Doe',
+                        'user_id' => $user->id,
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ]

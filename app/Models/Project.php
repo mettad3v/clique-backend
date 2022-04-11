@@ -9,6 +9,15 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'user_id'];
     
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function invitees()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

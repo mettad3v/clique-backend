@@ -9,10 +9,12 @@ class Task extends Model
 {
     use HasFactory;
 
-    // public function group()
-    // {
-    //     return $this->belongsTo(Group::class);
-    // }
+    protected $fillable = ['title', 'deadline', 'description', 'group_id'];
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
     
     // public function category()
     // {

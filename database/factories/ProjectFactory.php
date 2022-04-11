@@ -23,6 +23,7 @@ class ProjectFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
+            'user_id' => 1
         ];
     }
 }

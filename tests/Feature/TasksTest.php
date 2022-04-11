@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\Task;
 use App\Models\User;
-use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
 
 class TasksTest extends TestCase
 {
@@ -16,141 +16,856 @@ class TasksTest extends TestCase
     {
         $task = Task::factory()->create();
         $user = User::factory()->create();
+
         Sanctum::actingAs($user);
 
-        $this->getJson('api/v1/tasks/1', [ 
+        $this->getJson('/api/v1/tasks/1', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertOk()->assertJson([
+        ])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => $task->title,
+                        // 'deadline' => $task->deadline,
+                        'description' => $task->description,
+                        'created_at' => $task->created_at->toJSON(),
+                        'updated_at' => $task->updated_at->toJSON(),
+                    ]
+                ]
+            ]);
+    }
+
+    public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
+    {
+        $tasks = Task::factory(3)->create();
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+        $this->get('/api/v1/tasks', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(200);
+    }
+
+    public function test_It_can_paginate_tasks_through_a_page_query_parameter()
+    {
+        $tasks = Task::factory(10)->create();
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+        $this->get('/api/v1/tasks?page[size]=5&page[number]=1', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(200)->assertJson([
             "data" => [
-                "id" => '1',
-                "type" => "tasks",
-                "attributes" => [
-                    'title' => $group->title,
-                    'category_id' => $group->category_id,
-                    'project_id' => $group->project_id,
-                    'group_id' => $group->group_id,
-                    'user_id' => $group->user_id,
-                    'assignees' => $group->assignees,
-                    'task_unique_id' => $group->task_unique_id,
-                    'deadline' => $group->deadline,
-                    'description' => $group->description,
-                    'created_at' => $group->created_at->toJSON(),
-                    'updated_at' => $group->updated_at->toJSON(),
+                [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => $tasks[0]->title,
+                        'description' => $tasks[0]->description,
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '2',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => $tasks[1]->title,
+                        'description' => $tasks[1]->description,
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '3',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => $tasks[2]->title,
+                        'description' => $tasks[2]->description,
+                        'created_at' => $tasks[2]->created_at->toJSON(), 
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '4',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => $tasks[3]->title,
+                        'description' => $tasks[3]->description,
+                        'created_at' => $tasks[3]->created_at->toJSON(),
+                        'updated_at' => $tasks[3]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '5',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => $tasks[4]->title,
+                        'description' => $tasks[4]->description,
+                        'created_at' => $tasks[4]->created_at->toJSON(),
+                        'updated_at' => $tasks[4]->updated_at->toJSON(),
+                    ]
+                ],
+            ],
+            'links' => [
+                'first' => route('tasks.index', ['page[size]' => 5, 'page[number]' => 1]),
+                'last' => route('tasks.index', ['page[size]' => 5, 'page[number]' => 2]),
+                'prev' => null,
+                'next' => route('tasks.index', ['page[size]' => 5, 'page[number]' => 2]),
+            ]
+        ]);
+    }
+
+    public function test_it_can_sort_tasks_by_title_through_a_sort_query_parameter()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $tasks = collect([
+            'Bertram',
+            'Claus',
+            'Anna',
+        ])->map(function ($title) {
+            return Task::factory()->create([
+                'title' => $title,
+            ]);
+        });
+        $this->get('/api/v1/tasks?sort=title', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])->assertStatus(200)->assertJson([
+            "data" => [
+                [
+                    "id" => '3',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Anna',
+                        'created_at' => $tasks[2]->created_at->toJSON(),
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Bertram',
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '2',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Claus',
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
+                    ]
+                ],
+            ]
+        ]);
+    }
+
+    public function test_it_can_sort_tasks_by_title_in_descending_order_through_a_sort_query_parameter()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $tasks = collect([
+            'Bertram',
+            'Claus',
+            'Anna',
+        ])->map(function ($title) {
+            return Task::factory()->create([
+                'title' => $title,
+            ]);
+        });
+        $this->get('/api/v1/tasks?sort=-title', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])->assertStatus(200)->assertJson([
+            "data" => [
+                [
+                    "id" => '2',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Claus',
+                        'description' => $tasks[1]->description,
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Bertram',
+                        'description' => $tasks[0]->description,
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '3',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Anna',
+                        'description' => $tasks[2]->description,
+                        'created_at' => $tasks[2]->created_at->toJSON(),
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
+                    ]
+                ],
+            ]
+        ]);
+    }
+
+    public function test_it_can_sort_tasks_by_multiple_sort_params_through_a_sort_query_parameter()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $tasks = collect([
+            'Bertram',
+            'Claus',
+            'Anna',
+        ])->map(function ($title) {
+            if ($title === 'Bertram') {
+                return Task::factory()->create([
+                    'title' => $title,
+                    'created_at' => now()->addSeconds(3),
+                ]);
+            }
+
+            return Task::factory()->create([
+                'title' => $title,
+            ]);
+        });
+        $this->get('/api/v1/tasks?sort=created_at,title', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])->assertStatus(200)->assertJson([
+            "data" => [
+                [
+                    "id" => '3',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Anna',
+                        'created_at' => $tasks[2]->created_at->toJSON(),
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '2',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Claus',
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Bertram',
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
+                    ]
+                ],
+            ]
+        ]);
+    }
+
+    public function test_it_can_sort_tasks_by_multiple_sort_params_including_in_descending_order_through_a_sort_query_parameter()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $tasks = collect([
+            'Bertram',
+            'Claus',
+            'Anna',
+        ])->map(function ($title) {
+            if ($title === 'Bertram') {
+                return Task::factory()->create([
+                    'title' => $title,
+                    'created_at' => now()->addSeconds(3),
+                ]);
+            }
+
+            return Task::factory()->create([
+                'title' => $title,
+            ]);
+        });
+        $this->get('/api/v1/tasks?sort=-created_at,title', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])->assertStatus(200)->assertJson([
+            "data" => [
+                [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Bertram',
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '3',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Anna',
+                        'created_at' => $tasks[2]->created_at->toJSON(),
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
+                    ]
+                ],
+                [
+                    "id" => '2',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'Claus',
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
+                    ]
+                ],
+            ]
+        ]);
+    }
+
+
+    public function test_it_can_create_a_task_from_a_resource_object()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 'John Doe',
+                    'deadline' => "2022-09-09 09:09:09",
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(201)
+            ->assertJson([
+                "data" => [
+                    "id" => '1',
+                    "type" => "tasks",
+                    "attributes" => [
+                        'title' => 'John Doe',
+                        'created_at' => now()->setMilliseconds(0)->toJSON(),
+                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
+                    ]
+                ]
+            ])->assertHeader('Location', url('/api/v1/tasks/1'));
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => 'John Doe',
+        ]);
+    }
+
+    public function test_it_validates_that_the_type_member_is_given_when_creating_a_task()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => '',
+                'attributes' => [
+                    'title' => 'John Doe',
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.type field is required.',
+                    'source' => [
+                        'pointer' => '/data/type',
+                    ]
                 ]
             ]
         ]);
 
-        
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => 'John Doe'
+        ]);
     }
 
-    public function test_It_returns_all_groups_as_a_collection_of_resource_objects()
+    public function test_it_validates_that_the_type_member_is_given_when_updating_a_task()
     {
-       
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => '1',
+                'type' => '',
+                'attributes' => [
+                    'title' => 'John Doe',
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.type field is required.',
+                    'source' => [
+                        'pointer' => '/data/type',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title
+        ]);
     }
 
-    public function test_It_can_paginate_groups_through_a_page_query_parameter()
+    public function test_it_validates_that_the_type_member_has_the_value_of_tasks_when_creating_a_task()
     {
-        
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'task',
+                'attributes' => [
+                    'title' => 'John Doe',
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The selected data.type is invalid.',
+                    'source' => [
+                        'pointer' => '/data/type',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => 'John Doe'
+        ]);
     }
 
-    public function it_can_sort_groups_by_name_through_a_sort_query_parameter()
+    public function test_it_validates_that_the_type_member_has_the_value_of_tasks_when_updating_a_task()
     {
-        
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => '1',
+                'type' => 'group',
+                'attributes' => [
+                    'title' => 'John Doe',
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The selected data.type is invalid.',
+                    'source' => [
+                        'pointer' => '/data/type',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title
+        ]);
     }
 
-    public function it_can_sort_groups_by_name_in_descending_order_through_a_sort_query_parameter()
+    public function test_it_validates_that_a_title_attribute_has_been_given_when_creating_a_task()
     {
-        
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => '',
+                ],
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes.title field is required.',
+                    'source' => [
+                        'pointer' => '/data/attributes/title',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => 'John Doe'
+        ]);
     }
 
-    public function test_it_can_sort_groups_by_multiple_sort_params_through_a_sort_query_parameter()
+    public function test_it_validates_that_the_attributes_member_has_been_given_when_updating_a_task()
     {
-        
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $task = Task::factory()->create();
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => '1',
+                'type' => 'tasks',
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes field is required.',
+                    'source' => [
+                        'pointer' => '/data/attributes',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title
+        ]);
     }
 
-    public function test_it_can_sort_groups_by_multiple_sort_params_including_in_descending_order_through_a_sort_query_parameter()
+    public function test_it_validates_that_a_title_attribute_is_a_string_when_creating_a_task()
     {
-        
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 47,
+                ],
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes.title must be a string.',
+                    'source' => [
+                        'pointer' => '/data/attributes/title',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => 'John Doe'
+        ]);
     }
 
-
-    public function test_it_can_create_a_group_from_a_resource_object()
+    public function test_it_validates_that_a_title_attribute_is_a_string_when_updating_a_task()
     {
-       
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' =>  '1',
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 47,
+                ],
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes.title must be a string.',
+                    'source' => [
+                        'pointer' => '/data/attributes/title',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title
+        ]);
     }
 
-    public function test_it_validates_that_the_type_member_is_given_when_creating_a_group()
+    public function test_it_validates_that_an_id_member_is_a_string_when_updating_a_task()
     {
-       
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => 1,
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 'Jane Doe',
+                ]
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.id must be a string.',
+                    'source' => [
+                        'pointer' => '/data/id',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title
+        ]);
+    }
+    
+    public function test_it_validates_that_the_attributes_member_has_been_given_when_creating_a_task()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'tasks'
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes field is required.',
+                    'source' => [
+                        'pointer' => '/data/attributes',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => 'John Doe'
+        ]);
     }
 
-    public function test_it_validates_that_the_type_member_is_given_when_updating_a_group()
+    public function test_it_validates_that_the_attributes_member_is_an_object_given_when_creating_a_task()
     {
-        
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'tasks',
+                'attributes' => 'not an object'
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes must be an array.',
+                    'source' => [
+                        'pointer' => '/data/attributes',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => 'John Doe'
+        ]);
     }
 
-    public function test_it_validates_that_the_type_member_has_the_value_of_groups_when_creating_a_group()
+    public function test_it_validates_that_the_attributes_member_is_an_object_given_when_updating_a_task()
     {
-        
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => '1',
+                'type' => 'tasks',
+                'attributes' => 'not an object',
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.attributes must be an array.',
+                    'source' => [
+                        'pointer' => '/data/attributes',
+                    ]
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title
+        ]);
     }
 
-    public function test_it_validates_that_the_type_member_has_the_value_of_groups_when_updating_a_group()
+    public function test_it_can_update_a_task_from_a_resource_object()
     {
-        
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => '1',
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 'Jane Doe',
+                    'description' => 'another description'
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(200)
+            ->assertJson([
+                'data' => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
+                        'title' => 'Jane Doe',
+                        'description' => 'another description',
+                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
+                        'created_at' => now()->setMilliseconds(0)->toJSON(),
+                    ],
+                ]
+            ]);
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => 'Jane Doe',
+
+        ]);
     }
 
-    public function test_it_validates_that_a_title_attribute_has_been_given_when_creating_a_group()
+    public function test_it_validates_that_an_id_member_is_given_when_updating_a_task()
     {
-        
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 'Jane Doe',
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(422)
+            ->assertJson([
+                'errors' => [
+                    [
+                        'title' => 'Validation Error',
+                        'details' => 'The data.id field is required.',
+                        'source' => [
+                            'pointer' => '/data/id',
+                        ]
+                    ]
+                ]
+            ]);
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'title' => $task->title,
+        ]);
     }
 
-    public function test_it_validates_that_the_attributes_member_has_been_given_when_updating_a_group()
+    public function test_it_can_delete_a_task_through_a_delete_request()
     {
-        
-    }
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+        Sanctum::actingAs($user);
 
-    public function test_it_validates_that_a_title_attribute_is_a_string_when_creating_a_group()
-    {
-        
-    }
+        $this->delete('/api/v1/tasks/1', [], [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
+        ])->assertStatus(204);
 
-    public function test_it_validates_that_a_title_attribute_is_a_string_when_updating_a_group()
-    {
-        
-    }
-
-    public function test_it_validates_that_an_id_member_is_a_string_when_updating_a_group()
-    {
-        
-    }
-    public function test_it_validates_that_the_attributes_member_has_been_given_when_creating_a_group()
-    {
-       
-    }
-
-    public function test_it_validates_that_the_attributes_member_is_an_object_given_when_creating_a_group()
-    {
-        
-    }
-
-    public function test_it_validates_that_the_attributes_member_is_an_object_given_when_updating_a_group()
-    {
-        
-    }
-
-    public function test_it_can_update_an_group_from_a_resource_object()
-    {
-        
-    }
-
-    public function test_it_validates_that_an_id_member_is_given_when_updating_a_group()
-    {
-        
-    }
-
-    public function test_it_can_delete_a_group_through_a_delete_request()
-    {
-       
+        $this->assertDatabaseMissing('tasks', [
+            'id' => 1,
+            'title' => $task->title,
+        ]);
     }
 }

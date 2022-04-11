@@ -4,7 +4,7 @@ namespace App\Http\Requests\Projects;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateProjectRequest extends FormRequest
+class InviteUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +25,9 @@ class CreateProjectRequest extends FormRequest
     {
         return [
             'data' => 'required|array',
-            'data.type' => 'required|in:projects',
+            'data.type' => 'required|in:users',
             'data.attributes' => 'required|array',
-            'data.attributes.name' => 'required|string|unique:projects,name',
-            'data.attributes.user_id' => 'required|integer',
+            'data.attributes.id' => 'required|array',
         ];
     }
 }

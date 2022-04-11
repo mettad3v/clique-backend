@@ -2,8 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\Project;
 use App\Models\User;
+use App\Models\Project;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ProjectPolicy
@@ -20,6 +21,46 @@ class ProjectPolicy
     {
         //
     }
+    
+    /**
+     * Determine whether the user can invite other users.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function invite(User $user, Project $project)
+    {
+        return $user->id === $project->user_id
+                    ? Response::allow()
+                    : Response::deny('You do not own this project.');
+    }
+    
+    /**
+     * Determine whether the user can revoke other users.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function revoke(User $user, Project $project)
+    {
+        return $user->id === $project->user_id
+                    ? Response::allow()
+                    : Response::deny('You do not own this project.');
+    }
+    
+    /**
+     * Determine whether the user can revoke other users.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function change_ownership(User $user, Project $project)
+    {
+        return $user->id === $project->user_id
+                    ? Response::allow()
+                    : Response::deny('You do not own this project.');
+    }
+    
 
     /**
      * Determine whether the user can view the model.
@@ -65,7 +106,9 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project)
     {
-        //
+        return $user->id === $project->user_id
+                    ? Response::allow()
+                    : Response::deny('You do not own this project.');
     }
 
     /**
@@ -89,6 +132,6 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project)
     {
-        //
+        
     }
 }

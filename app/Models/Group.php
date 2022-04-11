@@ -11,10 +11,10 @@ class Group extends Model
 
     protected $fillable = ['title', 'user_id'];
 
-    // public function tasks()
-    // {
-    //     return $this->hasMany(Task::class);
-    // }
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 
     // public function user()
     // {

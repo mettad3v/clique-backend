@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectsResource extends JsonResource
+class GroupsIdentifierResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,13 +16,7 @@ class ProjectsResource extends JsonResource
     {
         return [
             'id' => (string)$this->id,
-            'type' => 'projects',
-            'attributes' => [
-                'name' => $this->name,
-                'user_id' => $this->user_id,
-                'created_at' => $this->created_at,
-                'updated_at' => $this->updated_at,
-            ]
+            'type' => 'tasks',
         ];
     }
 }
