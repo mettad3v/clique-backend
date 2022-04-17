@@ -2,10 +2,11 @@
 
 namespace App\Notifications;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 class NotifyRevokedUsers extends Notification implements ShouldQueue
 {
@@ -56,7 +57,8 @@ class NotifyRevokedUsers extends Notification implements ShouldQueue
     {
         return [
             'data' => [
-                'message' => 'Your invitation to ' . $this->project->name . ' was revoked '
+                'message' => 'Your invitation to ' . $this->project->name . ' was revoked ',
+                'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans()
             ]
         ];
     }

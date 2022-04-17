@@ -59,8 +59,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return [Collect($project->invitees)];
-        // return new ProjectsResource($project);
+        return new ProjectsResource($project);
     }
     
     /**
@@ -74,12 +73,12 @@ class ProjectController extends Controller
         if ($request->user()->cannot('invite', $project)) {
             abort(403, 'You are not the owner of this project');
         }
+        
+        $project->invitees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
-        $project->invitees()->attach($request->input('data.attributes.id'));
+        $attached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
+        Notification::send($attached_users, new NotifyInvitedUsers($project));
 
-        if ($project->invitees) {
-            Notification::send($project->invitees, new NotifyInvitedUsers($project));
-        }
         return response(null, 201);
     }
     
@@ -91,9 +90,9 @@ class ProjectController extends Controller
         
         $project->invitees()->detach($request->input('data.attributes.id'));
 
-        if ($project->invitees) {
-            Notification::send($project->invitees, new NotifyRevokedUsers($project));
-        }
+        $detached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
+        Notification::send($detached_users, new NotifyRevokedUsers($project));
+
         return response(null, 204);
     }
 

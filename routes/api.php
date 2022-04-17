@@ -52,5 +52,8 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::apiResource('projects', ProjectController::class);
     
     Route::apiResource('tasks', TaskController::class);
+    Route::post('/tasks/{task}/assign', [TaskController::class, 'assign']);
+    // Route::patch('/projects/{project}/revoke', [ProjectController::class, 'revoke']);
+
     Route::apiResource('categories', CategoryController::class);
 });

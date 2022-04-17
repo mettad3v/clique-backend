@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use Carbon\Carbon;
+use Tests\TestCase;
 use App\Models\Task;
 use App\Models\User;
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use App\Models\Project;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class TasksTest extends TestCase
 {
@@ -14,8 +16,12 @@ class TasksTest extends TestCase
 
     public function test_it_returns_a_task_as_a_resource_object()
     {
-        $task = Task::factory()->create();
         $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $uid =  Project::where('id', $project->id)->withCount('tasks')->get();
+        $unique = $uid[0]->tasks_count + 1;
+        $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
+        $project->tasks()->save($task);
 
         Sanctum::actingAs($user);
 
@@ -30,13 +36,43 @@ class TasksTest extends TestCase
                     "type" => "tasks",
                     "attributes" => [
                         'title' => $task->title,
-                        // 'deadline' => $task->deadline,
+                        'deadline' => Carbon::parse($task->deadline)->diffForHumans(),
+                        'unique_id' => $task->unique_id,
+                        'project_id' => $project->id,
                         'description' => $task->description,
                         'created_at' => $task->created_at->toJSON(),
                         'updated_at' => $task->updated_at->toJSON(),
                     ]
                 ]
             ]);
+    }
+
+    public function test_anyone_can_assign_tasks_to_other()
+    {
+        $auth = User::factory()->create();
+        $user = User::factory()->create();
+        $task = Task::factory()->create();
+
+        Sanctum::actingAs($auth);
+        $ids = $user->pluck('id');        
+
+        $this->postJson('/api/v1/tasks/1/assign', [
+            'data' => [
+                'type' => 'users',
+                'attributes' => [
+                    'id' => $ids,
+                    'user_id' => $auth->id
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(201);
+    }
+
+    public function test_it_can_make_assigned_user_supervisor()
+    {
+        
     }
 
     public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
@@ -342,14 +378,20 @@ class TasksTest extends TestCase
 
     public function test_it_can_create_a_task_from_a_resource_object()
     {
+        // dd(Carbon::parse('2022-09-09 09:09:09')->diffForHumans());
         $user = User::factory()->create();
-        Sanctum::actingAs($user);
+        $project = Project::factory()->create();
+        $task = Task::factory()->create();
 
+        Sanctum::actingAs($user);
         $this->postJson('/api/v1/tasks', [
             'data' => [
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'John Doe',
+                    'user_id' => $user->id,
+                    'project_id' => $project->id,
+                    'description' => 'John Doe and Jane Doe',
                     'deadline' => "2022-09-09 09:09:09",
                 ]
             ]
@@ -359,18 +401,22 @@ class TasksTest extends TestCase
         ])->assertStatus(201)
             ->assertJson([
                 "data" => [
-                    "id" => '1',
+                    "id" => '2',
                     "type" => "tasks",
                     "attributes" => [
                         'title' => 'John Doe',
+                        'description' => 'John Doe and Jane Doe',
+                        'user_id' => $user->id,
+                        'project_id' => $project->id,
+                        'deadline' => "2022-09-09 09:09:09",
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ]
                 ]
-            ])->assertHeader('Location', url('/api/v1/tasks/1'));
+            ])->assertHeader('Location', url('/api/v1/tasks/2'));
 
         $this->assertDatabaseHas('tasks', [
-            'id' => 1,
+            'id' => 2,
             'title' => 'John Doe',
         ]);
     }
@@ -792,7 +838,8 @@ class TasksTest extends TestCase
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'Jane Doe',
-                    'description' => 'another description'
+                    'description' => 'another description',
+                    'user_id' => 1
                 ]
             ]
         ], [

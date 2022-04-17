@@ -27,6 +27,7 @@ class InviteUserRequest extends FormRequest
             'data' => 'required|array',
             'data.type' => 'required|in:users',
             'data.attributes' => 'required|array',
+            'data.attributes.user_id' => 'required|integer',
             'data.attributes.id' => 'required|array',
         ];
     }

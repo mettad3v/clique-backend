@@ -2,10 +2,11 @@
 
 namespace App\Notifications;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 class ProjectOwnerShipChange extends Notification
 {
@@ -57,7 +58,8 @@ class ProjectOwnerShipChange extends Notification
     {
         return [
             'data' => [
-                'message' => 'You were assigned as the new administrator of Project: '. $this->project->name 
+                'message' => 'You were assigned as the new administrator of Project: '. $this->project->name,
+                'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans()
             ]
         ];
     }

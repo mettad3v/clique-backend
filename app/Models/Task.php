@@ -9,15 +9,20 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'deadline', 'description', 'group_id'];
+    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'user_id'];
 
-    public function group()
+    public function project()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(Project::class);
     }
     
-    // public function category()
-    // {
-    //     return $this->belongsTo(Category::class);
-    // }
+    public function creator()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function assignees()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }

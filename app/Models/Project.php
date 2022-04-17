@@ -18,6 +18,11 @@ class Project extends Model
 
     public function invitees()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withTimestamps();
+    }
+    
+    public function tasks()
+    {
+        return $this->HasMany(Task::class);
     }
 }

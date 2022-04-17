@@ -2,14 +2,20 @@
 
 namespace App\Notifications;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
 class NotifyInvitedUsers extends Notification implements ShouldQueue
 {
     use Queueable;
+
+    /**
+     * Get the Notifiable Project Instance 
+     * 
+     */
     public $project;
 
     /**
@@ -57,7 +63,8 @@ class NotifyInvitedUsers extends Notification implements ShouldQueue
     {
         return [
             'data' => [
-                'message' => 'You were invited to collaborate on ' . $this->project->name . ' by ' . $this->project->creator->name
+                'message' => 'You were invited to collaborate on ' . $this->project->name . ' by ' . $this->project->creator->name,
+                'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans()
             ]
         ];
     }

@@ -3,23 +3,28 @@
 namespace App\Notifications;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class ProjectDeleteNotification extends Notification
+class NotifyAssignedUsers extends Notification
 {
     use Queueable;
-    public $project;
+
+    public $task;
+    public $user;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($project)
+    public function __construct($user, $task)
     {
-        $this->project = $project;
+        $this->task = $task;
+        $this->user = $user;
     }
 
     /**
@@ -55,10 +60,12 @@ class ProjectDeleteNotification extends Notification
      */
     public function toArray($notifiable)
     {
+        $user = User::find($this->user)->name;
+
         return [
             'data' => [
-                'message' => 'Project: '. $this->project->name . 'was deleted by ' . $this->project->creator->name,
-                'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans()
+                'message' => $user . ' assigned ' . $this->task->title . ' to you',
+                'received_at' => $notifiable->created_at 
             ]
         ];
     }

@@ -30,6 +30,8 @@ class UpdateTaskRequest extends FormRequest
             'data.attributes' => 'required|array',
             'data.attributes.title' => 'sometimes|required|string|unique:tasks,title',
             'data.attributes.description' => 'sometimes|string',
+            'data.attributes.user_id' => 'sometimes|required|integer',
+            'data.attributes.project_id' => 'sometimes|required|integer',
             'data.attributes.deadline' => 'sometimes|date_format:Y-m-d H:i:s',
         ];
     }
