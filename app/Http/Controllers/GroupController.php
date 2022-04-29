@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Resources\GroupsResource;
 use App\Http\Resources\GroupsCollection;
-use App\Http\Requests\UpdateGroupRequest;
-use App\Http\Groups\Requests\CreateGroupRequest;
+use App\Http\Requests\Groups\UpdateGroupRequest;
+use App\Http\Requests\Groups\CreateGroupRequest;
 
 class GroupController extends Controller
 {
@@ -37,7 +37,8 @@ class GroupController extends Controller
     {
         $group = Group::create([
             'title' => $request->input('data.attributes.title'),
-            // 'user_id' => $request->input('data.attributes.user_id'),
+            'user_id' => $request->input('data.attributes.user_id'),
+            'project_id' => $request->input('data.attributes.project_id'),
         ]);
         return (new GroupsResource($group))->response()->header('Location', route('groups.show', ['group' => $group]));
     }

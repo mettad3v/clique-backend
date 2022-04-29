@@ -9,15 +9,20 @@ class Group extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'user_id'];
+    protected $fillable = ['title', 'user_id', 'project_id'];
 
     public function tasks()
     {
         return $this->hasMany(Task::class);
     }
 
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
+    public function creator()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

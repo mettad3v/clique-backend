@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Services\JSONAPIService;
+use Spatie\QueryBuilder\QueryBuilder;
+use App\Http\Resources\JSONAPIResource;
 use App\Http\Resources\CategoriesResource;
 use App\Http\Resources\CategoriesCollection;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class CategoryController extends Controller
 {
+    private $service;
+
+    public function __construct(JSONAPIService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,11 +25,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = QueryBuilder::for(Category::class)->allowedSorts([
-            'created_at',
-            'updated_at',
-        ])->jsonPaginate();
-        return new CategoriesCollection($categories);
+        return $this->service->fetchResources(Category::class, 'categories');
     }
 
     /**
@@ -53,7 +57,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return new CategoriesResource($category);
+        return new JSONAPIResource($category);
     }
 
     /**

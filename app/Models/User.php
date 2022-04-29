@@ -47,7 +47,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class);
     }
-    
+
     public function tasks()
     {
         return $this->hasMany(Task::class);
@@ -57,9 +57,34 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Project::class);
     }
-    
+
     public function tasksAssigned()
     {
         return $this->belongsToMany(Task::class);
+    }
+
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
+
+
+    public function type()
+    {
+        return 'users';
+    }
+
+    public function allowedAttributes()
+    {
+        return collect($this->attributes)->filter(function (
+            $item,
+            $key
+        ) {
+            return !collect($this->hidden)->contains($key) && $key
+                !== 'id';
+        })->merge([
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ]);
     }
 }

@@ -20,11 +20,11 @@ class GroupsRelationshipTest extends TestCase
      */
     public function test_it_returns_a_relationship_to_tasks_adhering_to_json_api()
     {
+        $user = User::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(3)->create();
         $group->tasks()->saveMany($tasks);
 
-        $user = User::factory()->create();
         Sanctum::actingAs($user);
 
         $this->getJson('/api/v1/groups/{$group->id}?include=tasks', [

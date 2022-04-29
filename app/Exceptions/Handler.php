@@ -4,11 +4,13 @@ namespace App\Exceptions;
 
 use Exception;
 use Throwable;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
+use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -76,7 +78,7 @@ class Handler extends ExceptionHandler
 
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        if($request->expectsJson()){
+        if ($request->expectsJson()) {
             return response()->json(['errors' => [
                 [
                     'title' => 'Unauthenticated',
@@ -85,5 +87,13 @@ class Handler extends ExceptionHandler
             ]], 403);
         }
         return redirect()->guest($exception->redirectTo() ?? route('login'));
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof QueryException) {
+            $exception = new NotFoundHttpException('Resource not found');
+        }
+        return parent::render($request, $exception);
     }
 }

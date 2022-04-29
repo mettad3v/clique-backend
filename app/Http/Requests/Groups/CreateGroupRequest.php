@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Groups\Requests;
+namespace App\Http\Requests\Groups;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -28,6 +28,8 @@ class CreateGroupRequest extends FormRequest
             'data.type' => 'required|in:groups',
             'data.attributes' => 'required|array',
             'data.attributes.title' => 'required|string|unique:groups,title',
+            'data.attributes.project_id' => 'required|integer',
+            'data.attributes.user_id' => 'required|integer',
         ];
     }
 }

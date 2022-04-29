@@ -4,9 +4,10 @@ namespace Tests\Unit\Exceptions;
 
 use Tests\TestCase;
 use App\Exceptions\Handler;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Testing\TestResponse;
+use Illuminate\Database\QueryException;
+use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 
@@ -24,7 +25,7 @@ class HandlerTest extends TestCase
         $request->headers->set('accept', 'application/vnd.api+json');
 
         $exception = new \Exception('Test exception');
-        
+
         $response = $handler->render($request, $exception);
         TestResponse::fromBaseResponse($response)->assertJson([
             'errors' => [
@@ -35,7 +36,7 @@ class HandlerTest extends TestCase
             ]
         ])->assertStatus(500);
     }
-    
+
     public function test_it_converts_a_http_exception_into_a_json_api_spec_error_response()
     {
         $handler = app(Handler::class);
@@ -43,7 +44,7 @@ class HandlerTest extends TestCase
         $request->headers->set('accept', 'application/vnd.api+json');
 
         $exception = new HttpException(404, 'Not Found');
-        
+
         $response = $handler->render($request, $exception);
         TestResponse::fromBaseResponse($response)->assertJson([
             'errors' => [
@@ -54,7 +55,7 @@ class HandlerTest extends TestCase
             ]
         ])->assertStatus(404);
     }
-    
+
     public function test_it_converts_an_authentication_exception_into_a_json_api_spec_error_response()
     {
         $handler = app(Handler::class);
@@ -62,13 +63,31 @@ class HandlerTest extends TestCase
         $request->headers->set('accept', 'application/vnd.api+json');
 
         $exception = new AuthenticationException();
-        
+
         $response = $handler->render($request, $exception);
         TestResponse::fromBaseResponse($response)->assertJson([
             'errors' => [
                 [
                     'title' => 'Unauthenticated',
                     'details' => 'You are not authenticated',
+                ]
+            ]
+        ]);
+    }
+
+    public function test_it_converts_a_query_exception_into_a_not_found_exception()
+    {
+        /** @var Handler $handler */
+        $handler = app(Handler::class);
+        $request = Request::create('/test', 'GET');
+        $request->headers->set('accept', 'application/vnd.api+json');
+        $exception = new QueryException('select ? from ?', ['name', 'nothing'], new \Exception(''));
+        $response = $handler->render($request, $exception);
+        TestResponse::fromBaseResponse($response)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Not Found Http Exception',
+                    'details' => 'Resource not found',
                 ]
             ]
         ]);

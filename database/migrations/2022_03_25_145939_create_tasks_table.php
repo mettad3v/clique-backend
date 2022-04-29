@@ -20,6 +20,8 @@ class CreateTasksTable extends Migration
             $table->text('description')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('project_id')->nullable();
+            $table->foreignId('group_id')->nullable();
+            $table->foreignId('category_id')->default(1);
             $table->timestamp('deadline')->nullable();
             $table->timestamps();
         });

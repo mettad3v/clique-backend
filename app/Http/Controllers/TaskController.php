@@ -7,17 +7,26 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use App\Services\JSONAPIService;
 use App\Http\Resources\TasksResource;
 use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Resources\TasksCollection;
 use App\Notifications\NotifyAssignedUsers;
+use App\Notifications\NotifyNewSupervisors;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Tasks\CreateTaskRequest;
 use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Requests\Tasks\AssignUsersRequest;
+use App\Http\Resources\JSONAPIResource;
 
 class TaskController extends Controller
 {
+    private $service;
+
+    public function __construct(JSONAPIService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -25,23 +34,10 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = QueryBuilder::for(Task::class)->allowedSorts([
-            'title',
-            'created_at',
-            'updated_at'
-        ])->jsonPaginate();
-        return new TasksCollection($tasks);
+        return $this->service->fetchResources(Task::class, 'tasks');
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -62,7 +58,7 @@ class TaskController extends Controller
             'unique_id' => 'T-'.$unique_id,
             'project_id' => $request->input('data.attributes.project_id'),
         ]);
-        return (new TasksResource($task))->response()->header('Location', route('tasks.show', ['task' => $task]));
+        return (new JSONAPIResource($task))->response()->header('Location', route('tasks.show', ['task' => $task]));
     }
 
     /**
@@ -73,7 +69,7 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
-        return new TasksResource($task);
+        return new JSONAPIResource($task);
 
     }
 
@@ -85,13 +81,32 @@ class TaskController extends Controller
      */
     public function assign(AssignUsersRequest $request, Task $task)
     {
+       
         $task->assignees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
         $assigned_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
         Notification::send($assigned_users, new NotifyAssignedUsers($request->input('data.attributes.user_id'), $task));
 
-        return response(null, 201);
-        // return Carbon::parse('2022-04-13T18:35:25.000000Z')->diffForHumans();
+        return response(null, 200);
+    }
+
+    /**
+     * Make assigned users supervisor
+     * 
+     * @param \App\Models\Task $task
+     * @return \Illuminate\Http\Response
+     */
+    public function supervisor(AssignUsersRequest $request, Task $task)
+    {
+       
+        $task->assignees()->updateExistingPivot($request->input('data.attributes.id'), [
+            'is_supervisor' => 1
+        ]);
+
+        $new_supervisors = User::whereIn('id', $request->input('data.attributes.id'))->get();
+        Notification::send($new_supervisors, new NotifyNewSupervisors($request->input('data.attributes.user_id'), $task));
+
+        return response(null, 200);
     }
 
     /**

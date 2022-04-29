@@ -7,6 +7,7 @@ use Tests\TestCase;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
+use App\Models\Category;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -49,12 +50,15 @@ class TasksTest extends TestCase
 
     public function test_anyone_can_assign_tasks_to_other()
     {
+        
         $auth = User::factory()->create();
-        $user = User::factory()->create();
-        $task = Task::factory()->create();
-
+        $project = Project::factory()->create();
+        $user = User::factory(2)->create();
+        $task = Task::factory()->create(['project_id' => 1]);
+        
         Sanctum::actingAs($auth);
         $ids = $user->pluck('id');        
+        $project->invitees()->attach($ids);
 
         $this->postJson('/api/v1/tasks/1/assign', [
             'data' => [
@@ -67,12 +71,39 @@ class TasksTest extends TestCase
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(201);
+        ])->assertStatus(200);
     }
 
-    public function test_it_can_make_assigned_user_supervisor()
+    public function test_it_returns_assignees_to_a_task()
     {
         
+    }
+    
+    public function test_it_can_make_assigned_users_supervisor()
+    {
+        $auth = User::factory()->create();
+        $project = Project::factory()->create();
+        $user = User::factory(3)->create();
+        $task = Task::factory()->create();
+
+        Sanctum::actingAs($auth);
+        $ids = $user->pluck('id'); 
+        $project->invitees()->attach($ids);
+        
+        $task->assignees()->attach($ids);
+
+        $this->patchJson('/api/v1/tasks/1/supervisor', [
+            'data' => [
+                'type' => 'users',
+                'attributes' => [
+                    'id' => $ids,
+                    'user_id' => $auth->id
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json'
+        ])->assertStatus(200); 
     }
 
     public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
@@ -380,6 +411,7 @@ class TasksTest extends TestCase
     {
         // dd(Carbon::parse('2022-09-09 09:09:09')->diffForHumans());
         $user = User::factory()->create();
+        $category = Category::factory()->create();
         $project = Project::factory()->create();
         $task = Task::factory()->create();
 
@@ -408,7 +440,8 @@ class TasksTest extends TestCase
                         'description' => 'John Doe and Jane Doe',
                         'user_id' => $user->id,
                         'project_id' => $project->id,
-                        'deadline' => "2022-09-09 09:09:09",
+                        // 'category_id' => 1,
+                        // 'deadline' => "2022-09-09 09:09:09",
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ]

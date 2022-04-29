@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\JSONAPIRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UsersResource;
@@ -10,9 +11,20 @@ use App\Http\Resources\UsersCollection;
 use Illuminate\Support\File;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Users\UpdateUserRequest;
+use App\Http\Resources\JSONAPICollection;
+use App\Http\Resources\JSONAPIResource;
+use App\Services\JSONAPIService;
 
 class UserController extends Controller
 {
+
+    private $service;
+
+    public function __construct(JSONAPIService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -20,12 +32,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = QueryBuilder::for(User::class)->allowedSorts([
-            'name',
-            'created_at',
-            'updated_at'
-        ])->jsonPaginate();
-        return new UsersCollection($users);
+        return $this->service->fetchResources(User::class, 'users');
     }
 
     /**
@@ -34,13 +41,16 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateGroupRequest $request)
+    public function store( $request)
     {
         // $group = Group::create([
         //     'title' => $request->input('data.attributes.title'),
         //     // 'user_id' => $request->input('data.attributes.user_id'),
         // ]);
         // return (new GroupsResource($group))->response()->header('Location', route('groups.show', ['group' => $group]));
+        
+        // return $this->service->createResource(User::class, $request->input('data.attributes'));
+
     }
 
     /**
@@ -51,7 +61,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return new UsersResource($user);
+        return $this->service->fetchResource($user);
     }
 
     /**
@@ -61,7 +71,7 @@ class UserController extends Controller
      * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(JSONAPIRequest $request, User $user)
     {
         if ($request->hasFile('data.attributes.profile_avatar')) {
 
@@ -77,7 +87,9 @@ class UserController extends Controller
             'status' => $request->input('data.attributes.status'),
             'profile_avatar' => $profile_avatar 
         ]);
-        return new UsersResource($user);
+        return new JSONAPIResource($user);
+        // return $this->service->updateResource($author, $request->input('data.attributes'));
+        
     }
 
     /**
@@ -88,7 +100,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-        return response(null, 204);
+        return $this->service->deleteResource($user);
+
     }
 }

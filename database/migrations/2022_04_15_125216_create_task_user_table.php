@@ -17,6 +17,7 @@ class CreateTaskUserTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('task_id')->constrained('tasks');
+            $table->boolean('is_supervisor')->default(0);
             $table->timestamps();
         });
     }

@@ -9,7 +9,7 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'user_id'];
+    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'user_id', 'category_id'];
 
     public function project()
     {
@@ -21,8 +21,13 @@ class Task extends Model
         return $this->belongsTo(User::class);
     }
     
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    
     public function assignees()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GroupsTasksRelationshipsController;
+use App\Http\Controllers\ProjectsUsersRelatedController;
+use App\Http\Controllers\ProjectsUsersRelationshipController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
 /*
@@ -46,13 +48,17 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/groups/{group}/tasks', [GroupsTasksRelationshipsController::class, 'update'])->name('groups.tasks');
     
     
-    Route::post('/projects/{project}/invite', [ProjectController::class, 'invite']);
-    Route::patch('/projects/{project}/revoke', [ProjectController::class, 'revoke']);
     Route::patch('/projects/{project}/change-ownership', [ProjectController::class, 'change_ownership']);
     Route::apiResource('projects', ProjectController::class);
+    Route::patch('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'revoke']);
+    Route::post('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'invite']);
+    Route::get('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'index'])->name('projects.relationships.users');
+    Route::patch('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'update'])->name('projects.relationships.users');
+    Route::get('/projects/{project}/users', [ProjectsUsersRelatedController::class, 'index'])->name('projects.users');
     
     Route::apiResource('tasks', TaskController::class);
     Route::post('/tasks/{task}/assign', [TaskController::class, 'assign']);
+    Route::patch('/tasks/{task}/supervisor', [TaskController::class, 'supervisor']);
     // Route::patch('/projects/{project}/revoke', [ProjectController::class, 'revoke']);
 
     Route::apiResource('categories', CategoryController::class);

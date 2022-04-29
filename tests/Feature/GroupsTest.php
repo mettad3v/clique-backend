@@ -2,11 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Group;
-use App\Models\User;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use App\Models\User;
+use App\Models\Group;
+use App\Models\Project;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class GroupsTest extends TestCase
 {
@@ -14,8 +15,9 @@ class GroupsTest extends TestCase
 
     public function test_it_returns_a_group_as_a_resource_object()
     {
-        $group = Group::factory()->create();
         $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $group = Group::factory()->create();
 
         Sanctum::actingAs($user);
 
@@ -30,6 +32,8 @@ class GroupsTest extends TestCase
                     "type" => "groups",
                     "attributes" => [
                         'title' => $group->title,
+                        'user_id' => $group->user_id,
+                        'project_id' => $group->project_id,
                         'created_at' => $group->created_at->toJSON(),
                         'updated_at' => $group->updated_at->toJSON(),
                     ]
@@ -333,6 +337,7 @@ class GroupsTest extends TestCase
     public function test_it_can_create_a_group_from_a_resource_object()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         Sanctum::actingAs($user);
 
         $this->postJson('/api/v1/groups', [
@@ -340,6 +345,8 @@ class GroupsTest extends TestCase
                 'type' => 'groups',
                 'attributes' => [
                     'title' => 'John Doe',
+                    'project_id' => $project->id,
+                    'user_id' => $user->id
                 ]
             ]
         ], [
@@ -352,6 +359,8 @@ class GroupsTest extends TestCase
                     "type" => "groups",
                     "attributes" => [
                         'title' => 'John Doe',
+                        'user_id' => 1,
+                        'project_id' => 1,
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ]

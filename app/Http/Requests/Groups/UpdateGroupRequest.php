@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Groups;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,6 +29,8 @@ class UpdateGroupRequest extends FormRequest
             'data.type' => 'required|in:groups',
             'data.attributes' => 'required|array',
             'data.attributes.title' => 'sometimes|required|string|unique:groups,title',
+            'data.attributes.project_id' => 'sometimes|required|integer',
+            'data.attributes.user_id' => 'sometimes|required|integer',
         ];
     }
 }

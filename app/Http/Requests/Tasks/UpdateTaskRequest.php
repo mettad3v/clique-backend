@@ -32,6 +32,7 @@ class UpdateTaskRequest extends FormRequest
             'data.attributes.description' => 'sometimes|string',
             'data.attributes.user_id' => 'sometimes|required|integer',
             'data.attributes.project_id' => 'sometimes|required|integer',
+            'data.attributes.category_id' => 'sometimes|required|integer',
             'data.attributes.deadline' => 'sometimes|date_format:Y-m-d H:i:s',
         ];
     }

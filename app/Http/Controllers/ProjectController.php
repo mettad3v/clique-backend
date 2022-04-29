@@ -2,25 +2,36 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\JSONAPIRequest;
 use App\Models\User;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use App\Services\JSONAPIService;
 use Spatie\QueryBuilder\QueryBuilder;
+use App\Http\Resources\JSONAPIResource;
 use App\Http\Resources\ProjectsResource;
+use App\Http\Resources\JSONAPICollection;
+use App\Notifications\NotifyInvitedUsers;
+use App\Notifications\NotifyRevokedUsers;
 use App\Http\Resources\ProjectsCollection;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Notification;
+use App\Notifications\ProjectOwnerShipChange;
+use App\Notifications\ProjectDeleteNotification;
 use App\Http\Requests\Projects\InviteUserRequest;
 use App\Http\Requests\Projects\CreateProjectRequest;
 use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Requests\Projects\ChangeProjectOwnershipRequest;
-use App\Notifications\NotifyInvitedUsers;
-use App\Notifications\NotifyRevokedUsers;
-use App\Notifications\ProjectDeleteNotification;
-use App\Notifications\ProjectOwnerShipChange;
-use Illuminate\Database\Eloquent\Collection;
 
 class ProjectController extends Controller
 {
+    private $service;
+
+    public function __construct(JSONAPIService $service)
+    {
+        $this->service = $service;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -28,27 +39,24 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $projects = QueryBuilder::for(Project::class)->allowedSorts([
-            'name',
-            'created_at',
-            'updated_at'
-        ])->jsonPaginate();
-        return new ProjectsCollection($projects);
+        return $this->service->fetchResources(Project::class, 'projects');
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateProjectRequest $request)
+    public function store(JSONAPIRequest $request)
     {
         $project = Project::create([
             'name' => $request->input('data.attributes.name'),
-            'user_id' => $request->input('data.attributes.user_id')
+            'user_id' => auth()->user()->id,
         ]);
-        return (new ProjectsResource($project))->response()->header('Location', route('projects.show', ['project' => $project]));
+        return (new JSONAPIResource($project))->response()
+                ->header('Location', route('projects.show', ['project' => $project]));
+
     }
 
     /**
@@ -57,11 +65,11 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show($project)
     {
-        return new ProjectsResource($project);
+        return $this->service->fetchResource(Project::class, $project, 'projects');
     }
-    
+
     /**
      * Project creator can invite other users.
      *
@@ -73,7 +81,7 @@ class ProjectController extends Controller
         if ($request->user()->cannot('invite', $project)) {
             abort(403, 'You are not the owner of this project');
         }
-        
+
         $project->invitees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
         $attached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
@@ -81,13 +89,13 @@ class ProjectController extends Controller
 
         return response(null, 201);
     }
-    
+
     public function revoke(Project $project, InviteUserRequest $request)
     {
         if ($request->user()->cannot('revoke', $project)) {
             abort(403, 'You are not the owner of this project');
         }
-        
+
         $project->invitees()->detach($request->input('data.attributes.id'));
 
         $detached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
@@ -104,12 +112,11 @@ class ProjectController extends Controller
      * @param  \App\Models\Project  $project
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(JSONAPIRequest $request, Project $project)
     {
-        $project->update($request->input('data.attributes'));
-        return new ProjectsResource($project);
+        $this->service->updateResource($project, $request->input('data.attributes'));
     }
-    
+
     /**
      * Update the specified resource in storage.
      *
@@ -143,10 +150,9 @@ class ProjectController extends Controller
         if ($request->user()->cannot('delete', $project)) {
             abort(403, 'You are not the owner of this project');
         }
-        
+
         // Notification::send($project->invitees, new ProjectDeleteNotification($project));
-        
-        $project->delete();
-        return response(null, 204);
+
+        return $this->service->deleteResource($project);
     }
 }

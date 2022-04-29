@@ -2,13 +2,12 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class UsersCollection extends ResourceCollection
+class JSONAPIIdentifierResource extends JsonResource
 {
-    public $collects = JSONAPIResource::class;
     /**
-     * Transform the resource collection into an array.
+     * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
@@ -16,7 +15,8 @@ class UsersCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection
+            'id' => (string)$this->id,
+            'type' => $this->type(),
         ];
     }
 }

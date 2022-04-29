@@ -2,14 +2,13 @@
 
 namespace App\Notifications;
 
-use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NotifyAssignedUsers extends Notification implements ShouldQueue
+class NotifyNewSupervisors extends Notification
 {
     use Queueable;
 
@@ -64,7 +63,7 @@ class NotifyAssignedUsers extends Notification implements ShouldQueue
 
         return [
             'data' => [
-                'message' => $user . ' assigned ' . $this->task->title . ' to you',
+                'message' => $this->user . ' made you a supervisor in ' . $this->task->title,
                 'received_at' => $notifiable->created_at 
             ]
         ];
