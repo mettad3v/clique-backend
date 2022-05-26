@@ -8,6 +8,7 @@ use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Resources\JSONAPIResource;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\JSONAPICollection;
+use Illuminate\Support\Facades\Notification;
 use App\Http\Resources\JSONAPIIdentifierResource;
 
 class JSONAPIService
@@ -58,11 +59,62 @@ class JSONAPIService
 
     public function fetchRelationship($model, string $relationship)
     {
+        if ($model->$relationship instanceof Model) {
+            return new JSONAPIIdentifierResource($model->$relationship);
+        }
         return JSONAPIIdentifierResource::collection($model->$relationship);
+    }
+
+    public function updateToOneRelationship($model, $relationship, $id)
+    {
+        $relatedModel = $model->$relationship()->getRelated();
+        $model->$relationship()->dissociate();
+
+        if ($id) {
+            $newModel = $relatedModel->newQuery()->findOrFail($id);
+            $model->$relationship()->associate($newModel);
+        }
+        $model->save();
+        return response(null, 204);
+    }
+
+    public function updateToManyRelationships($model, $relationship, $ids)
+    {
+        $foreignKey = $model->$relationship()->getForeignKeyName();
+        $relatedModel = $model->$relationship()->getRelated();
+
+        $relatedModel->newQuery()->where($foreignKey, $model->id)->update([$foreignKey => null,]);
+        $relatedModel->newQuery()->whereIn('id', $ids)->update([$foreignKey => $model->id,]);
+
+        return response(null, 204);
     }
 
     public function fetchRelated($model, $relationship)
     {
+        if ($model->$relationship instanceof Model) {
+            return new JSONAPIResource($model->$relationship);
+        }
         return new JSONAPICollection($model->$relationship);
+    }
+
+    public function updateManyToManyRelationships($model, $relationship, $ids)
+    {
+        $model->$relationship()->sync($ids);
+        return response(null, 204);
+    }
+
+    public function notificationHandler($request, $resource, $relationship, $notification, $defaultNotification, $user)
+    {
+        if (count($request->input('data.*.id')) > count($resource->$relationship->pluck('id'))) {
+            $users_to_notify = array_diff($request->input('data.*.id'), $resource->$relationship->pluck('id')->toArray());
+
+            $users_to_notify = User::whereIn('id', $users_to_notify)->get();
+            Notification::send($users_to_notify, new $notification($user, $resource));
+        } else {
+            $users_to_notify = array_diff($resource->$relationship->pluck('id')->toArray(), $request->input('data.*.id'));
+
+            $users_to_notify = User::whereIn('id', $users_to_notify)->get();
+            Notification::send($users_to_notify, new $defaultNotification($user, $resource));
+        }
     }
 }

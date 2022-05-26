@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\JSONAPIRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
-use App\Http\Resources\UsersResource;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Http\Resources\UsersCollection;
-use Illuminate\Support\File;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Users\UpdateUserRequest;
-use App\Http\Resources\JSONAPICollection;
-use App\Http\Resources\JSONAPIResource;
 use App\Services\JSONAPIService;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\JSONAPIRequest;
+use App\Http\Resources\JSONAPIResource;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -41,27 +35,19 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store( $request)
+    public function store($request)
     {
-        // $group = Group::create([
-        //     'title' => $request->input('data.attributes.title'),
-        //     // 'user_id' => $request->input('data.attributes.user_id'),
-        // ]);
-        // return (new GroupsResource($group))->response()->header('Location', route('groups.show', ['group' => $group]));
-        
-        // return $this->service->createResource(User::class, $request->input('data.attributes'));
-
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Group  $group
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($user)
     {
-        return $this->service->fetchResource($user);
+        return $this->service->fetchResource(User::class, $user, 'users');
     }
 
     /**
@@ -77,19 +63,16 @@ class UserController extends Controller
 
             Storage::delete($user->profile_avatar);
             $profile_avatar = $request->file('data.attributes.profile_avatar')->store('avatars');
-
         }
 
-        $user->update([
+        return $this->service->updateResource($user, [
             'name' => $request->input('data.attributes.name'),
             'username' => $request->input('data.attributes.username'),
+            'password' => bcrypt($request->input('data.attributes.password')),
             'email' => $request->input('data.attributes.email'),
             'status' => $request->input('data.attributes.status'),
-            'profile_avatar' => $profile_avatar 
+            'profile_avatar' => $profile_avatar
         ]);
-        return new JSONAPIResource($user);
-        // return $this->service->updateResource($author, $request->input('data.attributes'));
-        
     }
 
     /**
@@ -101,6 +84,5 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         return $this->service->deleteResource($user);
-
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\JSONAPIRequest;
 use App\Models\User;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -12,7 +12,7 @@ class AuthController extends Controller
 {
     use ApiResponser;
 
-    public function register(RegisterRequest $request)
+    public function register(JSONAPIRequest $request)
     {
     
         $user = User::create([

@@ -5,10 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Http\Resources\JSONAPIResource;
-use App\Http\Resources\CategoriesResource;
-use App\Http\Resources\CategoriesCollection;
 
 class CategoryController extends Controller
 {
@@ -57,7 +53,8 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return new JSONAPIResource($category);
+        return $this->service->fetchResource($category, 'categories');
+
     }
 
     /**

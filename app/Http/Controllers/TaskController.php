@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
+use App\Http\Requests\JSONAPIRequest;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use App\Http\Resources\TasksResource;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Http\Resources\TasksCollection;
 use App\Notifications\NotifyAssignedUsers;
 use App\Notifications\NotifyNewSupervisors;
 use Illuminate\Support\Facades\Notification;
-use App\Http\Requests\Tasks\CreateTaskRequest;
-use App\Http\Requests\Tasks\UpdateTaskRequest;
 use App\Http\Requests\Tasks\AssignUsersRequest;
 use App\Http\Resources\JSONAPIResource;
 
@@ -45,20 +39,18 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateTaskRequest $request)
+    public function store(JSONAPIRequest $request)
     {
-        $project = Project::where('id', $request->input('data.attributes.project_id'))->withCount('tasks')->get();
-        $unique_id = $project[0]->tasks_count + 1;
+        $unique_id = Project::findOrFail($request->input('data.attributes.project_id'))->tasks->count() + 1;
 
-        $task = Task::create([
+        return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),
             'description' => $request->input('data.attributes.description'),
             'deadline' => $request->input('data.attributes.deadline'),
-            'user_id' => $request->input('data.attributes.user_id'),
-            'unique_id' => 'T-'.$unique_id,
+            'user_id' => auth()->user()->id,
+            'unique_id' => 'T-'.(string)$unique_id,
             'project_id' => $request->input('data.attributes.project_id'),
         ]);
-        return (new JSONAPIResource($task))->response()->header('Location', route('tasks.show', ['task' => $task]));
     }
 
     /**
@@ -67,9 +59,9 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function show(Task $task)
+    public function show($task)
     {
-        return new JSONAPIResource($task);
+        return $this->service->fetchResource(Task::class, $task, 'tasks');
 
     }
 
@@ -85,7 +77,7 @@ class TaskController extends Controller
         $task->assignees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
         $assigned_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
-        Notification::send($assigned_users, new NotifyAssignedUsers($request->input('data.attributes.user_id'), $task));
+        Notification::send($assigned_users, new NotifyAssignedUsers(auth()->user()->id, $task));
 
         return response(null, 200);
     }
@@ -116,10 +108,9 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(JSONAPIRequest $request, Task $task)
     {
-        $task->update($request->input('data.attributes'));
-        return new TasksResource($task);
+        $this->service->updateResource($task, $request->input('data.attributes'));
     }
 
     /**

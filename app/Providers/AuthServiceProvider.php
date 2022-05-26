@@ -34,16 +34,11 @@ class AuthServiceProvider extends ServiceProvider
         });
 
 
-        Gate::define('invite', function (User $user, Project $project) {
+        Gate::define('update', function (User $user, Project $project) {
             return $user->id === $project->user_id
                         ? Response::allow()
                         : Response::deny('You are not the owner of this project.');
         });
-        
-        Gate::define('revoke', function (User $user, Project $project) {
-            return $user->id === $project->user_id
-                        ? Response::allow()
-                        : Response::deny('You are not the owner of this project.');
-        });
+
     }
 }

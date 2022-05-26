@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
-use Illuminate\Http\Request;
+use App\Services\JSONAPIService;
+use App\Http\Requests\JSONAPIRequest;
 use Spatie\QueryBuilder\QueryBuilder;
-use App\Http\Resources\GroupsResource;
-use App\Http\Resources\GroupsCollection;
-use App\Http\Requests\Groups\UpdateGroupRequest;
-use App\Http\Requests\Groups\CreateGroupRequest;
+use App\Http\Resources\JSONAPIResource;
+use App\Http\Resources\JSONAPICollection;
 
 class GroupController extends Controller
 {
+    private $service;
+
+    public function __construct(JSONAPIService $service)
+    {
+        $this->service = $service;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -19,12 +24,8 @@ class GroupController extends Controller
      */
     public function index()
     {
-        $groups = QueryBuilder::for(Group::class)->allowedSorts([
-            'title',
-            'created_at',
-            'updated_at'
-        ])->jsonPaginate();
-        return new GroupsCollection($groups);
+
+        return $this->service->fetchResources(Group::class, 'groups');
     }
 
     /**
@@ -33,14 +34,14 @@ class GroupController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreateGroupRequest $request)
+    public function store(JSONAPIRequest $request)
     {
-        $group = Group::create([
+
+        return $this->service->createResource(Group::class, [
             'title' => $request->input('data.attributes.title'),
-            'user_id' => $request->input('data.attributes.user_id'),
+            'user_id' => auth()->user()->id,
             'project_id' => $request->input('data.attributes.project_id'),
         ]);
-        return (new GroupsResource($group))->response()->header('Location', route('groups.show', ['group' => $group]));
     }
 
     /**
@@ -49,9 +50,10 @@ class GroupController extends Controller
      * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function show(Group $group)
+    public function show($group)
     {
-        return new GroupsResource($group);
+        return $this->service->fetchResource(Group::class, $group, 'groups');
+
     }
 
     /**
@@ -61,10 +63,10 @@ class GroupController extends Controller
      * @param  \App\Models\Group  $group
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateGroupRequest $request, Group $group)
+    public function update(JSONAPIRequest $request, Group $group)
     {
-        $group->update($request->input('data.attributes'));
-        return new GroupsResource($group);
+        $this->service->updateResource($group, $request->input('data.attributes'));
+
     }
 
     /**
@@ -75,7 +77,7 @@ class GroupController extends Controller
      */
     public function destroy(Group $group)
     {
-        $group->delete();
-        return response(null, 204);
+        return $this->service->deleteResource($group);
+
     }
 }

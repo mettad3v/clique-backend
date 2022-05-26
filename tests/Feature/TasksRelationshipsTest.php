@@ -3,13 +3,13 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class ProjectsRelationshipsTest extends TestCase
+class TasksRelationshipsTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -18,9 +18,10 @@ class ProjectsRelationshipsTest extends TestCase
         $auth = User::factory()->create();
         $users = User::factory(2)->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $project->invitees()->sync($users->pluck('id'));
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1?invitees', [
+        $this->getJson('/api/v1/tasks/1?assignees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -28,15 +29,16 @@ class ProjectsRelationshipsTest extends TestCase
             ->assertJson([
                 'data' => [
                     'id' => '1',
-                    'type' => 'projects',
+                    'type' => 'tasks',
                     'attributes' => [
-                        'name' => $project->name
+                        'title' => $task->title,
+                        'project_id' => $project->id
                     ],
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $project->id),
-                                'related' => route('projects.users', $project->id),
+                                'self' => route('tasks.relationships.users', $task->id),
+                                'related' => route('tasks.users', $task->id),
                             ],
                             'data' => [
                                 [
@@ -58,10 +60,11 @@ class ProjectsRelationshipsTest extends TestCase
     {
         $auth = User::factory()->create();
         $users = User::factory(3)->create();
-        $project = Project::factory()->create();
-        $project->invitees()->attach($users->pluck('id'));
+        $project = Project::factory()->create(['user_id' => $auth->id]);
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1/relationships/users', [
+        $this->getJson('/api/v1/tasks/1/relationships/users', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -89,9 +92,10 @@ class ProjectsRelationshipsTest extends TestCase
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $project->invitees()->attach($users->pluck('id'));
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
                     'id' => '5',
@@ -106,12 +110,12 @@ class ProjectsRelationshipsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
-        $this->assertDatabaseHas('project_user', [
+        $this->assertDatabaseHas('task_user', [
             'user_id' => 5,
-            'project_id' => 1,
-        ])->assertDatabaseHas('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseHas('task_user', [
             'user_id' => 6,
-            'project_id' => 1,
+            'task_id' => 1,
         ]);
     }
 
@@ -119,10 +123,11 @@ class ProjectsRelationshipsTest extends TestCase
     {
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
-        $project = Project::factory()->create(['user_id' => $auth->id]);
-        $project->invitees()->attach($users->pluck('id'));
+        $project = Project::factory()->create(['user_id' =>$auth->id]);
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
                     'id' => '1',
@@ -141,21 +146,21 @@ class ProjectsRelationshipsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
-        $this->assertDatabaseHas('project_user', [
+        $this->assertDatabaseHas('task_user', [
             'user_id' => 1,
-            'project_id' => 1,
-        ])->assertDatabaseHas('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseHas('task_user', [
             'user_id' => 2,
-            'project_id' => 1,
-        ])->assertDatabaseHas('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseHas('task_user', [
             'user_id' => 5,
-            'project_id' => 1,
-        ])->assertDatabaseMissing('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseMissing('task_user', [
             'user_id' => 3,
-            'project_id' => 1,
-        ])->assertDatabaseMissing('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseMissing('task_user', [
             'user_id' => 4,
-            'project_id' => 1,
+            'task_id' => 1,
         ]);
     }
 
@@ -163,24 +168,25 @@ class ProjectsRelationshipsTest extends TestCase
     {
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
-        $project = Project::factory()->create(['user_id' => $auth->id]);
-        $project->invitees()->attach($users->pluck('id'));
+        $project = Project::factory()->create(['user_id'=> $auth->id]);
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => []
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
-        $this->assertDatabaseMissing('project_user', [
+        $this->assertDatabaseMissing('task_user', [
             'user_id' => 1,
-            'project_id' => 1,
-        ])->assertDatabaseMissing('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseMissing('task_user', [
             'user_id' => 2,
-            'project_id' => 1,
-        ])->assertDatabaseMissing('project_user', [
+            'task_id' => 1,
+        ])->assertDatabaseMissing('task_user', [
             'user_id' => 3,
-            'project_id' => 1,
+            'task_id' => 1,
         ]);
     }
 
@@ -189,8 +195,9 @@ class ProjectsRelationshipsTest extends TestCase
         $users = User::factory(2)->create();
         $auth = User::factory()->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
+        $task = Task::factory()->create(['project_id' => $project->id]);
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
                     'id' => '5',
@@ -218,9 +225,10 @@ class ProjectsRelationshipsTest extends TestCase
     {
         $users = User::factory(5)->create();
         $project = Project::factory()->create();
+        $task = Task::factory()->create(['project_id' => $project->id]);
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
                     'type' => 'users',
@@ -246,9 +254,10 @@ class ProjectsRelationshipsTest extends TestCase
     {
         $users = User::factory(5)->create();
         $project = Project::factory()->create();
+        $task = Task::factory()->create(['project_id' => $project->id]);
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
                     'id' => 5,
@@ -275,9 +284,10 @@ class ProjectsRelationshipsTest extends TestCase
     {
         $users = User::factory(5)->create();
         $project = Project::factory()->create();
+        $task = Task::factory()->create(['project_id' => $project->id]);
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
                     'id' => '5',
@@ -299,43 +309,16 @@ class ProjectsRelationshipsTest extends TestCase
         ]);
     }
 
-    public function it_validates_that_the_type_member_has_a_value_of_users_when_updating_a_r()
-    {
-        $users = User::factory(5)->create();
-        $project = Project::factory()->create();
-        $auth = User::factory()->create();
-        Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
-            'data' => [
-                [
-                    'id' => '5',
-                    'type' => 'projects',
-                ],
-            ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(422)->assertJson([
-            'errors' => [
-                [
-                    'title' => 'Validation Error',
-                    'details' => 'The selected data.0.type is invalid.',
-                    'source' => [
-                        'pointer' => '/data/0/type',
-                    ]
-                ]
-            ]
-        ]);
-    }
 
     public function test_it_can_get_all_related_users_as_resource_objects_from_related_link()
     {
         $auth = User::factory()->create();
         $users = User::factory(3)->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $project->invitees()->sync($users->pluck('id'));
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1/relationships/users', [
+        $this->getJson('/api/v1/tasks/1/relationships/users', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -343,12 +326,13 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_includes_related_resource_objects_when_an_include_query_param_is_given()
     {
-        $project = Project::factory()->create();
         $users = User::factory(3)->create();
-        $project->invitees()->sync($users->pluck('id'));
         $auth = User::factory()->create();
+        $project = Project::factory()->create(['user_id' => $auth->id]);
+        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1?include=invitees', [
+        $this->getJson('/api/v1/tasks/1?include=assignees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -356,12 +340,12 @@ class ProjectsRelationshipsTest extends TestCase
             ->assertJson([
                 'data' => [
                     'id' => '1',
-                    'type' => 'projects',
+                    'type' => 'tasks',
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $project->id),
-                                'related' => route('projects.users', $project->id),
+                                'self' => route('tasks.relationships.users', $project->id),
+                                'related' => route('tasks.users', $project->id),
                             ],
                             'data' => [
                                 [
@@ -415,10 +399,11 @@ class ProjectsRelationshipsTest extends TestCase
     public function test_it_does_not_include_related_resource_objects_when_an_include_query_param_is_not_given()
     {
         $this->withoutExceptionHandling();
-        $project = Project::factory()->create();
         $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $task = Task::factory()->create(['project_id' => $project->id]);
         Sanctum::actingAs($user);
-        $this->getJson('/api/v1/projects/1', [
+        $this->getJson('/api/v1/tasks/1', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -430,35 +415,36 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_includes_related_resource_objects_for_a_collection_when_an_include_query_param_is_given()
     {
-        $projects = Project::factory(3)->create();
+        $projects = Project::factory()->create();
+        $tasks = Task::factory(3)->create();
         $users = User::factory(3)->create();
-
-        $projects->each(function ($project, $key) use ($users) {
+        
+        $tasks->each(function ($task, $key) use ($users) {
             if ($key === 0) {
-                $project->invitees()->attach($users->pluck('id'));
+                $task->assignees()->attach($users->pluck('id'));
             }
         });
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-
-        $this->get('/api/v1/projects?include=invitees', [
+        
+        $this->get('/api/v1/tasks?include=assignees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
             "data" => [
                 [
                     "id" => '1',
-                    "type" => "projects",
+                    "type" => "tasks",
                     "attributes" => [
-                        'name' => $projects[0]->name,
-                        'created_at' => $projects[0]->created_at->toJSON(),
-                        'updated_at' => $projects[0]->updated_at->toJSON(),
+                        'title' => $tasks[0]->title,
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
                     ],
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[0]->id),
-                                'related' => route('projects.users', $projects[0]->id),
+                                'self' => route('tasks.relationships.users', $tasks[0]->id),
+                                'related' => route('tasks.users', $tasks[0]->id),
                             ],
                             'data' => [
                                 [
@@ -479,34 +465,34 @@ class ProjectsRelationshipsTest extends TestCase
                 ],
                 [
                     "id" => '2',
-                    "type" => "projects",
+                    "type" => "tasks",
                     "attributes" => [
-                        'name' => $projects[1]->name,
-                        'created_at' => $projects[1]->created_at->toJSON(),
-                        'updated_at' => $projects[1]->updated_at->toJSON(),
+                        'title' => $tasks[1]->title,
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
                     ],
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[1]->id),
-                                'related' => route('projects.users', $projects[1]->id),
+                                'self' => route('tasks.relationships.users', $tasks[1]->id),
+                                'related' => route('tasks.users', $tasks[1]->id),
                             ],
                         ]
                     ]
                 ],
                 [
                     "id" => '3',
-                    "type" => "projects",
+                    "type" => "tasks",
                     "attributes" => [
-                        'name' => $projects[2]->name,
-                        'created_at' => $projects[2]->created_at->toJSON(),
-                        'updated_at' => $projects[2]->updated_at->toJSON(),
+                        'title' => $tasks[2]->title,
+                        'created_at' => $tasks[2]->created_at->toJSON(),
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
                     ],
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[2]->id),
-                                'related' => route('projects.users', $projects[2]->id),
+                                'self' => route('tasks.relationships.users', $tasks[2]->id),
+                                'related' => route('tasks.users', $tasks[2]->id),
                             ],
                         ]
                     ]
@@ -546,10 +532,11 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_does_not_include_related_resource_objects_for_a_collection_when_an_include_param_is_not_given()
     {
-        $projects = Project::factory()->create();
+        $project = Project::factory()->create();
+        $task = Task::factory()->create(['project_id' => $project->id]);
         $user = User::factory()->create();
         Sanctum::actingAs($user);
-        $this->get('/api/v1/projects', [
+        $this->get('/api/v1/tasks', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)
@@ -561,43 +548,44 @@ class ProjectsRelationshipsTest extends TestCase
     public function test_it_only_includes_a_related_resource_object_once_for_a_collection()
     {
         $users = User::factory(3)->create();
-        $projects = Project::factory(3)->create();
-        $projects->each(function ($project) use ($users) {
-            $project->invitees()->attach($users->pluck('id'));
-        });
         $auth = User::factory()->create();
+        $project = Project::factory()->create();
+        $tasks = Task::factory(3)->create();
+        $tasks->each(function ($task) use ($users) {
+            $task->assignees()->attach($users->pluck('id'));
+        });
         Sanctum::actingAs($auth);
-
-        $this->get('/api/v1/projects?include=invitees', [
+        
+        $this->get('/api/v1/tasks?include=assignees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
             "data" => [
                 [
                     "id" => '1',
-                    "type" => "projects",
+                    "type" => "tasks",
                     "attributes" => [
-                        'name' => $projects[0]->name,
-                        'created_at' => $projects[0]->created_at->toJSON(),
-                        'updated_at' => $projects[0]->updated_at->toJSON(),
+                        'title' => $tasks[0]->title,
+                        'created_at' => $tasks[0]->created_at->toJSON(),
+                        'updated_at' => $tasks[0]->updated_at->toJSON(),
                     ],
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[0]->id),
-                                'related' => route('projects.users', $projects[0]->id),
+                                'self' => route('tasks.relationships.users', $tasks[0]->id), 
+                                'related' => route('tasks.users', $tasks[0]->id),
                             ],
                             'data' => [
                                 [
-                                    'id' => $users->get(0)->id,
+                                    'id' => (string)$users->get(0)->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users->get(1)->id,
+                                    'id' => (string)$users->get(1)->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users->get(2)->id,
+                                    'id' => (string)$users->get(2)->id,
                                     'type' => 'users'
                                 ]
                             ]
@@ -606,28 +594,28 @@ class ProjectsRelationshipsTest extends TestCase
                 ],
                 [
                     "id" => '2',
-                    "type" => "projects",
+                    "type" => "tasks",
                     "attributes" => [
-                        'name' => $projects[1]->name,
-                        'created_at' => $projects[1]->created_at->toJSON(),
-                        'updated_at' => $projects[1]->updated_at->toJSON(),
+                        'title' => $tasks[1]->title,
+                        'created_at' => $tasks[1]->created_at->toJSON(),
+                        'updated_at' => $tasks[1]->updated_at->toJSON(),
                     ], 'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[1]->id),
-                                'related' => route('projects.users', $projects[1]->id),
+                                'self' => route('tasks.relationships.users', $tasks[1]->id),
+                                'related' => route('tasks.users', $tasks[1]->id),
                             ],
                             'data' => [
                                 [
-                                    'id' => $users->get(0)->id,
+                                    'id' => (string)$users->get(0)->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users->get(1)->id,
+                                    'id' => (string)$users->get(1)->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users->get(2)->id,
+                                    'id' => (string)$users->get(2)->id,
                                     'type' => 'users'
                                 ]
                             ]
@@ -636,29 +624,29 @@ class ProjectsRelationshipsTest extends TestCase
                 ],
                 [
                     "id" => '3',
-                    "type" => "projects",
+                    "type" => "tasks",
                     "attributes" => [
-                        'name' => $projects[2]->name,
-                        'created_at' => $projects[2]->created_at->toJSON(),
-                        'updated_at' => $projects[2]->updated_at->toJSON(),
+                        'title' => $tasks[2]->title,
+                        'created_at' => $tasks[2]->created_at->toJSON(),
+                        'updated_at' => $tasks[2]->updated_at->toJSON(),
                     ],
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[2]->id),
-                                'related' => route('projects.users', $projects[2]->id),
+                                'self' => route('tasks.relationships.users', $tasks[2]->id),
+                                'related' => route('tasks.users', $tasks[2]->id),
                             ],
                             'data' => [
                                 [
-                                    'id' => $users->get(0)->id,
+                                    'id' => (string)$users->get(0)->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users->get(1)->id,
+                                    'id' => (string)$users->get(1)->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users->get(2)->id,
+                                    'id' => (string)$users->get(2)->id,
                                     'type' => 'users'
                                 ]
                             ]
@@ -745,7 +733,8 @@ class ProjectsRelationshipsTest extends TestCase
                     "id" => '3',
                     "type" => "users",
                     "attributes" => [
-                        'name' => $users[2]->name, 'created_at' => $users[2]->created_at->toJSON(),
+                        'name' => $users[2]->name, 
+                        'created_at' => $users[2]->created_at->toJSON(),
                         'updated_at' => $users[2]->updated_at->toJSON(),
                     ]
                 ],
@@ -778,64 +767,6 @@ class ProjectsRelationshipsTest extends TestCase
                 ],
             ]
         ]);
-    }
-
-    public function test_when_creating_a_project_it_can_also_add_relationships_right_away()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
-        $this->postJson('/api/v1/projects', [
-            'data' => [
-                'type' => 'projects',
-                'attributes' => [
-                    'name' => 'Hello world',
-                ],
-                'relationships' => [
-                    'users' => [
-                        'data' => [
-                            'id' => $user->id,
-                            'type' => 'users',
-                        ]
-                    ]
-                ]
-            ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])
-            ->assertStatus(201)
-            ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => 'projects',
-                    "attributes" => [
-                        'name' => 'Hello world',
-                        'created_at' => now()->setMilliseconds(0)->toJSON(),
-                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                    ],
-                    'relationships' => [
-                        'users' => [
-                            'links' => [
-                                'self' => route('projects.relationships.users', 1),
-                                'related' => route('projects.users', 1),
-                            ],
-                            'data' => [
-                                'id' => $user->id,
-                                'type' => 'users',
-                            ]
-                        ]
-                    ]
-                ]
-            ])->assertHeader('Location', url('/api/v1/projects/1'));
-
-            $this->assertDatabaseHas('projects', [
-                    'id' => 1,
-                    'name' => 'Hello world',
-                    'user_id' => $user->id,
-                    'book_id' => $book->id,
-                ]);
-            }
     }
     
 }

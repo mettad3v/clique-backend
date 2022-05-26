@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use App\AbstractAPIModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class Task extends AbstractAPIModel
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'user_id', 'category_id'];
+    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'unique_id', 'user_id', 'category_id'];
 
     public function project()
     {
@@ -28,6 +29,11 @@ class Task extends Model
     
     public function assignees()
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('is_supervisor')->withTimestamps();
+    }
+    
+    public function type()
+    {
+        return 'tasks';
     }
 }

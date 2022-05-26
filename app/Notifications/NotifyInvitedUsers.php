@@ -16,6 +16,7 @@ class NotifyInvitedUsers extends Notification implements ShouldQueue
      * Get the Notifiable Project Instance 
      * 
      */
+    public $user;
     public $project;
 
     /**
@@ -23,8 +24,9 @@ class NotifyInvitedUsers extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($project)
+    public function __construct($user, $project)
     {
+        $this->user = $user;
         $this->project = $project;
     }
 
@@ -63,7 +65,7 @@ class NotifyInvitedUsers extends Notification implements ShouldQueue
     {
         return [
             'data' => [
-                'message' => 'You were invited to collaborate on ' . $this->project->name . ' by ' . $this->project->creator->name,
+                'message' => 'You were invited to collaborate on ' . $this->project->name . ' by ' . $this->user->name,
                 'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans()
             ]
         ];

@@ -15,7 +15,7 @@ class CreateTaskUserTable extends Migration
     {
         Schema::create('task_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
+            $table->uuid('user_id')->constrained('users');
             $table->foreignId('task_id')->constrained('tasks');
             $table->boolean('is_supervisor')->default(0);
             $table->timestamps();

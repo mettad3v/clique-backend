@@ -13,8 +13,8 @@ class NotifyAssignedUsers extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $task;
     public $user;
+    public $task;
 
     /**
      * Create a new notification instance.
@@ -23,8 +23,8 @@ class NotifyAssignedUsers extends Notification implements ShouldQueue
      */
     public function __construct($user, $task)
     {
-        $this->task = $task;
         $this->user = $user;
+        $this->task = $task;
     }
 
     /**
@@ -60,11 +60,10 @@ class NotifyAssignedUsers extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
-        $user = User::find($this->user)->name;
 
         return [
             'data' => [
-                'message' => $user . ' assigned ' . $this->task->title . ' to you',
+                'message' => $this->user->name . ' assigned ' . $this->task->title . ' to you',
                 'received_at' => $notifiable->created_at 
             ]
         ];

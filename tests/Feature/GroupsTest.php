@@ -43,6 +43,7 @@ class GroupsTest extends TestCase
 
     public function test_It_returns_all_groups_as_a_collection_of_resource_objects()
     {
+        $project = Project::factory()->create();
         $groups = Group::factory(3)->create();
         $user = User::factory()->create();
 
@@ -55,6 +56,7 @@ class GroupsTest extends TestCase
 
     public function test_It_can_paginate_groups_through_a_page_query_parameter()
     {
+        $project = Project::factory()->create();
         $groups = Group::factory(10)->create();
         $user = User::factory()->create();
 
@@ -220,7 +222,9 @@ class GroupsTest extends TestCase
     }
 
     public function test_it_can_sort_groups_by_multiple_sort_params_through_a_sort_query_parameter()
+        
     {
+        $project = Project::factory()->create();
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
@@ -278,6 +282,7 @@ class GroupsTest extends TestCase
 
     public function test_it_can_sort_groups_by_multiple_sort_params_including_in_descending_order_through_a_sort_query_parameter()
     {
+        $project = Project::factory()->create();
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
@@ -409,6 +414,7 @@ class GroupsTest extends TestCase
     public function test_it_validates_that_the_type_member_is_given_when_updating_a_group()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -477,6 +483,7 @@ class GroupsTest extends TestCase
     public function test_it_validates_that_the_type_member_has_the_value_of_groups_when_updating_a_group()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -547,6 +554,7 @@ class GroupsTest extends TestCase
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
 
         $this->patchJson('/api/v1/groups/1', [
@@ -613,6 +621,7 @@ class GroupsTest extends TestCase
     public function test_it_validates_that_a_title_attribute_is_a_string_when_updating_a_group()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -649,6 +658,7 @@ class GroupsTest extends TestCase
     public function test_it_validates_that_an_id_member_is_a_string_when_updating_a_group()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -746,6 +756,7 @@ class GroupsTest extends TestCase
     public function test_it_validates_that_the_attributes_member_is_an_object_given_when_updating_a_group()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -780,6 +791,7 @@ class GroupsTest extends TestCase
     public function test_it_can_update_an_group_from_a_resource_object()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -794,18 +806,7 @@ class GroupsTest extends TestCase
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'id' => '1',
-                    'type' => 'groups',
-                    'attributes' => [
-                        'title' => 'Jane Doe',
-                        'created_at' => now()->setMilliseconds(0)->toJSON(),
-                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                    ],
-                ]
-            ]);
+        ]);
         $this->assertDatabaseHas('groups', [
             'id' => 1,
             'title' => 'Jane Doe',
@@ -816,6 +817,7 @@ class GroupsTest extends TestCase
     public function test_it_validates_that_an_id_member_is_given_when_updating_a_group()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 
@@ -850,6 +852,7 @@ class GroupsTest extends TestCase
     public function test_it_can_delete_a_group_through_a_delete_request()
     {
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         Sanctum::actingAs($user);
 

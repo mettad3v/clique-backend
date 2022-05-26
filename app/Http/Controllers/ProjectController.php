@@ -7,20 +7,12 @@ use App\Models\User;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use Spatie\QueryBuilder\QueryBuilder;
 use App\Http\Resources\JSONAPIResource;
-use App\Http\Resources\ProjectsResource;
-use App\Http\Resources\JSONAPICollection;
 use App\Notifications\NotifyInvitedUsers;
 use App\Notifications\NotifyRevokedUsers;
-use App\Http\Resources\ProjectsCollection;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ProjectOwnerShipChange;
-use App\Notifications\ProjectDeleteNotification;
 use App\Http\Requests\Projects\InviteUserRequest;
-use App\Http\Requests\Projects\CreateProjectRequest;
-use App\Http\Requests\Projects\UpdateProjectRequest;
 use App\Http\Requests\Projects\ChangeProjectOwnershipRequest;
 
 class ProjectController extends Controller
@@ -50,13 +42,10 @@ class ProjectController extends Controller
      */
     public function store(JSONAPIRequest $request)
     {
-        $project = Project::create([
+        return $this->service->createResource(Project::class, [
             'name' => $request->input('data.attributes.name'),
             'user_id' => auth()->user()->id,
         ]);
-        return (new JSONAPIResource($project))->response()
-                ->header('Location', route('projects.show', ['project' => $project]));
-
     }
 
     /**
@@ -70,39 +59,39 @@ class ProjectController extends Controller
         return $this->service->fetchResource(Project::class, $project, 'projects');
     }
 
-    /**
-     * Project creator can invite other users.
-     *
-     * @param  \App\Models\Project  $project
-     * @return \Illuminate\Http\Response
-     */
-    public function invite(Project $project, InviteUserRequest $request)
-    {
-        if ($request->user()->cannot('invite', $project)) {
-            abort(403, 'You are not the owner of this project');
-        }
+    // /**
+    //  * Project creator can invite other users.
+    //  *
+    //  * @param  \App\Models\Project  $project
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function invite(Project $project, InviteUserRequest $request)
+    // {
+    //     if ($request->user()->cannot('invite', $project)) {
+    //         abort(403, 'You are not the owner of this project');
+    //     }
 
-        $project->invitees()->syncWithoutDetaching($request->input('data.attributes.id'));
+    //     $project->invitees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
-        $attached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
-        Notification::send($attached_users, new NotifyInvitedUsers($project));
+    //     $attached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
+    //     Notification::send($attached_users, new NotifyInvitedUsers($project));
 
-        return response(null, 201);
-    }
+    //     return response(null, 201);
+    // }
 
-    public function revoke(Project $project, InviteUserRequest $request)
-    {
-        if ($request->user()->cannot('revoke', $project)) {
-            abort(403, 'You are not the owner of this project');
-        }
+    // public function revoke(Project $project, InviteUserRequest $request)
+    // {
+    //     if ($request->user()->cannot('revoke', $project)) {
+    //         abort(403, 'You are not the owner of this project');
+    //     }
 
-        $project->invitees()->detach($request->input('data.attributes.id'));
+    //     $project->invitees()->detach($request->input('data.attributes.id'));
 
-        $detached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
-        Notification::send($detached_users, new NotifyRevokedUsers($project));
+    //     $detached_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
+    //     Notification::send($detached_users, new NotifyRevokedUsers($project));
 
-        return response(null, 204);
-    }
+    //     return response(null, 204);
+    // }
 
 
     /**

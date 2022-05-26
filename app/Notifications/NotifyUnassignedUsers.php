@@ -8,7 +8,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NotifyNewSupervisors extends Notification implements ShouldQueue
+class NotifyUnassignedUsers extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -62,7 +62,7 @@ class NotifyNewSupervisors extends Notification implements ShouldQueue
 
         return [
             'data' => [
-                'message' => $this->user->name . ' made you a supervisor in ' . $this->task->title,
+                'message' => $this->user->name . ' unassigned you from Task: ' . $this->task->title,
                 'received_at' => $notifiable->created_at 
             ]
         ];

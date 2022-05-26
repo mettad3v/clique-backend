@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JSONAPIResource extends JsonResource
 {
@@ -19,12 +21,13 @@ class JSONAPIResource extends JsonResource
             'id' => (string)$this->id,
             'type' => $this->type(),
             'attributes' => $this->allowedAttributes(),
+            'relationships' => $this->prepareRelationships()
         ];
     }
 
     private function prepareRelationships()
     {
-        return collect(config("jsonapi.resources.{$this->type()}.relationships"))
+        $collection = collect(config("jsonapi.resources.{$this->type()}.relationships"))
             ->flatMap(function ($related) {
                 $relatedType = $related['type'];
                 $relationship = $related['method'];
@@ -34,28 +37,24 @@ class JSONAPIResource extends JsonResource
                             'self' => route("{$this->type()}.relationships.{$relatedType}", $this->id),
                             'related' => route("{$this->type()}.{$relatedType}", $this->id),
                         ],
-                        'data' => !$this->whenLoaded($relationship) instanceof MissingValue ?
-                            JSONAPIIdentifierResource::collection($this->{$relationship}) : new MissingValue(),
+                        'data' => $this->prepareRelationshipsData($relatedType, $relationship),
                     ],
                 ];
             });
+
+        //remove the relationships member if the included query param is not used in uri
+        return $collection->count() > 0 ? $collection : new MissingValue();
     }
 
-    private function relations()
+    private function prepareRelationshipsData($relatedType, $relationship)
     {
-        return collect(config("jsonapi.resources.{$this->type()}.relationships"))
-            ->map(function ($relation) {
-                return JSONAPIResource::collection($this->whenLoaded($relation['method']));
-            });
-    }
-
-    public function included($request)
-    {
-        return collect($this->relations())
-            ->filter(function ($resource) {
-                return $resource->collection !== null;
-            })
-            ->flatMap->toArray($request);
+        if ($this->whenLoaded($relationship) instanceof MissingValue) {
+            return new MissingValue();
+        }
+        if ($this->$relationship() instanceof BelongsTo) {
+            return new JSONAPIIdentifierResource($this->$relationship);
+        }
+        return JSONAPIIdentifierResource::collection($this->$relationship);
     }
 
     public function with($request)
@@ -67,5 +66,27 @@ class JSONAPIResource extends JsonResource
         return $with;
     }
 
-    
+    public function included($request)
+    {
+        return collect($this->relations())
+            ->filter(function ($resource) {
+                return $resource->collection !== null;
+            })
+            ->flatMap->toArray($request);
+    }
+
+    private function relations()
+    {
+        return collect(config("jsonapi.resources.{$this->type()}.relationships"))
+            ->map(function ($relation) {
+                $modelOrCollection = $this->whenLoaded($relation['method']);
+                
+                //return a single resource for one-to query param but a collection for many-to query param
+                if ($modelOrCollection instanceof Model) {
+                    $modelOrCollection = collect([new JSONAPIResource($modelOrCollection)]);
+                }
+                return JSONAPIResource::collection($modelOrCollection);
+            });
+    }
+
 }

@@ -27,7 +27,7 @@ class UsersTest extends TestCase
             ->assertStatus(200)
             ->assertJson([
                 "data" => [
-                    "id" => '1',
+                    "id" => $user->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $user->name,
@@ -66,7 +66,7 @@ class UsersTest extends TestCase
         ])->assertStatus(200)->assertJson([
             "data" => [
                 [
-                    "id" => '1',
+                    "id" => $user->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[0]->name,
@@ -75,7 +75,7 @@ class UsersTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '2',
+                    "id" => $user->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[1]->name,
@@ -84,7 +84,7 @@ class UsersTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '3',
+                    "id" => $user->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[2]->name,
@@ -93,7 +93,7 @@ class UsersTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '4',
+                    "id" => $user->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[3]->name,

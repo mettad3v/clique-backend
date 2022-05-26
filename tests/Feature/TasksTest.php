@@ -17,13 +17,13 @@ class TasksTest extends TestCase
 
     public function test_it_returns_a_task_as_a_resource_object()
     {
-        $user = User::factory()->create();
         $project = Project::factory()->create();
         $uid =  Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
         $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
         $project->tasks()->save($task);
-
+        
+        $user = User::factory()->create();
         Sanctum::actingAs($user);
 
         $this->getJson('/api/v1/tasks/1', [
@@ -37,7 +37,7 @@ class TasksTest extends TestCase
                     "type" => "tasks",
                     "attributes" => [
                         'title' => $task->title,
-                        'deadline' => Carbon::parse($task->deadline)->diffForHumans(),
+                        'deadline' => $task->deadline,
                         'unique_id' => $task->unique_id,
                         'project_id' => $project->id,
                         'description' => $task->description,
@@ -54,24 +54,27 @@ class TasksTest extends TestCase
         $auth = User::factory()->create();
         $project = Project::factory()->create();
         $user = User::factory(2)->create();
-        $task = Task::factory()->create(['project_id' => 1]);
+        $task = Task::factory()->create();
         
         Sanctum::actingAs($auth);
         $ids = $user->pluck('id');        
         $project->invitees()->attach($ids);
 
-        $this->postJson('/api/v1/tasks/1/assign', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
-                'type' => 'users',
-                'attributes' => [
-                    'id' => $ids,
-                    'user_id' => $auth->id
+                [
+                    'id' => '2',
+                    'type' => 'users'
+                ],
+                [
+                    'id' => '3',
+                    'type' => 'users'
                 ]
             ]
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(200);
+        ])->assertStatus(204);
     }
 
     public function test_it_returns_assignees_to_a_task()
@@ -92,12 +95,15 @@ class TasksTest extends TestCase
         
         $task->assignees()->attach($ids);
 
-        $this->patchJson('/api/v1/tasks/1/supervisor', [
+        $this->patchJson('/api/v1/tasks/1/relationships/users/supervisor', [
             'data' => [
-                'type' => 'users',
-                'attributes' => [
-                    'id' => $ids,
-                    'user_id' => $auth->id
+                [
+                    'id' => '2',
+                    'type' => 'users'
+                ],
+                [
+                    'id' => '3',
+                    'type' => 'users'
                 ]
             ]
         ], [
@@ -410,18 +416,16 @@ class TasksTest extends TestCase
     public function test_it_can_create_a_task_from_a_resource_object()
     {
         // dd(Carbon::parse('2022-09-09 09:09:09')->diffForHumans());
-        $user = User::factory()->create();
-        $category = Category::factory()->create();
         $project = Project::factory()->create();
-        $task = Task::factory()->create();
-
+        // $task = Task::factory()->create();
+        
+        $user = User::factory()->create();
         Sanctum::actingAs($user);
         $this->postJson('/api/v1/tasks', [
             'data' => [
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'John Doe',
-                    'user_id' => $user->id,
                     'project_id' => $project->id,
                     'description' => 'John Doe and Jane Doe',
                     'deadline' => "2022-09-09 09:09:09",
@@ -433,23 +437,21 @@ class TasksTest extends TestCase
         ])->assertStatus(201)
             ->assertJson([
                 "data" => [
-                    "id" => '2',
+                    "id" => '1',
                     "type" => "tasks",
                     "attributes" => [
                         'title' => 'John Doe',
                         'description' => 'John Doe and Jane Doe',
                         'user_id' => $user->id,
                         'project_id' => $project->id,
-                        // 'category_id' => 1,
-                        // 'deadline' => "2022-09-09 09:09:09",
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ]
                 ]
-            ])->assertHeader('Location', url('/api/v1/tasks/2'));
+            ])->assertHeader('Location', url('/api/v1/tasks/1'));
 
         $this->assertDatabaseHas('tasks', [
-            'id' => 2,
+            'id' => 1,
             'title' => 'John Doe',
         ]);
     }
@@ -878,19 +880,8 @@ class TasksTest extends TestCase
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'id' => '1',
-                    'type' => 'tasks',
-                    'attributes' => [
-                        'title' => 'Jane Doe',
-                        'description' => 'another description',
-                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                        'created_at' => now()->setMilliseconds(0)->toJSON(),
-                    ],
-                ]
-            ]);
+        ])->assertStatus(200);
+        
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
             'title' => 'Jane Doe',
