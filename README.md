@@ -2,13 +2,19 @@
 
 ## About Clique
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Inspired by https://height.app/. Clique is a tool made to help teams collaborate and manage tasks and projects in a seamless, stress-free manner. Clique's codebase follows design principles and conventions discovered in Wacky Studio's Build an API with Laravel. 
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- A flat hierarchy (any team member can assign or unassign tasks to colleagues)
+- Users have access to projects only by invitation
+- Tasks always have a "progress" tag to show their exact status at every point in time - consisting of blocked, won't do, in-progress, done, blocking, blocked, etc.
+- Robust notification system geared at keeping all collaborators fully informed.
+- Well-documented clean code
+- Follows Test Driven Development best practices with both Unit and Feature tests.
+
+Plan to Include
+
+- Workspaces for projects
+- In-website messaging system
+- Twitter-like user tagging in the messaging system
+- and more
 
