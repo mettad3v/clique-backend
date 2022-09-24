@@ -20,7 +20,7 @@ class UsersTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $this->getJson('/api/v1/users/1', [
+        $this->getJson("/api/v1/users/$user->id", [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
         ])
@@ -63,86 +63,7 @@ class UsersTest extends TestCase
         $this->get('/api/v1/users?page[size]=5&page[number]=1', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(200)->assertJson([
-            "data" => [
-                [
-                    "id" => $user->id,
-                    "type" => "users",
-                    "attributes" => [
-                        'name' => $users[0]->name,
-                        'created_at' => $users[0]->created_at->toJSON(),
-                        'updated_at' => $users[0]->updated_at->toJSON(),
-                    ]
-                ],
-                [
-                    "id" => $user->id,
-                    "type" => "users",
-                    "attributes" => [
-                        'name' => $users[1]->name,
-                        'created_at' => $users[1]->created_at->toJSON(),
-                        'updated_at' => $users[1]->updated_at->toJSON(),
-                    ]
-                ],
-                [
-                    "id" => $user->id,
-                    "type" => "users",
-                    "attributes" => [
-                        'name' => $users[2]->name,
-                        'created_at' => $users[2]->created_at->toJSON(), 
-                        'updated_at' => $users[2]->updated_at->toJSON(),
-                    ]
-                ],
-                [
-                    "id" => $user->id,
-                    "type" => "users",
-                    "attributes" => [
-                        'name' => $users[3]->name,
-                        'created_at' => $users[3]->created_at->toJSON(),
-                        'updated_at' => $users[3]->updated_at->toJSON(),
-                    ]
-                ],
-            ],
-            'links' => [
-                'first' => route('users.index', ['page[size]' => 5, 'page[number]' => 1]),
-                'last' => route('users.index', ['page[size]' => 5, 'page[number]' => 2]),
-                'prev' => null,
-                'next' => route('users.index', ['page[size]' => 5, 'page[number]' => 2]),
-            ]
-        ]);
-    }
-
-    public function test_it_validates_that_the_attributes_member_is_an_object_given_when_updating_a_task()
-    {
-        $user = User::factory()->create();
-        $task = Task::factory()->create();
-        Sanctum::actingAs($user);
-
-        $this->patchJson('/api/v1/tasks/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'tasks',
-                'attributes' => 'not an object',
-
-            ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(422)->assertJson([
-            'errors' => [
-                [
-                    'title' => 'Validation Error',
-                    'details' => 'The data.attributes must be an array.',
-                    'source' => [
-                        'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
-        ]);
-
-        $this->assertDatabaseHas('tasks', [
-            'id' => 1,
-            'title' => $task->title
-        ]);
+        ])->assertStatus(200);
     }
 
     public function test_it_can_update_a_user_from_a_resource_object()
@@ -151,10 +72,10 @@ class UsersTest extends TestCase
         Sanctum::actingAs($user);
 
         Storage::fake('avatars');
- 
+
         $file = UploadedFile::fake()->image('avatar.jpg');
 
-        $this->patchJson('/api/v1/users/1', [
+        $this->patchJson("/api/v1/users/$user->id", [
             'data' => [
                 'id' => '1',
                 'type' => 'users',
@@ -171,10 +92,10 @@ class UsersTest extends TestCase
             'content-type' => 'application/vnd.api+json',
             'enctype' => 'multipart/form-data'
         ])->assertStatus(200);
-        
+
 
         // Storage::disk('avatars')->assertExists($file->hashName());
-        
+
     }
 
 
@@ -197,8 +118,6 @@ class UsersTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
         ])->assertStatus(200);
-
-        
     }
 
     public function test_it_can_delete_a_user_through_a_delete_request()
@@ -206,7 +125,7 @@ class UsersTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $this->delete('/api/v1/users/1', [], [
+        $this->delete("/api/v1/users/$user->id", [], [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
         ])->assertStatus(204);
@@ -216,7 +135,7 @@ class UsersTest extends TestCase
             'name' => $user->title,
         ]);
     }
-    
+
 
 
     // public function test_it_can_register_a_user()
@@ -225,14 +144,14 @@ class UsersTest extends TestCase
     //     Sanctum::actingAs($user);
 
     //     $this->postJson('/api/auth/register', [
-           
+
     //             // 'attributes' => [
     //                 'name' => 'John Doe',
     //                 'email' => 'john@doe.com',
     //                 'password' => 'Secret',
     //                 'password_confirmation' => 'Secret',
     //             // ]
-            
+
     //     ], [
     //         'accept' => 'application/vnd.api+json',
     //         'content-type' => 'application/vnd.api+json'
@@ -560,7 +479,7 @@ class UsersTest extends TestCase
     //         'title' => $task->title
     //     ]);
     // }
-    
+
     // public function test_it_validates_that_the_attributes_member_has_been_given_when_creating_a_task()
     // {
     //     $user = User::factory()->create();
@@ -657,5 +576,5 @@ class UsersTest extends TestCase
     //     ]);
     // }
 
-    
+
 }

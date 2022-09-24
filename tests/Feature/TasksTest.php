@@ -20,9 +20,9 @@ class TasksTest extends TestCase
         $project = Project::factory()->create();
         $uid =  Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
+        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
         $project->tasks()->save($task);
-        
+
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
@@ -50,14 +50,14 @@ class TasksTest extends TestCase
 
     public function test_anyone_can_assign_tasks_to_other()
     {
-        
+
         $auth = User::factory()->create();
         $project = Project::factory()->create();
         $user = User::factory(2)->create();
         $task = Task::factory()->create();
-        
+
         Sanctum::actingAs($auth);
-        $ids = $user->pluck('id');        
+        $ids = $user->pluck('id');
         $project->invitees()->attach($ids);
 
         $this->patchJson('/api/v1/tasks/1/relationships/users', [
@@ -77,11 +77,11 @@ class TasksTest extends TestCase
         ])->assertStatus(204);
     }
 
-    public function test_it_returns_assignees_to_a_task()
-    {
-        
-    }
-    
+    // public function test_it_returns_assignees_to_a_task()
+    // {
+
+    // }
+
     public function test_it_can_make_assigned_users_supervisor()
     {
         $auth = User::factory()->create();
@@ -90,9 +90,9 @@ class TasksTest extends TestCase
         $task = Task::factory()->create();
 
         Sanctum::actingAs($auth);
-        $ids = $user->pluck('id'); 
+        $ids = $user->pluck('id');
         $project->invitees()->attach($ids);
-        
+
         $task->assignees()->attach($ids);
 
         $this->patchJson('/api/v1/tasks/1/relationships/users/supervisor', [
@@ -109,7 +109,7 @@ class TasksTest extends TestCase
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(200); 
+        ])->assertStatus(200);
     }
 
     public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
@@ -161,7 +161,7 @@ class TasksTest extends TestCase
                     "attributes" => [
                         'title' => $tasks[2]->title,
                         'description' => $tasks[2]->description,
-                        'created_at' => $tasks[2]->created_at->toJSON(), 
+                        'created_at' => $tasks[2]->created_at->toJSON(),
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
                     ]
                 ],
@@ -418,7 +418,7 @@ class TasksTest extends TestCase
         // dd(Carbon::parse('2022-09-09 09:09:09')->diffForHumans());
         $project = Project::factory()->create();
         // $task = Task::factory()->create();
-        
+
         $user = User::factory()->create();
         Sanctum::actingAs($user);
         $this->postJson('/api/v1/tasks', [
@@ -764,7 +764,7 @@ class TasksTest extends TestCase
             'title' => $task->title
         ]);
     }
-    
+
     public function test_it_validates_that_the_attributes_member_has_been_given_when_creating_a_task()
     {
         $user = User::factory()->create();
@@ -881,7 +881,7 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
         ])->assertStatus(200);
-        
+
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
             'title' => 'Jane Doe',

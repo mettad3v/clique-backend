@@ -33,8 +33,8 @@ class TaskUsersRelationshipController extends Controller
      */
     public function update(JSONAPIRelationshipRequest $request, Task $task)
     {
-        $this->service->notificationHandler($request, $task, 'assignees', NotifyAssignedUsers::class, NotifyUnassignedUsers::class, auth()->user());
-     
+        // $this->service->notificationHandler($request, $task, 'assignees', NotifyAssignedUsers::class, NotifyUnassignedUsers::class, auth()->user());
+
         $task->assignees()->sync($request->input('data.*.id'));
         return response(null, 204);
     }
@@ -48,7 +48,7 @@ class TaskUsersRelationshipController extends Controller
      */
     public function supervisor(JSONAPIRelationshipRequest $request, Task $task)
     {
-       
+
         $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
             'is_supervisor' => 1
         ]);
@@ -58,7 +58,7 @@ class TaskUsersRelationshipController extends Controller
 
         return response(null, 200);
     }
-    
+
     /**
      * Make assigned users supervisor
      * 
@@ -67,7 +67,7 @@ class TaskUsersRelationshipController extends Controller
      */
     public function remove_supervisor(JSONAPIRelationshipRequest $request, Task $task)
     {
-       
+
         $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
             'is_supervisor' => 0
         ]);

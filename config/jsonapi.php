@@ -9,8 +9,8 @@ return  [
                 'updated_at'
             ],
             'allowedIncludes' => [
-                'invitations',  
-                'projects',  
+                'invitations',
+                'projects',
                 'tasksAssigned'
             ],
             'validationRules' => [
@@ -142,12 +142,10 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:groups,title',
                     'data.attributes.project_id' => 'required|integer',
-                    'data.attributes.user_id' => 'required|integer',
                 ],
                 'update' => [
                     'data.attributes.title' => 'sometimes|required|string|unique:groups,title',
                     'data.attributes.project_id' => 'sometimes|required|integer',
-                    'data.attributes.user_id' => 'sometimes|required|integer',
                 ]
             ],
             'relationships' => []

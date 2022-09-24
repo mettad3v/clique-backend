@@ -39,7 +39,7 @@ class JSONAPIService
         $model = $modelClass::create($attributes);
         return (new JSONAPIResource($model))
             ->response()
-            ->header('Location', route('{$model->type()}.show', [
+            ->header('Location', route("{$model->type()}.show", [
                 Str::singular($model->type()) => $model,
 
             ]));
@@ -103,18 +103,18 @@ class JSONAPIService
         return response(null, 204);
     }
 
-    public function notificationHandler($request, $resource, $relationship, $notification, $defaultNotification, $user)
-    {
-        if (count($request->input('data.*.id')) > count($resource->$relationship->pluck('id'))) {
-            $users_to_notify = array_diff($request->input('data.*.id'), $resource->$relationship->pluck('id')->toArray());
+    // public function notificationHandler($request, $resource, $relationship, $notification, $defaultNotification, $user)
+    // {
+    //     if (count($request->input('data.*.id')) > count($resource->$relationship->pluck('id'))) {
+    //         $users_to_notify = array_diff($request->input('data.*.id'), $resource->$relationship->pluck('id')->toArray());
 
-            $users_to_notify = User::whereIn('id', $users_to_notify)->get();
-            Notification::send($users_to_notify, new $notification($user, $resource));
-        } else {
-            $users_to_notify = array_diff($resource->$relationship->pluck('id')->toArray(), $request->input('data.*.id'));
+    //         $users_to_notify = User::whereIn('id', $users_to_notify)->get();
+    //         Notification::send($users_to_notify, new $notification($user, $resource));
+    //     } else {
+    //         $users_to_notify = array_diff($resource->$relationship->pluck('id')->toArray(), $request->input('data.*.id'));
 
-            $users_to_notify = User::whereIn('id', $users_to_notify)->get();
-            Notification::send($users_to_notify, new $defaultNotification($user, $resource));
-        }
-    }
+    //         $users_to_notify = User::whereIn('id', $users_to_notify)->get();
+    //         Notification::send($users_to_notify, new $defaultNotification($user, $resource));
+    //     }
+    // }
 }

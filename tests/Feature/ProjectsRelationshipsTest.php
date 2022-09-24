@@ -829,13 +829,11 @@ class ProjectsRelationshipsTest extends TestCase
                 ]
             ])->assertHeader('Location', url('/api/v1/projects/1'));
 
-            $this->assertDatabaseHas('projects', [
-                    'id' => 1,
-                    'name' => 'Hello world',
-                    'user_id' => $user->id,
-                    'book_id' => $book->id,
-                ]);
-            }
+        $this->assertDatabaseHas('projects', [
+            'id' => 1,
+            'name' => 'Hello world',
+            'user_id' => $user->id,
+
+        ]);
     }
-    
 }

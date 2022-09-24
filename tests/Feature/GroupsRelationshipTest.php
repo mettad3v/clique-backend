@@ -2,13 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\Group;
+use Tests\TestCase;
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\Group;
+use App\Models\Project;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class GroupsRelationshipTest extends TestCase
 {
@@ -21,8 +22,9 @@ class GroupsRelationshipTest extends TestCase
     public function test_it_returns_a_relationship_to_tasks_adhering_to_json_api()
     {
         $user = User::factory()->create();
-        $group = Group::factory()->create();
+        $project = Project::factory()->create();
         $tasks = Task::factory(3)->create();
+        $group = Group::factory()->create();
         $group->tasks()->saveMany($tasks);
 
         Sanctum::actingAs($user);
@@ -113,7 +115,7 @@ class GroupsRelationshipTest extends TestCase
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
 
-        
+
         // dd($group->tasks);
         // $this->assertDatabaseHas('tasks', [
         //     'id' => 5,

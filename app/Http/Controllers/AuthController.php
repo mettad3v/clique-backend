@@ -14,7 +14,7 @@ class AuthController extends Controller
 
     public function register(JSONAPIRequest $request)
     {
-    
+
         $user = User::create([
             'name' => $request->input('data.attributes.name'),
             'password' => bcrypt($request->input('data.attributes.password')),
@@ -50,5 +50,4 @@ class AuthController extends Controller
             'message' => 'Tokens Revoked'
         ];
     }
-
 }

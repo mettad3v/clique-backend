@@ -31,10 +31,9 @@ class ProjectsUsersRelationshipController extends Controller
             abort(403);
         }
 
-        $this->service->notificationHandler($request, $project, 'invitees', NotifyInvitedUsers::class, NotifyRevokedUsers::class, auth()->user());
-        
+        // $this->service->notificationHandler($request, $project, 'invitees', NotifyInvitedUsers::class, NotifyRevokedUsers::class, auth()->user());
+
         $project->invitees()->sync($request->input('data.*.id'));
         return response(null, 204);
     }
-
 }
