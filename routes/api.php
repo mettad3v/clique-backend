@@ -12,6 +12,8 @@ use App\Http\Controllers\ProjectsUsersRelatedController;
 use App\Http\Controllers\UsersProjectsRelatedController;
 use App\Http\Controllers\TaskUsersRelationshipController;
 use App\Http\Controllers\TaskUsersRelatedController;
+use App\Http\Controllers\TaskProjectRelationshipController;
+use App\Http\Controllers\TaskProjectRelatedController;
 use App\Http\Controllers\UsersTasksRelationshipController;
 use App\Http\Controllers\GroupsTasksRelationshipController;
 use App\Http\Controllers\ProjectsUsersRelationshipController;
@@ -88,6 +90,9 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/tasks/{task}/relationships/users', [TaskUsersRelationshipController::class, 'index'])->name('tasks.relationships.users');
     Route::patch('/tasks/{task}/relationships/users', [TaskUsersRelationshipController::class, 'update']);
     Route::get('/tasks/{task}/users', [TaskUsersRelatedController::class, 'index'])->name('tasks.users');
+
+    Route::get('/tasks/{task}/relationships/projects', [TaskProjectRelationshipController::class, 'index'])->name('tasks.relationships.projects');
+    Route::get('/tasks/{task}/projects', [TaskProjectRelatedController::class, 'index'])->name('tasks.projects');
     Route::patch('/tasks/{task}/relationships/users/supervisor', [TaskUsersRelationshipController::class, 'supervisor']);
     Route::patch('/tasks/{task}/relationships/users/remove-supervisor', [TaskUsersRelationshipController::class, 'remove_supervisor']);
 

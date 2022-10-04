@@ -41,7 +41,7 @@ class TaskController extends Controller
     public function store(JSONAPIRequest $request)
     {
 
-        $unique_id = Project::findOrFail($request->input('data.relationships.projects.data.id'))->tasks->count() + 1;
+        $unique_id = Project::findOrFail($request->input('data.relationships.project.data.id'))->tasks->count() + 1;
 
         return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),

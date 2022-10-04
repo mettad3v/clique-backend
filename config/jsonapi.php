@@ -108,7 +108,7 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:tasks,title',
                     'data.attributes.description' => 'string',
-                    'data.relationships' => 'required',
+                    'data.relationships.project' => 'required',
                     'data.attributes.deadline' => 'date_format:Y-m-d',
                 ],
                 'update' => [

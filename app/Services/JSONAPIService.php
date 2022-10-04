@@ -44,10 +44,13 @@ class JSONAPIService
         }
         return (new JSONAPIResource($model))
             ->response()
-            ->header('Location', route("{$model->type()}.show", [
-                Str::singular($model->type()) => $model,
+            ->header('Location', route(
+                "{$model->type()}.show",
+                [
+                    Str::singular($model->type()) => $model,
 
-            ]));
+                ]
+            ));
     }
 
     public function updateResource($model, $attributes)

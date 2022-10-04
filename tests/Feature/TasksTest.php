@@ -428,10 +428,10 @@ class TasksTest extends TestCase
                 'attributes' => [
                     'title' => 'John Doe',
                     'description' => 'John Doe and Jane Doe',
-                    'deadline' => '2022-09-09 09:09:09'
+                    'deadline' => '2022-09-09'
                 ],
                 'relationships' => [
-                    'projects' => [
+                    'project' => [
                         'data' => [
                             'id' => (string)$project->id,
                             'type' => 'projects'
@@ -443,34 +443,7 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(201)
-            ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
-                        'title' => 'John Doe',
-                        'description' => 'John Doe and Jane Doe',
-                        'user_id' => $user->id,
-                        'project_id' => $project->id,
-                        'created_at' => now()->setMilliseconds(0)->toJSON(),
-                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                    ],
-                    'relationships' => [
-                        'projects' => [
-                            'links' => [
-                                'self' => route('tasks.relationships.projects', $project->id),
-                                'related' => route('tasks.projects', $project->id),
-                            ],
-                            'data' => [
-                                [
-                                    'id' => (string)$project->id,
-                                    'type' => 'projects'
-                                ],
-                            ]
-                        ]
-                    ]
-                ]
-            ])->assertHeader('Location', url('/api/v1/tasks/1'));
+            ->assertHeader('Location', url('/api/v1/tasks/1'));
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
