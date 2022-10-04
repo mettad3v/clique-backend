@@ -2,27 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\GroupsIdentifierResource;
+use App\Models\Task;
 use App\Models\Group;
 use Illuminate\Http\Request;
+use App\Services\JSONAPIService;
+use App\Http\Resources\GroupsIdentifierResource;
+use App\Http\Requests\JSONAPIRelationshipRequest;
+use Illuminate\Support\Facades\DB;
 
 class GroupsTasksRelationshipController extends Controller
 {
+    private $service;
+    public function __construct(JSONAPIService $service)
+    {
+        $this->service = $service;
+    }
     public function index(Group $group)
     {
-        return GroupsIdentifierResource::collection($group->tasks);
+        return $this->service->fetchRelated($group, 'tasks');
     }
+    // public function index(Group $group)
+    // {
+    //     return GroupsIdentifierResource::collection($group->tasks);
+    // }
 
-    public function update(Request $request, Group $group)
+    public function update(JSONAPIRelationshipRequest $request, Group $group)
     {
-        $ids = $request->input('data.*.id');    
-        $group->tasks()->whereNotIn('id', $ids)->update();
-        // if ($group->tasks->empty) {
-        //     dd($group->tasks);
-        // }else{
-        //     dd(0);
-        // }
-        return response(null, 204);
 
+        $x = Task::whereIn('id', $request->input('data.*.id'))->get();
+        $group->tasks()->saveMany($x);
+
+        return response(null, 204);
     }
 }

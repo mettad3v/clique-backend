@@ -323,5 +323,4 @@ class CategoriesTest extends TestCase
             ]
         ]);
     }
-
 }

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\JSONAPICollection;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Resources\JSONAPIIdentifierResource;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class JSONAPIService
 {
@@ -34,9 +36,12 @@ class JSONAPIService
         return new JSONAPICollection($resource);
     }
 
-    public function createResource(string $modelClass, array $attributes)
+    public function createResource(string $modelClass, array $attributes,  array $relationships = null)
     {
         $model = $modelClass::create($attributes);
+        if ($relationships) {
+            $this->handleRelationship($relationships, $model);
+        }
         return (new JSONAPIResource($model))
             ->response()
             ->header('Location', route("{$model->type()}.show", [
@@ -65,6 +70,28 @@ class JSONAPIService
         return JSONAPIIdentifierResource::collection($model->$relationship);
     }
 
+    protected function handleRelationship(array $relationships, $model): void
+    {
+        foreach ($relationships as $relationshipName => $contents) {
+
+            if ($model->$relationshipName() instanceof BelongsTo) {
+                $this->updateToOneRelationship(
+                    $model,
+                    $relationshipName,
+                    $contents['data']['id']
+                );
+            }
+            if ($model->$relationshipName() instanceof BelongsToMany) {
+                $this->updateManyToManyRelationships(
+                    $model,
+                    $relationshipName,
+                    collect($contents['data'])->pluck('id')
+                );
+            }
+        }
+        $model->load(array_keys($relationships));
+    }
+
     public function updateToOneRelationship($model, $relationship, $id)
     {
         $relatedModel = $model->$relationship()->getRelated();
@@ -82,6 +109,8 @@ class JSONAPIService
     {
         $foreignKey = $model->$relationship()->getForeignKeyName();
         $relatedModel = $model->$relationship()->getRelated();
+
+        $relatedModel->newQuery()->findOrFail($ids);
 
         $relatedModel->newQuery()->where($foreignKey, $model->id)->update([$foreignKey => null,]);
         $relatedModel->newQuery()->whereIn('id', $ids)->update([$foreignKey => $model->id,]);

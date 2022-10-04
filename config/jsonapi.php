@@ -90,10 +90,6 @@ return  [
                     'method' => 'invitees',
                 ],
                 [
-                    'type' => 'users',
-                    'method' => 'creator',
-                ],
-                [
                     'type' => 'tasks',
                     'method' => 'tasks',
                 ]
@@ -112,8 +108,8 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:tasks,title',
                     'data.attributes.description' => 'string',
-                    'data.attributes.project_id' => 'required|integer',
-                    'data.attributes.deadline' => 'date_format:Y-m-d H:i:s',
+                    'data.relationships' => 'required',
+                    'data.attributes.deadline' => 'date_format:Y-m-d',
                 ],
                 'update' => [
                     'data.attributes.title' => 'sometimes|required|string|unique:tasks,title',
@@ -128,6 +124,10 @@ return  [
                 [
                     'type' => 'users',
                     'method' => 'assignees',
+                ],
+                [
+                    'type' => 'projects',
+                    'method' => 'project'
                 ]
             ]
         ],
@@ -137,7 +137,9 @@ return  [
                 'created_at',
                 'updated_at'
             ],
-            'allowedIncludes' => [],
+            'allowedIncludes' => [
+                'tasks'
+            ],
             'validationRules' => [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:groups,title',
@@ -148,7 +150,12 @@ return  [
                     'data.attributes.project_id' => 'sometimes|required|integer',
                 ]
             ],
-            'relationships' => []
+            'relationships' => [
+                [
+                    'type' => 'tasks',
+                    'method' => 'tasks',
+                ]
+            ]
         ],
     ]
 

@@ -29,7 +29,6 @@ class TaskController extends Controller
     public function index()
     {
         return $this->service->fetchResources(Task::class, 'tasks');
-
     }
 
 
@@ -41,16 +40,17 @@ class TaskController extends Controller
      */
     public function store(JSONAPIRequest $request)
     {
-        $unique_id = Project::findOrFail($request->input('data.attributes.project_id'))->tasks->count() + 1;
+
+        $unique_id = Project::findOrFail($request->input('data.relationships.projects.data.id'))->tasks->count() + 1;
 
         return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),
             'description' => $request->input('data.attributes.description'),
             'deadline' => $request->input('data.attributes.deadline'),
             'user_id' => auth()->user()->id,
-            'unique_id' => 'T-'.(string)$unique_id,
-            'project_id' => $request->input('data.attributes.project_id'),
-        ]);
+            'unique_id' => 'T-' . (string)$unique_id,
+
+        ], $request->input('data.relationships'));
     }
 
     /**
@@ -62,7 +62,6 @@ class TaskController extends Controller
     public function show($task)
     {
         return $this->service->fetchResource(Task::class, $task, 'tasks');
-
     }
 
     /**
@@ -73,7 +72,7 @@ class TaskController extends Controller
      */
     public function assign(AssignUsersRequest $request, Task $task)
     {
-       
+
         $task->assignees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
         $assigned_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
@@ -90,7 +89,7 @@ class TaskController extends Controller
      */
     public function supervisor(AssignUsersRequest $request, Task $task)
     {
-       
+
         $task->assignees()->updateExistingPivot($request->input('data.attributes.id'), [
             'is_supervisor' => 1
         ]);

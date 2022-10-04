@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -91,7 +92,9 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if ($exception instanceof QueryException) {
+        if (
+            $exception instanceof QueryException || $exception instanceof ModelNotFoundException
+        ) {
             $exception = new NotFoundHttpException('Resource not found');
         }
         return parent::render($request, $exception);

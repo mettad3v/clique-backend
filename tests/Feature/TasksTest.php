@@ -421,19 +421,27 @@ class TasksTest extends TestCase
 
         $user = User::factory()->create();
         Sanctum::actingAs($user);
+
         $this->postJson('/api/v1/tasks', [
             'data' => [
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'John Doe',
-                    'project_id' => $project->id,
                     'description' => 'John Doe and Jane Doe',
-                    'deadline' => "2022-09-09 09:09:09",
+                    'deadline' => '2022-09-09 09:09:09'
+                ],
+                'relationships' => [
+                    'projects' => [
+                        'data' => [
+                            'id' => (string)$project->id,
+                            'type' => 'projects'
+                        ]
+                    ]
                 ]
             ]
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(201)
             ->assertJson([
                 "data" => [
@@ -446,6 +454,20 @@ class TasksTest extends TestCase
                         'project_id' => $project->id,
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
+                    ],
+                    'relationships' => [
+                        'projects' => [
+                            'links' => [
+                                'self' => route('tasks.relationships.projects', $project->id),
+                                'related' => route('tasks.projects', $project->id),
+                            ],
+                            'data' => [
+                                [
+                                    'id' => (string)$project->id,
+                                    'type' => 'projects'
+                                ],
+                            ]
+                        ]
                     ]
                 ]
             ])->assertHeader('Location', url('/api/v1/tasks/1'));

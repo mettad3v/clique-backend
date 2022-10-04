@@ -27,9 +27,10 @@ class GroupsRelationshipTest extends TestCase
         $group = Group::factory()->create();
         $group->tasks()->saveMany($tasks);
 
+
         Sanctum::actingAs($user);
 
-        $this->getJson('/api/v1/groups/{$group->id}?include=tasks', [
+        $this->getJson("/api/v1/groups/{$group->id}?include=tasks", [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -62,13 +63,17 @@ class GroupsRelationshipTest extends TestCase
 
     public function test_a_relationship_link_to_tasks_returns_all_related_tasks_as_resource_id_ob()
     {
+
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(3)->create();
+        $group->tasks()->saveMany($tasks);
+
 
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $this->getJson('/api/v1/groups/1/relationships/tasks', [
+        $this->getJson("/api/v1/groups/{$group->id}/relationships/tasks", [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -93,13 +98,15 @@ class GroupsRelationshipTest extends TestCase
 
     public function test_it_can_modify_relationships_to_groups_and_add_new_relationships()
     {
+        $this->withoutExceptionHandling();
+        $project = Project::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(10)->create();
         $user = User::factory()->create();
         // dd($group->tasks);
         Sanctum::actingAs($user);
 
-        $this->patchJson('/api/v1/groups/1/relationships/tasks', [
+        $this->patchJson("/api/v1/groups/{$group->id}/relationships/tasks", [
             'data' => [
                 [
                     'id' => '5',
@@ -117,12 +124,12 @@ class GroupsRelationshipTest extends TestCase
 
 
         // dd($group->tasks);
-        // $this->assertDatabaseHas('tasks', [
-        //     'id' => 5,
-        //     'group_id' => 1,
-        // ])->assertDatabaseHas('tasks', [
-        //     'id' => 6,
-        //     'group_id' => 1,
-        // ]);
+        $this->assertDatabaseHas('tasks', [
+            'id' => 5,
+            'group_id' => 1,
+        ])->assertDatabaseHas('tasks', [
+            'id' => 6,
+            'group_id' => 1,
+        ]);
     }
 }

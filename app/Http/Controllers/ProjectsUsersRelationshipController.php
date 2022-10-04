@@ -28,12 +28,12 @@ class ProjectsUsersRelationshipController extends Controller
     public function update(JSONAPIRelationshipRequest $request, Project $project)
     {
         if (!Gate::allows('invite', $project)) {
-            abort(403);
+            abort(403, 'Access denied');
         }
 
         // $this->service->notificationHandler($request, $project, 'invitees', NotifyInvitedUsers::class, NotifyRevokedUsers::class, auth()->user());
-
-        $project->invitees()->sync($request->input('data.*.id'));
-        return response(null, 204);
+        $this->service->updateManyToManyRelationships($project, 'invitees', $request->input('data.*.id'));
+        // $project->invitees()->sync($request->input('data.*.id'));
+        // return response(null, 204);
     }
 }

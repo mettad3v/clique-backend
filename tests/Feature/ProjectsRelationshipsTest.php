@@ -184,11 +184,12 @@ class ProjectsRelationshipsTest extends TestCase
         ]);
     }
 
-    public function test_it_returns_a_404_not_found_when_trying_to_add_relationship_to_a_non_existing()
+    public function test_it_returns_a_404_not_found_when_trying_to_add_relationship_to_a_non_existing_reference()
     {
         $users = User::factory(2)->create();
         $auth = User::factory()->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
+        $project->invitees()->saveMany($users);
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/projects/1/relationships/users', [
             'data' => [
@@ -382,7 +383,7 @@ class ProjectsRelationshipsTest extends TestCase
                 ],
                 'included' => [
                     [
-                        "id" => '1',
+                        "id" => (string)$users->get(0)->id,
                         "type" => "users",
                         "attributes" => [
                             'name' => $users[0]->name,
@@ -391,7 +392,7 @@ class ProjectsRelationshipsTest extends TestCase
                         ]
                     ],
                     [
-                        "id" => '2',
+                        "id" => (string)$users->get(1)->id,
                         "type" => "users",
                         "attributes" => [
                             'name' => $users[1]->name,
@@ -400,7 +401,7 @@ class ProjectsRelationshipsTest extends TestCase
                         ]
                     ],
                     [
-                        "id" => '3',
+                        "id" => (string)$users->get(2)->id,
                         "type" => "users",
                         "attributes" => [
                             'name' => $users[2]->name,
@@ -514,7 +515,7 @@ class ProjectsRelationshipsTest extends TestCase
             ],
             'included' => [
                 [
-                    "id" => '1',
+                    "id" => (string)$users->get(0)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[0]->name,
@@ -523,7 +524,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '2',
+                    "id" => (string)$users->get(1)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[1]->name,
@@ -532,7 +533,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '3',
+                    "id" => (string)$users->get(2)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[2]->name,
@@ -668,7 +669,7 @@ class ProjectsRelationshipsTest extends TestCase
             ],
             'included' => [
                 [
-                    "id" => '1',
+                    "id" => $users->get(0)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[0]->name,
@@ -676,7 +677,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'updated_at' => $users[0]->updated_at->toJSON(),
                     ]
                 ], [
-                    "id" => '2',
+                    "id" => $users->get(1)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[1]->name,
@@ -685,7 +686,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '3',
+                    "id" => $users->get(2)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[2]->name,
@@ -697,7 +698,7 @@ class ProjectsRelationshipsTest extends TestCase
         ])->assertJsonMissing([
             'included' => [
                 [
-                    "id" => '1',
+                    "id" => $users->get(0)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[0]->name,
@@ -706,7 +707,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '2',
+                    "id" => $users->get(1)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[1]->name,
@@ -715,7 +716,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '3',
+                    "id" => $users->get(2)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[2]->name,
@@ -724,7 +725,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '1',
+                    "id" => $users->get(0)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[0]->name,
@@ -733,7 +734,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '2',
+                    "id" => $users->get(1)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[1]->name,
@@ -742,7 +743,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '3',
+                    "id" => $users->get(2)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[2]->name, 'created_at' => $users[2]->created_at->toJSON(),
@@ -750,7 +751,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '1',
+                    "id" => $users->get(0)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[0]->name,
@@ -759,7 +760,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '2',
+                    "id" => $users->get(1)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[1]->name,
@@ -768,7 +769,7 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
                 [
-                    "id" => '3',
+                    "id" => $users->get(2)->id,
                     "type" => "users",
                     "attributes" => [
                         'name' => $users[2]->name,
@@ -777,63 +778,6 @@ class ProjectsRelationshipsTest extends TestCase
                     ]
                 ],
             ]
-        ]);
-    }
-
-    public function test_when_creating_a_project_it_can_also_add_relationships_right_away()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
-        $this->postJson('/api/v1/projects', [
-            'data' => [
-                'type' => 'projects',
-                'attributes' => [
-                    'name' => 'Hello world',
-                ],
-                'relationships' => [
-                    'users' => [
-                        'data' => [
-                            'id' => $user->id,
-                            'type' => 'users',
-                        ]
-                    ]
-                ]
-            ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])
-            ->assertStatus(201)
-            ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => 'projects',
-                    "attributes" => [
-                        'name' => 'Hello world',
-                        'created_at' => now()->setMilliseconds(0)->toJSON(),
-                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                    ],
-                    'relationships' => [
-                        'users' => [
-                            'links' => [
-                                'self' => route('projects.relationships.users', 1),
-                                'related' => route('projects.users', 1),
-                            ],
-                            'data' => [
-                                'id' => $user->id,
-                                'type' => 'users',
-                            ]
-                        ]
-                    ]
-                ]
-            ])->assertHeader('Location', url('/api/v1/projects/1'));
-
-        $this->assertDatabaseHas('projects', [
-            'id' => 1,
-            'name' => 'Hello world',
-            'user_id' => $user->id,
-
         ]);
     }
 }
