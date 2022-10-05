@@ -95,7 +95,7 @@ class Handler extends ExceptionHandler
         if (
             $exception instanceof QueryException || $exception instanceof ModelNotFoundException
         ) {
-            $exception = new NotFoundHttpException('Resource not found');
+            $exception = new NotFoundHttpException('Given resource not found');
         }
         return parent::render($request, $exception);
     }

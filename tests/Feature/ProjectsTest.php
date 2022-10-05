@@ -141,7 +141,7 @@ class ProjectsTest extends TestCase
 
         Sanctum::actingAs($auth);
 
-        $this->patchJson('/api/v1/projects/1/change-ownership', [
+        $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 'id' => '1',
                 'type' => 'projects',
@@ -914,7 +914,7 @@ class ProjectsTest extends TestCase
         ])->assertStatus(200)
             ->assertJson([
                 'data' => [
-                    'id' => $project->id,
+                    'id' => '1',
                     'type' => 'projects',
                     'attributes' => [
                         'name' => 'Jane Doe',

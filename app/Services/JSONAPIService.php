@@ -131,6 +131,11 @@ class JSONAPIService
 
     public function updateManyToManyRelationships($model, $relationship, $ids)
     {
+        // get relation
+        $relatedModel = $model->$relationship()->getRelated();
+        //chcek if they exist
+        $relatedModel->newQuery()->findOrFail($ids);
+
         $model->$relationship()->sync($ids);
         return response(null, 204);
     }

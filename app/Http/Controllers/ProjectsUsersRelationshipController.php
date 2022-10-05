@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\JSONAPIRelationshipRequest;
-use App\Http\Requests\JSONAPIRequest;
 use App\Models\User;
 use App\Models\Project;
 use App\Services\JSONAPIService;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\JSONAPIRequest;
 use App\Notifications\NotifyInvitedUsers;
 use App\Notifications\NotifyRevokedUsers;
 use Illuminate\Support\Facades\Notification;
+use App\Http\Requests\JSONAPIRelationshipRequest;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class ProjectsUsersRelationshipController extends Controller
 {
@@ -27,13 +28,11 @@ class ProjectsUsersRelationshipController extends Controller
 
     public function update(JSONAPIRelationshipRequest $request, Project $project)
     {
-        if (!Gate::allows('invite', $project)) {
-            abort(403, 'Access denied');
+        if (Gate::denies('invite', $project)) {
+            throw new AuthorizationException('This action is unauthorized.');
         }
 
         // $this->service->notificationHandler($request, $project, 'invitees', NotifyInvitedUsers::class, NotifyRevokedUsers::class, auth()->user());
-        $this->service->updateManyToManyRelationships($project, 'invitees', $request->input('data.*.id'));
-        // $project->invitees()->sync($request->input('data.*.id'));
-        // return response(null, 204);
+        return $this->service->updateManyToManyRelationships($project, 'invitees', $request->input('data.*.id'));
     }
 }

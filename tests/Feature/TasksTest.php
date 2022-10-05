@@ -63,11 +63,11 @@ class TasksTest extends TestCase
         $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
-                    'id' => '2',
+                    'id' => (string)$user[1]->id,
                     'type' => 'users'
                 ],
                 [
-                    'id' => '3',
+                    'id' => (string)$user[1]->id,
                     'type' => 'users'
                 ]
             ]

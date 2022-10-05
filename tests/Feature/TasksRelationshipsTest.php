@@ -87,7 +87,7 @@ class TasksRelationshipsTest extends TestCase
             ]);
     }
 
-    public function test_project_creator_can_modify_relationships_to_users_and_add_new_relationships()
+    public function test_task_user_can_modify_relationships_to_users_and_add_new_relationships()
     {
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
@@ -98,11 +98,11 @@ class TasksRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
-                    'id' => '5',
+                    'id' => (string)$users[4]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => '6',
+                    'id' => (string)$users[5]->id,
                     'type' => 'users',
                 ]
             ]
@@ -111,10 +111,10 @@ class TasksRelationshipsTest extends TestCase
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
         $this->assertDatabaseHas('task_user', [
-            'user_id' => 5,
+            'user_id' => (string)$users[4]->id,
             'task_id' => 1,
         ])->assertDatabaseHas('task_user', [
-            'user_id' => 6,
+            'user_id' => (string)$users[5]->id,
             'task_id' => 1,
         ]);
     }
@@ -130,15 +130,15 @@ class TasksRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/tasks/1/relationships/users', [
             'data' => [
                 [
-                    'id' => '1',
+                    'id' => (string)$users[0]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => '2',
+                    'id' => (string)$users[1]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => '5',
+                    'id' => (string)$users[4]->id,
                     'type' => 'users',
                 ],
             ]
@@ -147,19 +147,19 @@ class TasksRelationshipsTest extends TestCase
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
         $this->assertDatabaseHas('task_user', [
-            'user_id' => 1,
+            'user_id' => (string)$users[0]->id,
             'task_id' => 1,
         ])->assertDatabaseHas('task_user', [
-            'user_id' => 2,
+            'user_id' => (string)$users[1]->id,
             'task_id' => 1,
         ])->assertDatabaseHas('task_user', [
-            'user_id' => 5,
+            'user_id' => (string)$users[4]->id,
             'task_id' => 1,
         ])->assertDatabaseMissing('task_user', [
-            'user_id' => 3,
+            'user_id' => (string)$users[2]->id,
             'task_id' => 1,
         ])->assertDatabaseMissing('task_user', [
-            'user_id' => 4,
+            'user_id' => (string)$users[3]->id,
             'task_id' => 1,
         ]);
     }

@@ -30,11 +30,11 @@ return  [
             'relationships' => [
                 [
                     'type' => 'projects',
-                    'method' => 'invitations',
+                    'method' => 'projects',
                 ],
                 [
                     'type' => 'projects',
-                    'method' => 'projects',
+                    'method' => 'invitations',
                 ],
                 [
                     'type' => 'tasks',

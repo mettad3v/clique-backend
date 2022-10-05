@@ -103,7 +103,7 @@ class ProjectController extends Controller
      */
     public function update(JSONAPIRequest $request, Project $project)
     {
-        $this->service->updateResource($project, $request->input('data.attributes'));
+        return $this->service->updateResource($project, $request->input('data.attributes'));
     }
 
     /**

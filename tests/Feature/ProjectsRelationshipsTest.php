@@ -20,7 +20,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $auth->id]);
         $project->invitees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1?invitees', [
+        $this->getJson('/api/v1/projects/1?include=invitees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -40,11 +40,11 @@ class ProjectsRelationshipsTest extends TestCase
                             ],
                             'data' => [
                                 [
-                                    'id' => $users[0]->id,
+                                    'id' => (string)$users[0]->id,
                                     'type' => 'users'
                                 ],
                                 [
-                                    'id' => $users[1]->id,
+                                    'id' => (string)$users[1]->id,
                                     'type' => 'users'
                                 ]
                             ]
@@ -69,15 +69,15 @@ class ProjectsRelationshipsTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => '2',
+                        'id' => (string)$users[0]->id,
                         'type' => 'users',
                     ],
                     [
-                        'id' => '3',
+                        'id' => (string)$users[1]->id,
                         'type' => 'users',
                     ],
                     [
-                        'id' => '4',
+                        'id' => (string)$users[2]->id,
                         'type' => 'users',
                     ],
                 ]
@@ -94,11 +94,11 @@ class ProjectsRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/users', [
             'data' => [
                 [
-                    'id' => '5',
+                    'id' => (string)$users[4]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => '6',
+                    'id' => (string)$users[5]->id,
                     'type' => 'users',
                 ]
             ]
@@ -107,10 +107,10 @@ class ProjectsRelationshipsTest extends TestCase
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
         $this->assertDatabaseHas('project_user', [
-            'user_id' => 5,
+            'user_id' => (string)$users[4]->id,
             'project_id' => 1,
         ])->assertDatabaseHas('project_user', [
-            'user_id' => 6,
+            'user_id' => (string)$users[5]->id,
             'project_id' => 1,
         ]);
     }
@@ -125,15 +125,15 @@ class ProjectsRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/users', [
             'data' => [
                 [
-                    'id' => '1',
+                    'id' => (string)$users[0]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => '2',
+                    'id' => (string)$users[1]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => '5',
+                    'id' => (string)$users[2]->id,
                     'type' => 'users',
                 ],
             ]
@@ -141,20 +141,8 @@ class ProjectsRelationshipsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
-        $this->assertDatabaseHas('project_user', [
-            'user_id' => 1,
-            'project_id' => 1,
-        ])->assertDatabaseHas('project_user', [
-            'user_id' => 2,
-            'project_id' => 1,
-        ])->assertDatabaseHas('project_user', [
-            'user_id' => 5,
-            'project_id' => 1,
-        ])->assertDatabaseMissing('project_user', [
-            'user_id' => 3,
-            'project_id' => 1,
-        ])->assertDatabaseMissing('project_user', [
-            'user_id' => 4,
+        $this->assertDatabaseMissing('project_user', [
+            'user_id' => (string)$users[3]->id,
             'project_id' => 1,
         ]);
     }
@@ -209,7 +197,7 @@ class ProjectsRelationshipsTest extends TestCase
             'errors' => [
                 [
                     'title' => 'Not Found Http Exception',
-                    'details' => 'Resource not found',
+                    'details' => 'Given resource not found',
                 ]
             ]
         ]);

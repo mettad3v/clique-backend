@@ -33,10 +33,10 @@ class TaskUsersRelationshipController extends Controller
      */
     public function update(JSONAPIRelationshipRequest $request, Task $task)
     {
+        // return response(null, 204);
         // $this->service->notificationHandler($request, $task, 'assignees', NotifyAssignedUsers::class, NotifyUnassignedUsers::class, auth()->user());
 
-        $task->assignees()->sync($request->input('data.*.id'));
-        return response(null, 204);
+        return $this->service->updateManyToManyRelationships($task, 'assignees', $request->input('data.*.id'));
     }
 
 
