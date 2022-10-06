@@ -30,15 +30,14 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
-            return config('app.frontend_url')."/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
+            return config('app.frontend_url') . "/password-reset/$token?email={$notifiable->getEmailForPasswordReset()}";
         });
 
 
         Gate::define('update', function (User $user, Project $project) {
             return $user->id === $project->user_id
-                        ? Response::allow()
-                        : Response::deny('You are not the owner of this project.');
+                ? Response::allow()
+                : Response::deny('You are not the owner of this project.');
         });
-
     }
 }

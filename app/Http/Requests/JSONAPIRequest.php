@@ -42,7 +42,7 @@ class JSONAPIRequest extends FormRequest
                 case 'PATCH':
                     $rules = array_merge($rules, config("jsonapi.resources.{$type}.validationRules.update"));
                     break;
-                    
+
                 case 'POST':
                 default:
                     $rules = array_merge($rules, config("jsonapi.resources.{$type}.validationRules.create"));

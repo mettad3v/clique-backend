@@ -20,6 +20,7 @@ class TaskController extends Controller
     public function __construct(JSONAPIService $service)
     {
         $this->service = $service;
+        // $this->authorizeResource(Task::class, 'task');
     }
     /**
      * Display a listing of the resource.
@@ -61,6 +62,7 @@ class TaskController extends Controller
      */
     public function show($task)
     {
+
         return $this->service->fetchResource(Task::class, $task, 'tasks');
     }
 
@@ -109,7 +111,10 @@ class TaskController extends Controller
      */
     public function update(JSONAPIRequest $request, Task $task)
     {
-        $this->service->updateResource($task, $request->input('data.attributes'));
+        if ($request->user()->cannot('update', $task)) {
+            abort(403, 'Access Denied');
+        }
+        return $this->service->updateResource($task, $request->input('data.attributes'));
     }
 
     /**

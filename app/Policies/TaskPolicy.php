@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Task;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TaskPolicy
@@ -30,7 +31,9 @@ class TaskPolicy
      */
     public function view(User $user, Task $task)
     {
-        //
+
+        // return $result->isNotEmpty() ?  Response::allow()
+        //     : Response::deny('Access denied.');
     }
 
     /**
@@ -53,7 +56,10 @@ class TaskPolicy
      */
     public function update(User $user, Task $task)
     {
-        //
+        $project = $task->project->id;
+        $result = $user->invitations()->where('project_id', $project)->get();
+
+        return $result->isNotEmpty();
     }
 
     /**

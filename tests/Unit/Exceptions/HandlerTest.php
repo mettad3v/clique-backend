@@ -87,7 +87,7 @@ class HandlerTest extends TestCase
             'errors' => [
                 [
                     'title' => 'Not Found Http Exception',
-                    'details' => 'Resource not found',
+                    'details' => 'Given resource not found',
                 ]
             ]
         ]);

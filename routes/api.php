@@ -77,11 +77,11 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'index'])->name('projects.relationships.users');
     Route::patch('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'update']);
     Route::get('/projects/{project}/users', [ProjectsUsersRelatedController::class, 'index'])->name('projects.users');
-    Route::patch('/projects/{project}/change-ownership', [ProjectController::class, 'change_ownership']);
 
-    Route::get('/projects/{project}/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
-    Route::patch('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'update']);
-    Route::get('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
+    // Route::patch('/projects/{project}/relationships/users/change-ownership', [ProjectCreatorRelationshipController::class, 'change_ownership']);
+    Route::get('/projects/{project}/relationships/users/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
+    Route::patch('/projects/{project}/relationships/users/creator', [ProjectCreatorRelationshipController::class, 'update']);
+    Route::get('/projects/{project}/relationships/users/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
 
     Route::get('/projects/{project}/tasks', [ProjectsTasksRelatedController::class, 'index'])->name('projects.tasks');
     Route::get('/projects/{project}/relationships/tasks', [ProjectsTasksRelationshipController::class, 'index'])->name('projects.relationships.tasks');

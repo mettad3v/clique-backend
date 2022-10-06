@@ -117,7 +117,7 @@ return  [
                     'data.attributes.project_id' => 'sometimes|required|integer',
                     'data.attributes.category_id' => 'sometimes|required|integer',
                     'data.attributes.group_id' => 'sometimes|required|integer',
-                    'data.attributes.deadline' => 'sometimes|date_format:Y-m-d H:i:s',
+                    'data.attributes.deadline' => 'sometimes|date_format:Y-m-d',
                 ]
             ],
             'relationships' => [

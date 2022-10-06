@@ -119,13 +119,12 @@ class ProjectsTest extends TestCase
 
         Sanctum::actingAs($auth);
 
-        $this->patchJson('/api/v1/projects/1/change-ownership', [
+        $this->patchJson('/api/v1/projects/1/relationships/users/creator', [
             'data' => [
-                'id' => '1',
-                'type' => 'projects',
-                'attributes' => [
-                    'user_id' => $user->id
-                ]
+                [
+                    'id' => (string)$auth->id,
+                    'type' => 'users'
+                ],
             ]
         ], [
             'accept' => 'application/vnd.api+json',
@@ -141,13 +140,12 @@ class ProjectsTest extends TestCase
 
         Sanctum::actingAs($auth);
 
-        $this->patchJson('/api/v1/projects/1/relationships/creator', [
+        $this->patchJson('/api/v1/projects/1/relationships/users/creator', [
             'data' => [
-                'id' => '1',
-                'type' => 'projects',
-                'attributes' => [
-                    'user_id' => $user->id
-                ]
+                [
+                    'id' => (string)$auth->id,
+                    'type' => 'users'
+                ],
             ]
         ], [
             'accept' => 'application/vnd.api+json',
