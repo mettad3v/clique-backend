@@ -13,6 +13,27 @@ class ProjectsRelationshipsTest extends TestCase
 {
     use DatabaseMigrations;
 
+    public function test_project_owner_can_change_ownership()
+    {
+        $users = User::factory(10)->create();
+        $auth = User::factory()->create();
+        $project = Project::factory()->create(['user_id' => $users[2]->id]);
+        $project->invitees()->attach($users->pluck('id'));
+        Sanctum::actingAs($auth);
+        $this->patchJson('/api/v1/projects/1/relationships/users/creator', [
+            'data' => [
+                [
+                    'id' => (string)$users[4]->id,
+                    'type' => 'users',
+                ],
+
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])->assertStatus(204);
+    }
+
     public function test_it_returns_a_relationship_to_users_adhering_to_json_api_spec()
     {
         $auth = User::factory()->create();

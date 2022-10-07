@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\JSONAPIRequest;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
+use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Requests\JSONAPIRequest;
+use App\Http\Resources\JSONAPIResource;
 use App\Notifications\NotifyAssignedUsers;
 use App\Notifications\NotifyNewSupervisors;
 use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\Tasks\AssignUsersRequest;
-use App\Http\Resources\JSONAPIResource;
 
 class TaskController extends Controller
 {
@@ -42,7 +43,7 @@ class TaskController extends Controller
     public function store(JSONAPIRequest $request)
     {
 
-        $unique_id = Project::findOrFail($request->input('data.relationships.project.data.id'))->tasks->count() + 1;
+        $unique_id = Project::findOrFail((int)$request->input('data.relationships.projects.data.id'))->tasks->count() + 1;
 
         return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),
@@ -62,7 +63,12 @@ class TaskController extends Controller
      */
     public function show($task)
     {
+        // $x = ['a', 'b', 'c'];
 
+        // foreach ($x as $key) {
+        //     $key = 'x';
+        // }
+        // return $x;
         return $this->service->fetchResource(Task::class, $task, 'tasks');
     }
 
@@ -123,9 +129,11 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Task $task)
+    public function destroy(Task $task, Request $request)
     {
-        $task->delete();
-        return response(null, 204);
+        if ($request->user()->cannot('delete', $task)) {
+            abort(403, 'Access Denied');
+        }
+        return $task;
     }
 }

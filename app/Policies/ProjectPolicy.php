@@ -21,7 +21,7 @@ class ProjectPolicy
     {
         //
     }
-    
+
     /**
      * Determine whether the user can invite other users.
      *
@@ -31,10 +31,10 @@ class ProjectPolicy
     public function invite(User $user, Project $project)
     {
         return $user->id === $project->user_id
-                    ? Response::allow()
-                    : Response::deny('You do not own this project.');
+            ? Response::allow()
+            : Response::deny('You do not own this project.');
     }
-    
+
     /**
      * Determine whether the user can revoke other users.
      *
@@ -44,10 +44,10 @@ class ProjectPolicy
     public function revoke(User $user, Project $project)
     {
         return $user->id === $project->user_id
-                    ? Response::allow()
-                    : Response::deny('You do not own this project.');
+            ? Response::allow()
+            : Response::deny('You do not own this project.');
     }
-    
+
     /**
      * Determine whether the user can revoke other users.
      *
@@ -57,10 +57,10 @@ class ProjectPolicy
     public function change_ownership(User $user, Project $project)
     {
         return $user->id === $project->user_id
-                    ? Response::allow()
-                    : Response::deny('You do not own this project.');
+            ? Response::allow()
+            : Response::deny('You do not own this project.');
     }
-    
+
 
     /**
      * Determine whether the user can view the model.
@@ -71,7 +71,10 @@ class ProjectPolicy
      */
     public function view(User $user, Project $project)
     {
-        //
+        // $project = $project->project;
+        $result = $project->invitees()->where('user_id', $user->id)->get();
+
+        return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
     }
 
     /**
@@ -94,7 +97,8 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        //
+        $result = $project->invitees()->where('user_id', $user->id)->get();
+        return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
     }
 
     /**
@@ -107,8 +111,8 @@ class ProjectPolicy
     public function delete(User $user, Project $project)
     {
         return $user->id === $project->user_id
-                    ? Response::allow()
-                    : Response::deny('You do not own this project.');
+            ? Response::allow()
+            : Response::deny('You do not own this project.');
     }
 
     /**
@@ -132,6 +136,5 @@ class ProjectPolicy
      */
     public function forceDelete(User $user, Project $project)
     {
-        
     }
 }

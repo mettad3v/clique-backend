@@ -77,11 +77,8 @@ return  [
                     'data.attributes.name' => 'required|string|unique:projects,name',
                 ],
                 'update' => [
-                    'data.attributes.name' => 'sometimes|string',
-                    'data.attributes.profile_avatar' => 'sometimes|image|mimes:jpg,png,jpeg,svg',
-                    'data.attributes.email' => 'sometimes|email|unique:users,email',
-                    'data.attributes.username' => 'sometimes|string|unique:users,username',
-                    'data.attributes.status' => 'sometimes|boolean',
+                    'data.attributes.name' => 'required|string|unique:projects,name',
+
                 ]
             ],
             'relationships' => [
@@ -108,7 +105,7 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:tasks,title',
                     'data.attributes.description' => 'string',
-                    'data.relationships.project' => 'required',
+                    'data.relationships.projects' => 'required',
                     'data.attributes.deadline' => 'date_format:Y-m-d',
                 ],
                 'update' => [
@@ -118,7 +115,8 @@ return  [
                     'data.attributes.category_id' => 'sometimes|required|integer',
                     'data.attributes.group_id' => 'sometimes|required|integer',
                     'data.attributes.deadline' => 'sometimes|date_format:Y-m-d',
-                ]
+                ],
+                'delete' => []
             ],
             'relationships' => [
                 [

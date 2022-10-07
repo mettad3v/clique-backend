@@ -31,9 +31,6 @@ class TaskPolicy
      */
     public function view(User $user, Task $task)
     {
-
-        // return $result->isNotEmpty() ?  Response::allow()
-        //     : Response::deny('Access denied.');
     }
 
     /**
@@ -44,7 +41,6 @@ class TaskPolicy
      */
     public function create(User $user)
     {
-        //
     }
 
     /**
@@ -56,10 +52,10 @@ class TaskPolicy
      */
     public function update(User $user, Task $task)
     {
-        $project = $task->project->id;
-        $result = $user->invitations()->where('project_id', $project)->get();
+        $project = $task->project;
+        $result = $user->invitations()->where('project_id', $project->id)->get();
 
-        return $result->isNotEmpty();
+        return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
     }
 
     /**
@@ -71,7 +67,10 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task)
     {
-        //
+        $project = $task->project;
+        $result = $user->invitations()->where('project_id', $project->id)->get();
+
+        return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
     }
 
     /**

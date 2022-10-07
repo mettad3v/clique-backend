@@ -15,18 +15,18 @@ class TasksTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function test_only_users_invited_to_the_parent_project_can_modify_task_resources()
+    public function test_only_owners_or_users_invited_to_the_parent_project_can_modify_task()
     {
         $users = User::factory(2)->create();
         $auth = User::factory()->create();
-        $project = Project::factory()->create();
+        $project = Project::factory(['user_id' => $auth->id])->create();
         $project->invitees()->sync($users->pluck('id'));
         $uid =  Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
         $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
         Sanctum::actingAs($auth);
 
-        dd($project);
+        // dd($users[0]->invitations()->where('project_id', $project->id)->get());
 
         $this->patchJson('/api/v1/tasks/1', [
             'data' => [
@@ -39,7 +39,7 @@ class TasksTest extends TestCase
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(403);
+        ])->assertStatus(200);
     }
 
     public function test_it_returns_a_task_as_a_resource_object()

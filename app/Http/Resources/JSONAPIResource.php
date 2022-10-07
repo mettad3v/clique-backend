@@ -37,7 +37,7 @@ class JSONAPIResource extends JsonResource
                             'self' => route("{$this->type()}.relationships.{$relatedType}", $this->id),
                             'related' => route("{$this->type()}.{$relatedType}", $this->id),
                         ],
-                        'data' => $this->prepareRelationshipsData($relatedType, $relationship),
+                        'data' => $this->prepareRelationshipData($relatedType, $relationship),
                     ],
                 ];
             });
@@ -46,7 +46,7 @@ class JSONAPIResource extends JsonResource
         return $collection->count() > 0 ? $collection : new MissingValue();
     }
 
-    private function prepareRelationshipsData($relatedType, $relationship)
+    private function prepareRelationshipData($relatedType, $relationship)
     {
         if ($this->whenLoaded($relationship) instanceof MissingValue) {
             return new MissingValue();
@@ -72,7 +72,9 @@ class JSONAPIResource extends JsonResource
             ->filter(function ($resource) {
                 return $resource->collection !== null;
             })
-            ->flatMap->toArray($request);
+            ->flatMap(function ($resource) use ($request) {
+                return $resource->toArray($request);
+            });
     }
 
     private function relations()
@@ -80,7 +82,7 @@ class JSONAPIResource extends JsonResource
         return collect(config("jsonapi.resources.{$this->type()}.relationships"))
             ->map(function ($relation) {
                 $modelOrCollection = $this->whenLoaded($relation['method']);
-                
+
                 //return a single resource for one-to query param but a collection for many-to query param
                 if ($modelOrCollection instanceof Model) {
                     $modelOrCollection = collect([new JSONAPIResource($modelOrCollection)]);
@@ -88,5 +90,4 @@ class JSONAPIResource extends JsonResource
                 return JSONAPIResource::collection($modelOrCollection);
             });
     }
-
 }
