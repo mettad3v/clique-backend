@@ -16,8 +16,8 @@ class CreateGroupsTable extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->string('title')->unique();
-            $table->uuid('user_id')->constrained('users');
-            $table->foreignId('project_id')->constrained('projects');
+            $table->uuid('user_id')->constrained('users')->nullable();
+            $table->foreignId('project_id')->constrained('projects')->nullable();
             $table->timestamps();
         });
     }

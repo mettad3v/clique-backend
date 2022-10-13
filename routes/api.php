@@ -14,6 +14,8 @@ use App\Http\Controllers\TaskUsersRelationshipController;
 use App\Http\Controllers\TaskUsersRelatedController;
 use App\Http\Controllers\TaskProjectRelationshipController;
 use App\Http\Controllers\TaskProjectRelatedController;
+use App\Http\Controllers\TaskGroupRelatedController;
+use App\Http\Controllers\TaskGroupRelationshipController;
 use App\Http\Controllers\UsersTasksRelationshipController;
 use App\Http\Controllers\GroupsTasksRelationshipController;
 use App\Http\Controllers\ProjectsUsersRelationshipController;
@@ -21,6 +23,8 @@ use App\Http\Controllers\ProjectsTasksRelatedController;
 use App\Http\Controllers\ProjectsTasksRelationshipController;
 use App\Http\Controllers\ProjectCreatorRelatedController;
 use App\Http\Controllers\ProjectCreatorRelationshipController;
+use App\Http\Controllers\TaskCreatorRelationshipController;
+use App\Http\Controllers\TaskCreatorRelatedController;
 use App\Http\Controllers\UsersProjectsRelationshipController;
 use App\Http\Controllers\UsersInvitationsRelationshipController;
 use App\Http\Controllers\UsersInvitationsRelatedController;
@@ -74,27 +78,33 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
 
     Route::apiResource('projects', ProjectController::class);
-    Route::get('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'index'])->name('projects.relationships.users');
-    Route::patch('/projects/{project}/relationships/users', [ProjectsUsersRelationshipController::class, 'update']);
-    Route::get('/projects/{project}/users', [ProjectsUsersRelatedController::class, 'index'])->name('projects.users');
+    Route::get('/projects/{project}/relationships/invitees', [ProjectsUsersRelationshipController::class, 'index'])->name('projects.relationships.invitees');
+    Route::patch('/projects/{project}/relationships/invitees', [ProjectsUsersRelationshipController::class, 'update']);
+    Route::get('/projects/{project}/invitees', [ProjectsUsersRelatedController::class, 'index'])->name('projects.invitees');
 
     // Route::patch('/projects/{project}/relationships/users/change-ownership', [ProjectCreatorRelationshipController::class, 'change_ownership']);
-    Route::get('/projects/{project}/relationships/users/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
-    Route::patch('/projects/{project}/relationships/users/creator', [ProjectCreatorRelationshipController::class, 'update']);
-    Route::get('/projects/{project}/relationships/users/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
+    Route::get('/projects/{project}/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
+    Route::patch('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'update']);
+    Route::get('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
 
     Route::get('/projects/{project}/tasks', [ProjectsTasksRelatedController::class, 'index'])->name('projects.tasks');
     Route::get('/projects/{project}/relationships/tasks', [ProjectsTasksRelationshipController::class, 'index'])->name('projects.relationships.tasks');
 
     Route::apiResource('tasks', TaskController::class);
-    Route::get('/tasks/{task}/relationships/users', [TaskUsersRelationshipController::class, 'index'])->name('tasks.relationships.users');
-    Route::patch('/tasks/{task}/relationships/users', [TaskUsersRelationshipController::class, 'update']);
-    Route::get('/tasks/{task}/users', [TaskUsersRelatedController::class, 'index'])->name('tasks.users');
+    Route::get('/tasks/{task}/relationships/assignees', [TaskUsersRelationshipController::class, 'index'])->name('tasks.relationships.assignees');
+    Route::patch('/tasks/{task}/relationships/assignees', [TaskUsersRelationshipController::class, 'update']);
+    Route::get('/tasks/{task}/assignees', [TaskUsersRelatedController::class, 'index'])->name('tasks.assignees');
 
-    Route::get('/tasks/{task}/relationships/projects', [TaskProjectRelationshipController::class, 'index'])->name('tasks.relationships.projects');
-    Route::get('/tasks/{task}/projects', [TaskProjectRelatedController::class, 'index'])->name('tasks.projects');
-    Route::patch('/tasks/{task}/relationships/users/supervisor', [TaskUsersRelationshipController::class, 'supervisor']);
-    Route::patch('/tasks/{task}/relationships/users/remove-supervisor', [TaskUsersRelationshipController::class, 'remove_supervisor']);
+    Route::get('/tasks/{task}/relationships/project', [TaskProjectRelationshipController::class, 'index'])->name('tasks.relationships.project');
+    Route::get('/tasks/{task}/project', [TaskProjectRelatedController::class, 'index'])->name('tasks.project');
+    Route::patch('/tasks/{task}/relationships/supervisor', [TaskUsersRelationshipController::class, 'supervisor']);
+    Route::patch('/tasks/{task}/relationships/remove-supervisor', [TaskUsersRelationshipController::class, 'remove_supervisor']);
+
+    Route::get('/tasks/{task}/creator', [TaskCreatorRelatedController::class, 'index'])->name('tasks.creator');
+    Route::get('/tasks/{task}/relationships/creator', [TaskCreatorRelationshipController::class, 'index'])->name('tasks.relationships.creator');
+
+    Route::get('/tasks/{task}/relationships/group', [TaskGroupRelationshipController::class, 'index'])->name('tasks.relationships.group');
+    Route::get('/tasks/{task}/group', [TaskGroupRelatedController::class, 'index'])->name('tasks.group');
 
     Route::apiResource('categories', CategoryController::class);
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
 use App\Http\Requests\JSONAPIRequest;
@@ -43,7 +44,7 @@ class TaskController extends Controller
     public function store(JSONAPIRequest $request)
     {
 
-        $unique_id = Project::findOrFail((int)$request->input('data.relationships.projects.data.id'))->tasks->count() + 1;
+        $unique_id = Project::findOrFail((int)$request->input('data.relationships.project.data.id'))->tasks->count() + 1;
 
         return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),
@@ -63,12 +64,7 @@ class TaskController extends Controller
      */
     public function show($task)
     {
-        // $x = ['a', 'b', 'c'];
 
-        // foreach ($x as $key) {
-        //     $key = 'x';
-        // }
-        // return $x;
         return $this->service->fetchResource(Task::class, $task, 'tasks');
     }
 

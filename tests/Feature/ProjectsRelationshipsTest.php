@@ -20,7 +20,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $users[2]->id]);
         $project->invitees()->attach($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users/creator', [
+        $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 [
                     'id' => (string)$users[4]->id,

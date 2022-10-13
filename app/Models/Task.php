@@ -20,7 +20,7 @@ class Task extends AbstractAPIModel
 
     public function creator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function category()

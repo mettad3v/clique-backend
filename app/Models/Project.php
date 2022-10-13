@@ -11,7 +11,7 @@ class Project extends AbstractAPIModel
     use HasFactory;
 
     protected $fillable = ['name', 'user_id'];
-    
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -21,7 +21,7 @@ class Project extends AbstractAPIModel
     {
         return $this->belongsToMany(User::class)->withTimestamps();
     }
-    
+
     public function tasks()
     {
         return $this->HasMany(Task::class);

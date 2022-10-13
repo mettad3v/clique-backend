@@ -40,7 +40,6 @@ class JSONAPIService
     {
         $model = $modelClass::create($attributes);
         if ($relationships) {
-            return $relationships["groups"];
             $this->handleRelationship($relationships, $model);
         }
         return (new JSONAPIResource($model))

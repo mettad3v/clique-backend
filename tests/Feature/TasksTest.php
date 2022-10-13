@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
@@ -433,6 +434,143 @@ class TasksTest extends TestCase
                         'title' => 'Claus',
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
+                    ]
+                ],
+            ]
+        ]);
+    }
+
+    public function test_when_updating_a_task_it_can_also_update_relationships()
+    {
+        // $this->withExceptionHandling();
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $project = Project::factory(['user_id' => $user->id])->create();
+        $user->invitations()->save($project);
+        $task = Task::factory()->create();
+        $project->tasks()->save($task);
+
+        $anotherUser = User::factory()->create();
+        $anotherProject = Project::factory()->create();
+
+        $this->patchJson('/api/v1/tasks/1', [
+            'data' => [
+                'id' => (string)$task->id,
+                'type' => 'tasks',
+                'attributes' => [
+                    'description' => 'Hello world',
+                ],
+                'relationships' => [
+                    'creator' => [
+                        'data' => [
+                            'id' => (string)$anotherUser->id,
+                            'type' => 'users',
+                        ]
+                    ],
+                    'project' => [
+                        'data' => [
+                            'id' => (string)$anotherProject->id,
+                            'type' => 'projects',
+                        ]
+                    ]
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => '1',
+                    "type" => 'tasks',
+                    "attributes" => [
+                        'description' => 'Hello world',
+                        'created_at' => now()->setMilliseconds(0)->toJSON(),
+                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
+                    ],
+                    'relationships' => [
+                        'project' => [
+                            'links' => [
+                                'self' => route('tasks.relationships.project', '2'),
+                                'related' => route('tasks.project', '2'),
+                            ],
+                            'data' => [
+                                'id' => $anotherProject->id,
+                                'type' => 'projects'
+                            ]
+                        ],
+                        'creator' => [
+                            'links' => [
+                                'self' => route('tasks.relationships.creator', $anotherUser->id),
+                                'related' => route('tasks.creator', $anotherUser->id),
+                            ],
+                            'data' => [
+                                'id' => $anotherUser->id,
+                                'type' => 'users',
+                            ]
+                        ]
+                    ]
+                ]
+            ]);
+        $this->assertDatabaseHas('tasks', [
+            'id' => 1,
+            'description' => 'Hello world',
+            'user_id' => $anotherUser->id,
+            'project_id' => $anotherProject->id,
+        ]);
+    }
+
+    public function test_it_validates_relationships_are_given_when_creating_tasks()
+    {
+
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $project = Project::factory()->create();
+        // $task = Task::factory(['project_id' => $project->id])->create();
+
+        $this->postJson('/api/v1/tasks', [
+            'data' => [
+                'type' => 'tasks',
+                'attributes' => [
+                    'title' => 'John Doe',
+                    'description' => 'John Doe and Jane Doe',
+                    'deadline' => '2022-09-09'
+                ],
+                'relationships' => [
+                    'creator' => [],
+                    'project' => [
+                        'data' => [
+                            'id' => $project->id,
+                            'type' => 'random'
+                        ]
+                    ]
+                ]
+            ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])->assertStatus(422)->assertJson([
+            'errors' => [
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.relationships.creator.data field is required.',
+                    'source' => [
+                        'pointer' => '/data/relationships/creator/data',
+                    ]
+                ],
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The data.relationships.project.data.id must be a string.',
+                    'source' => [
+                        'pointer' => '/data/relationships/project/data/id',
+                    ]
+                ],
+                [
+                    'title' => 'Validation Error',
+                    'details' => 'The selected data.relationships.project.data.type is invalid.',
+                    'source' => [
+                        'pointer' => '/data/relationships/project/data/type',
                     ]
                 ],
             ]

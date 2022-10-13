@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -29,13 +30,23 @@ class JSONAPIResource extends JsonResource
     {
         $collection = collect(config("jsonapi.resources.{$this->type()}.relationships"))
             ->flatMap(function ($related) {
-                $relatedType = $related['type'];
                 $relationship = $related['method'];
+                $relatedType = $related['type'];
+                $relatedType2 = $related['type'];
+
+                //check if given val for relationship is equal to its singluar form
+                if ($this->$relationship() instanceof BelongsTo) {
+                    $relatedType2 = Str::singular($related['type']);
+                    // dd($relationship, $relatedType2);
+                    // $relatedType = Str::plural($related['type']);
+                }
+                // dd($relatedType2);
+
                 return [
-                    $relatedType => [
+                    $relationship => [
                         'links' => [
-                            'self' => route("{$this->type()}.relationships.{$relatedType}", $this->id),
-                            'related' => route("{$this->type()}.{$relatedType}", $this->id),
+                            'self' => route("{$this->type()}.relationships.{$relationship}", $this->id),
+                            'related' => route("{$this->type()}.{$relationship}", $this->id),
                         ],
                         'data' => $this->prepareRelationshipData($relatedType, $relationship),
                     ],

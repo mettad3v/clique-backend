@@ -23,7 +23,7 @@ class ProjectFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
-            // 'user_id' => 1
+            'user_id' => '1f0955c5-7313-4536-8361-caddb186f6b5'
         ];
     }
 }

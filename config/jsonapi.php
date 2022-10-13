@@ -38,7 +38,7 @@ return  [
                 ],
                 [
                     'type' => 'tasks',
-                    'method' => 'tasksAssigned',
+                    'method' => 'tasks',
                 ]
             ]
         ],
@@ -89,6 +89,10 @@ return  [
                 [
                     'type' => 'tasks',
                     'method' => 'tasks',
+                ],
+                [
+                    'type' => 'users',
+                    'method' => 'creator',
                 ]
             ]
         ],
@@ -105,7 +109,7 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:tasks,title',
                     'data.attributes.description' => 'string',
-                    'data.relationships.projects' => 'required',
+                    'data.relationships.project' => 'required',
                     'data.attributes.deadline' => 'date_format:Y-m-d',
                 ],
                 'update' => [
@@ -116,7 +120,7 @@ return  [
                     'data.attributes.group_id' => 'sometimes|required|integer',
                     'data.attributes.deadline' => 'sometimes|date_format:Y-m-d',
                 ],
-                'delete' => []
+
             ],
             'relationships' => [
                 [
@@ -124,8 +128,16 @@ return  [
                     'method' => 'assignees',
                 ],
                 [
+                    'type' => 'users',
+                    'method' => 'creator',
+                ],
+                [
                     'type' => 'projects',
                     'method' => 'project'
+                ],
+                [
+                    'type' => 'groups',
+                    'method' => 'group'
                 ]
             ]
         ],
@@ -136,7 +148,8 @@ return  [
                 'updated_at'
             ],
             'allowedIncludes' => [
-                'tasks'
+                'tasks',
+                'creator'
             ],
             'validationRules' => [
                 'create' => [
@@ -152,6 +165,10 @@ return  [
                 [
                     'type' => 'tasks',
                     'method' => 'tasks',
+                ],
+                [
+                    'type' => 'users',
+                    'method' => 'creator',
                 ]
             ]
         ],

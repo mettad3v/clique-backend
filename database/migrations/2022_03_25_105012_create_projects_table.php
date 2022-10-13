@@ -16,7 +16,7 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->uuid('user_id')->nullable()->constrained('users');
+            $table->uuid('user_id')->constrained('users')->nullable();
             $table->timestamps();
         });
     }

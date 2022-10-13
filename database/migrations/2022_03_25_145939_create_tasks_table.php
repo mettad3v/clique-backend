@@ -18,7 +18,7 @@ class CreateTasksTable extends Migration
             $table->string('title');
             $table->string('unique_id');
             $table->text('description')->nullable();
-            $table->uuid('user_id')->nullable()->constrained('users');
+            $table->uuid('user_id')->constrained('users')->nullable();
             $table->foreignId('project_id')->nullable();
             $table->foreignId('group_id')->nullable();
             $table->foreignId('category_id')->default(1);
