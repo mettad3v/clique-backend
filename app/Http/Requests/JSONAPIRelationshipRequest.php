@@ -30,7 +30,7 @@ class JSONAPIRelationshipRequest extends FormRequest
             'data.id' => [Rule::requiredIf($this->has('data.type')), 'string'],
             'data.type' => [Rule::requiredIf($this->has('data.id')), Rule::in(array_keys(config('jsonapi.resources')))],
             //for collections
-            'data.*.id' => [Rule::requiredIf($this->has('data.0')) | 'string'],
+            'data.*.id' => [Rule::requiredIf($this->has('data.0')), 'string'],
             'data.*.type' =>  [
                 Rule::requiredIf($this->has('data.0')),
                 Rule::in(array_keys(config('jsonapi.resources')))

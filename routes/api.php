@@ -23,6 +23,8 @@ use App\Http\Controllers\ProjectsTasksRelatedController;
 use App\Http\Controllers\ProjectsTasksRelationshipController;
 use App\Http\Controllers\ProjectCreatorRelatedController;
 use App\Http\Controllers\ProjectCreatorRelationshipController;
+use App\Http\Controllers\GroupCreatorRelatedController;
+use App\Http\Controllers\GroupCreatorRelationshipController;
 use App\Http\Controllers\TaskCreatorRelationshipController;
 use App\Http\Controllers\TaskCreatorRelatedController;
 use App\Http\Controllers\UsersProjectsRelationshipController;
@@ -75,7 +77,9 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/groups/{group}/relationships/tasks', [GroupsTasksRelationshipController::class, 'index'])->name('groups.relationships.tasks');
     Route::patch('/groups/{group}/relationships/tasks', [GroupsTasksRelationshipController::class, 'update'])->name('groups.relationships.tasks');
     Route::get('/groups/{group}/tasks', [GroupsTasksRelationshipController::class, 'update'])->name('groups.tasks');
-
+    Route::get('/groups/{group}/creator', [GroupCreatorRelatedController::class, 'index'])->name('groups.creator');
+    Route::patch('/groups/{group}/relationships/creator', [GroupCreatorRelationshipController::class, 'update']);
+    Route::get('/groups/{group}/relationships/creator', [GroupCreatorRelationshipController::class, 'index'])->name('groups.relationships.creator');
 
     Route::apiResource('projects', ProjectController::class);
     Route::get('/projects/{project}/relationships/invitees', [ProjectsUsersRelationshipController::class, 'index'])->name('projects.relationships.invitees');

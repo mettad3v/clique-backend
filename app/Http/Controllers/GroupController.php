@@ -53,7 +53,6 @@ class GroupController extends Controller
     public function show($group)
     {
         return $this->service->fetchResource(Group::class, $group, 'groups');
-
     }
 
     /**
@@ -66,7 +65,6 @@ class GroupController extends Controller
     public function update(JSONAPIRequest $request, Group $group)
     {
         $this->service->updateResource($group, $request->input('data.attributes'));
-
     }
 
     /**
@@ -78,6 +76,5 @@ class GroupController extends Controller
     public function destroy(Group $group)
     {
         return $this->service->deleteResource($group);
-
     }
 }

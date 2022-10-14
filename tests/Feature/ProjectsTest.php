@@ -47,7 +47,7 @@ class ProjectsTest extends TestCase
 
         Sanctum::actingAs($auth);
 
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => $users[0]->id,
@@ -119,7 +119,7 @@ class ProjectsTest extends TestCase
 
         Sanctum::actingAs($auth);
 
-        $this->patchJson('/api/v1/projects/1/relationships/users/creator', [
+        $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 [
                     'id' => (string)$auth->id,
@@ -140,7 +140,7 @@ class ProjectsTest extends TestCase
 
         Sanctum::actingAs($auth);
 
-        $this->patchJson('/api/v1/projects/1/relationships/users/creator', [
+        $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 [
                     'id' => (string)$auth->id,
@@ -895,7 +895,7 @@ class ProjectsTest extends TestCase
     public function test_it_can_update_a_project_from_a_resource_object()
     {
         $user = User::factory()->create();
-        $project = Project::factory()->create();
+        $project = Project::factory(['user_id' => $user->id])->create();
         Sanctum::actingAs($user);
 
         $this->patchJson("/api/v1/projects/$project->id", [

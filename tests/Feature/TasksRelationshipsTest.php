@@ -35,10 +35,10 @@ class TasksRelationshipsTest extends TestCase
                         'project_id' => $project->id
                     ],
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $task->id),
-                                'related' => route('tasks.users', $task->id),
+                                'self' => route('tasks.relationships.assignees', $task->id),
+                                'related' => route('tasks.assignees', $task->id),
                             ],
                             'data' => [
                                 [
@@ -64,7 +64,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/tasks/1/relationships/users', [
+        $this->getJson('/api/v1/tasks/1/relationships/assignees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -95,7 +95,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
                     'id' => (string)$users[4]->id,
@@ -127,7 +127,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
                     'id' => (string)$users[0]->id,
@@ -172,7 +172,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => []
         ], [
             'accept' => 'application/vnd.api+json',
@@ -199,7 +199,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
                     'type' => 'users',
@@ -228,7 +228,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
                     'id' => 5,
@@ -258,7 +258,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
                     'id' => '5',
@@ -289,7 +289,7 @@ class TasksRelationshipsTest extends TestCase
         $task = Task::factory()->create(['project_id' => $project->id]);
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/tasks/1/relationships/users', [
+        $this->getJson('/api/v1/tasks/1/relationships/assignees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -315,8 +315,8 @@ class TasksRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $project->id),
-                                'related' => route('tasks.users', $project->id),
+                                'self' => route('tasks.relationships.assignees', $project->id),
+                                'related' => route('tasks.assignees', $project->id),
                             ],
                             'data' => [
                                 [
@@ -392,11 +392,8 @@ class TasksRelationshipsTest extends TestCase
         $tasks = Task::factory(3)->create();
         $users = User::factory(3)->create();
 
-        $tasks->each(function ($task, $key) use ($users) {
-            if ($key === 0) {
-                $task->assignees()->attach($users->pluck('id'));
-            }
-        });
+        $tasks->each(fn ($task, $key) =>  $key === 0 ?  $task->assignees()->attach($users->pluck('id')) : null);
+
 
         $this->get('/api/v1/tasks?include=assignees', [
             'accept' => 'application/vnd.api+json',
@@ -412,10 +409,10 @@ class TasksRelationshipsTest extends TestCase
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $tasks[0]->id),
-                                'related' => route('tasks.users', $tasks[0]->id),
+                                'self' => route('tasks.relationships.assignees', $tasks[0]->id),
+                                'related' => route('tasks.assignees', $tasks[0]->id),
                             ],
                             'data' => [
                                 [
@@ -443,10 +440,10 @@ class TasksRelationshipsTest extends TestCase
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $tasks[1]->id),
-                                'related' => route('tasks.users', $tasks[1]->id),
+                                'self' => route('tasks.relationships.assignees', $tasks[1]->id),
+                                'related' => route('tasks.assignees', $tasks[1]->id),
                             ],
                         ]
                     ]
@@ -460,10 +457,10 @@ class TasksRelationshipsTest extends TestCase
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $tasks[2]->id),
-                                'related' => route('tasks.users', $tasks[2]->id),
+                                'self' => route('tasks.relationships.assignees', $tasks[2]->id),
+                                'related' => route('tasks.assignees', $tasks[2]->id),
                             ],
                         ]
                     ]
@@ -523,9 +520,9 @@ class TasksRelationshipsTest extends TestCase
         $users = User::factory(3)->create();
         $project = Project::factory()->create();
         $tasks = Task::factory(3)->create();
-        $tasks->each(function ($task) use ($users) {
-            $task->assignees()->attach($users->pluck('id'));
-        });
+
+        $tasks->each(fn ($task) => $task->assignees()->attach($users->pluck('id')));
+
 
         $this->get('/api/v1/tasks?include=assignees', [
             'accept' => 'application/vnd.api+json',
@@ -541,10 +538,10 @@ class TasksRelationshipsTest extends TestCase
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $tasks[0]->id),
-                                'related' => route('tasks.users', $tasks[0]->id),
+                                'self' => route('tasks.relationships.assignees', $tasks[0]->id),
+                                'related' => route('tasks.assignees', $tasks[0]->id),
                             ],
                             'data' => [
                                 [
@@ -571,10 +568,10 @@ class TasksRelationshipsTest extends TestCase
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
                     ], 'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $tasks[1]->id),
-                                'related' => route('tasks.users', $tasks[1]->id),
+                                'self' => route('tasks.relationships.assignees', $tasks[1]->id),
+                                'related' => route('tasks.assignees', $tasks[1]->id),
                             ],
                             'data' => [
                                 [
@@ -602,10 +599,10 @@ class TasksRelationshipsTest extends TestCase
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
-                                'self' => route('tasks.relationships.users', $tasks[2]->id),
-                                'related' => route('tasks.users', $tasks[2]->id),
+                                'self' => route('tasks.relationships.assignees', $tasks[2]->id),
+                                'related' => route('tasks.assignees', $tasks[2]->id),
                             ],
                             'data' => [
                                 [

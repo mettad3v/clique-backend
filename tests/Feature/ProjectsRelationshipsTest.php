@@ -26,12 +26,11 @@ class ProjectsRelationshipsTest extends TestCase
                     'id' => (string)$users[4]->id,
                     'type' => 'users',
                 ],
-
             ]
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(204);
+        ])->assertStatus(403);
     }
 
     public function test_it_returns_a_relationship_to_users_adhering_to_json_api_spec()
@@ -54,10 +53,10 @@ class ProjectsRelationshipsTest extends TestCase
                         'name' => $project->name
                     ],
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $project->id),
-                                'related' => route('projects.users', $project->id),
+                                'self' => route('projects.relationships.invitees', $project->id),
+                                'related' => route('projects.invitees', $project->id),
                             ],
                             'data' => [
                                 [
@@ -82,7 +81,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create();
         $project->invitees()->attach($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1/relationships/users', [
+        $this->getJson('/api/v1/projects/1/relationships/invitees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -112,7 +111,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $auth->id]);
         $project->invitees()->attach($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => (string)$users[4]->id,
@@ -143,7 +142,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $auth->id]);
         $project->invitees()->attach($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => (string)$users[0]->id,
@@ -175,7 +174,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $auth->id]);
         $project->invitees()->attach($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => []
         ], [
             'accept' => 'application/vnd.api+json',
@@ -200,7 +199,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $auth->id]);
         $project->invitees()->saveMany($users);
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => '5',
@@ -230,7 +229,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'type' => 'users',
@@ -258,7 +257,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => 5,
@@ -287,7 +286,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => '5',
@@ -315,7 +314,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/projects/1/relationships/users', [
+        $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
                     'id' => '5',
@@ -345,7 +344,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project = Project::factory()->create(['user_id' => $auth->id]);
         $project->invitees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/projects/1/relationships/users', [
+        $this->getJson('/api/v1/projects/1/relationships/invitees', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -370,8 +369,8 @@ class ProjectsRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $project->id),
-                                'related' => route('projects.users', $project->id),
+                                'self' => route('projects.relationships.invitees', $project->id),
+                                'related' => route('projects.invitees', $project->id),
                             ],
                             'data' => [
                                 [
@@ -467,8 +466,8 @@ class ProjectsRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[0]->id),
-                                'related' => route('projects.users', $projects[0]->id),
+                                'self' => route('projects.relationships.invitees', $projects[0]->id),
+                                'related' => route('projects.invitees', $projects[0]->id),
                             ],
                             'data' => [
                                 [
@@ -498,8 +497,8 @@ class ProjectsRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[1]->id),
-                                'related' => route('projects.users', $projects[1]->id),
+                                'self' => route('projects.relationships.invitees', $projects[1]->id),
+                                'related' => route('projects.invitees', $projects[1]->id),
                             ],
                         ]
                     ]
@@ -515,8 +514,8 @@ class ProjectsRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[2]->id),
-                                'related' => route('projects.users', $projects[2]->id),
+                                'self' => route('projects.relationships.invitees', $projects[2]->id),
+                                'related' => route('projects.invitees', $projects[2]->id),
                             ],
                         ]
                     ]
@@ -594,8 +593,8 @@ class ProjectsRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[0]->id),
-                                'related' => route('projects.users', $projects[0]->id),
+                                'self' => route('projects.relationships.invitees', $projects[0]->id),
+                                'related' => route('projects.invitees', $projects[0]->id),
                             ],
                             'data' => [
                                 [
@@ -624,8 +623,8 @@ class ProjectsRelationshipsTest extends TestCase
                     ], 'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[1]->id),
-                                'related' => route('projects.users', $projects[1]->id),
+                                'self' => route('projects.relationships.invitees', $projects[1]->id),
+                                'related' => route('projects.invitees', $projects[1]->id),
                             ],
                             'data' => [
                                 [
@@ -655,8 +654,8 @@ class ProjectsRelationshipsTest extends TestCase
                     'relationships' => [
                         'users' => [
                             'links' => [
-                                'self' => route('projects.relationships.users', $projects[2]->id),
-                                'related' => route('projects.users', $projects[2]->id),
+                                'self' => route('projects.relationships.invitees', $projects[2]->id),
+                                'related' => route('projects.invitees', $projects[2]->id),
                             ],
                             'data' => [
                                 [

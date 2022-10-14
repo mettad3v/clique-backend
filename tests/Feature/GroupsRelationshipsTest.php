@@ -11,7 +11,7 @@ use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
-class GroupsRelationshipTest extends TestCase
+class GroupsRelationshipsTest extends TestCase
 {
     use DatabaseMigrations;
     /**
@@ -98,7 +98,7 @@ class GroupsRelationshipTest extends TestCase
 
     public function test_it_can_modify_relationships_to_groups_and_add_new_relationships()
     {
-        $this->withoutExceptionHandling();
+        // $this->withoutExceptionHandling();
         $project = Project::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(10)->create();

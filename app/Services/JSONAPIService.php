@@ -53,9 +53,12 @@ class JSONAPIService
             ));
     }
 
-    public function updateResource($model, $attributes)
+    public function updateResource($model, $attributes, $relationships = null)
     {
         $model->update($attributes);
+        if ($relationships) {
+            $this->handleRelationship($relationships, $model);
+        }
         return new JSONAPIResource($model);
     }
 
@@ -76,7 +79,7 @@ class JSONAPIService
     protected function handleRelationship(array $relationships, $model): void
     {
         foreach ($relationships as $relationshipName => $contents) {
-            // $relationshipName = Str::singular($relationshipName);
+
             if ($model->$relationshipName() instanceof BelongsTo) {
                 $this->updateToOneRelationship(
                     $model,

@@ -88,7 +88,7 @@ class TasksTest extends TestCase
         $ids = $user->pluck('id');
         $project->invitees()->attach($ids);
 
-        $this->patchJson('/api/v1/tasks/1/relationships/users', [
+        $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
                     'id' => (string)$user[1]->id,
@@ -114,30 +114,30 @@ class TasksTest extends TestCase
     {
         $auth = User::factory()->create();
         $project = Project::factory()->create();
-        $user = User::factory(3)->create();
+        $users = User::factory(3)->create();
         $task = Task::factory()->create();
 
         Sanctum::actingAs($auth);
-        $ids = $user->pluck('id');
+        $ids = $users->pluck('id');
         $project->invitees()->attach($ids);
 
         $task->assignees()->attach($ids);
 
-        $this->patchJson('/api/v1/tasks/1/relationships/users/supervisor', [
+        $this->patchJson('/api/v1/tasks/1/relationships/supervisor', [
             'data' => [
                 [
-                    'id' => '2',
+                    'id' => $users[1]->id,
                     'type' => 'users'
                 ],
                 [
-                    'id' => '3',
+                    'id' => $users[2]->id,
                     'type' => 'users'
                 ]
             ]
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
-        ])->assertStatus(200);
+        ])->assertStatus(204);
     }
 
     public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
@@ -492,8 +492,8 @@ class TasksTest extends TestCase
                     'relationships' => [
                         'project' => [
                             'links' => [
-                                'self' => route('tasks.relationships.project', '2'),
-                                'related' => route('tasks.project', '2'),
+                                'self' => route('tasks.relationships.project', $task->id),
+                                'related' => route('tasks.project', $task->id),
                             ],
                             'data' => [
                                 'id' => $anotherProject->id,
@@ -502,8 +502,8 @@ class TasksTest extends TestCase
                         ],
                         'creator' => [
                             'links' => [
-                                'self' => route('tasks.relationships.creator', $anotherUser->id),
-                                'related' => route('tasks.creator', $anotherUser->id),
+                                'self' => route('tasks.relationships.creator', $task->id),
+                                'related' => route('tasks.creator', $task->id),
                             ],
                             'data' => [
                                 'id' => $anotherUser->id,

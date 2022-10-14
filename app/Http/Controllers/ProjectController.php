@@ -71,7 +71,7 @@ class ProjectController extends Controller
         if ($request->user()->cannot('update', $project)) {
             abort(403, 'Access Denied');
         }
-        return $this->service->updateResource($project, $request->input('data.attributes'));
+        return $this->service->updateResource($project, $request->input('data.attributes'), $request->input('data.relationships'));
     }
 
     /**

@@ -56,7 +56,7 @@ class TaskUsersRelationshipController extends Controller
         $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
         Notification::send($new_supervisors, new NotifyNewSupervisors(auth()->user(), $task));
 
-        return response(null, 200);
+        return response(null, 204);
     }
 
     /**
@@ -75,6 +75,6 @@ class TaskUsersRelationshipController extends Controller
         $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
         Notification::send($new_supervisors, new NotifyRemovedSupervisors(auth()->user(), $task));
 
-        return response(null, 200);
+        return response(null, 204);
     }
 }

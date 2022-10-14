@@ -116,7 +116,7 @@ class TaskController extends Controller
         if ($request->user()->cannot('update', $task)) {
             abort(403, 'Access Denied');
         }
-        return $this->service->updateResource($task, $request->input('data.attributes'));
+        return $this->service->updateResource($task, $request->input('data.attributes'),  $request->input('data.relationships'));
     }
 
     /**
