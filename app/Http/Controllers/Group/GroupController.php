@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Group;
 
-use App\Models\Group;
-use App\Services\JSONAPIService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
+use App\Models\Group;
+use App\Services\JSONAPIService;
 
 class GroupController extends Controller
 {
@@ -15,6 +15,7 @@ class GroupController extends Controller
     {
         $this->service = $service;
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -22,7 +23,6 @@ class GroupController extends Controller
      */
     public function index()
     {
-
         return $this->service->fetchResources(Group::class, 'groups');
     }
 
@@ -34,7 +34,6 @@ class GroupController extends Controller
      */
     public function store(JSONAPIRequest $request)
     {
-
         return $this->service->createResource(Group::class, [
             'title' => $request->input('data.attributes.title'),
             'user_id' => auth()->user()->id,

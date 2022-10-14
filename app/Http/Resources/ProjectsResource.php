@@ -15,7 +15,7 @@ class ProjectsResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'type' => 'projects',
             'attributes' => [
                 'name' => $this->name,
@@ -29,9 +29,9 @@ class ProjectsResource extends JsonResource
                         'self' => route('projects.relationships.users', $this->id),
                         'related' => route('projects.users', $this->id),
                     ],
-                    'data' => InviteesIdentifierResource::collection($this->whenLoaded('invitees'))
+                    'data' => InviteesIdentifierResource::collection($this->whenLoaded('invitees')),
                 ],
-            ]
+            ],
 
         ];
     }
@@ -58,6 +58,7 @@ class ProjectsResource extends JsonResource
         if ($this->included($request)->isNotEmpty()) {
             $with['included'] = $this->included($request);
         }
+
         return $with;
     }
 }

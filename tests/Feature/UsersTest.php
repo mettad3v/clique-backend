@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Task;
 use App\Models\User;
-use Laravel\Sanctum\Sanctum;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
@@ -22,14 +22,14 @@ class UsersTest extends TestCase
 
         $this->getJson("/api/v1/users/$user->id", [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])
             ->assertStatus(200)
             ->assertJson([
-                "data" => [
-                    "id" => $user->id,
-                    "type" => "users",
-                    "attributes" => [
+                'data' => [
+                    'id' => $user->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $user->name,
                         'email' => $user->email,
                         'username' => $user->username,
@@ -37,9 +37,9 @@ class UsersTest extends TestCase
                         'profile_avatar' => $user->profile_avatar,
                         'status' => $user->status,
                         'created_at' => $user->created_at->toJSON(),
-                        'updated_at' => $user->updated_at->toJSON()
-                    ]
-                ]
+                        'updated_at' => $user->updated_at->toJSON(),
+                    ],
+                ],
             ]);
     }
 
@@ -50,7 +50,7 @@ class UsersTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/users', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -62,7 +62,7 @@ class UsersTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/users?page[size]=5&page[number]=1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -84,20 +84,17 @@ class UsersTest extends TestCase
                     'email' => 'janet@doe.com',
                     // 'username' => 'janet',
                     'status' => 1,
-                    'profile_avatar' => $file
-                ]
-            ]
+                    'profile_avatar' => $file,
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
-            'enctype' => 'multipart/form-data'
+            'enctype' => 'multipart/form-data',
         ])->assertStatus(200);
 
-
         // Storage::disk('avatars')->assertExists($file->hashName());
-
     }
-
 
     public function test_it_can_create_a_user_from_a_resource_object()
     {
@@ -109,14 +106,14 @@ class UsersTest extends TestCase
                 'type' => 'users',
                 'attributes' => [
                     'name' => 'John Doe',
-                    'email' => "john@doe.com",
-                    'password' => "secret",
-                    'password_confirmation' => "secret"
-                ]
-            ]
+                    'email' => 'john@doe.com',
+                    'password' => 'secret',
+                    'password_confirmation' => 'secret',
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -135,8 +132,6 @@ class UsersTest extends TestCase
             'name' => $user->title,
         ]);
     }
-
-
 
     // public function test_it_can_register_a_user()
     // {
@@ -575,6 +570,4 @@ class UsersTest extends TestCase
     //         'title' => $task->title,
     //     ]);
     // }
-
-
 }

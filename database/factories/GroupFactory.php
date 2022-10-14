@@ -24,7 +24,7 @@ class GroupFactory extends Factory
         return [
             'title' => $this->faker->word(),
             'project_id' => 1,
-            'user_id' => 1
+            'user_id' => 1,
         ];
     }
 }

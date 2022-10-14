@@ -4,14 +4,15 @@ namespace App\Notifications;
 
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ProjectDeleteNotification extends Notification
 {
     use Queueable;
+
     public $project;
+
     /**
      * Create a new notification instance.
      *
@@ -57,9 +58,9 @@ class ProjectDeleteNotification extends Notification
     {
         return [
             'data' => [
-                'message' => 'Project: '. $this->project->name . 'was deleted by ' . $this->project->creator->name,
-                'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans()
-            ]
+                'message' => 'Project: '.$this->project->name.'was deleted by '.$this->project->creator->name,
+                'received_at' => Carbon::parse($notifiable->created_at)->diffForHumans(),
+            ],
         ];
     }
 }

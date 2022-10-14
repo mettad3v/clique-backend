@@ -3,15 +3,15 @@
 namespace App\Exceptions;
 
 use Exception;
-use Throwable;
-use Illuminate\Support\Str;
-use Illuminate\Support\Collection;
-use Illuminate\Database\QueryException;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -55,11 +55,12 @@ class Handler extends ExceptionHandler
                     'title' => 'Validation Error',
                     'details' => $error[0],
                     'source' => [
-                        'pointer' => '/' . str_replace('.', '/', $key),
-                    ]
+                        'pointer' => '/'.str_replace('.', '/', $key),
+                    ],
                 ];
             })
             ->values();
+
         return response()->json([
             'errors' => $errors,
         ], $exception->status);
@@ -72,8 +73,8 @@ class Handler extends ExceptionHandler
                 [
                     'title' => Str::title(Str::snake(class_basename($e), ' ')),
                     'details' => $e->getMessage(),
-                ]
-            ]
+                ],
+            ],
         ], $this->isHttpException($e) ? $e->getStatusCode() : 500);
     }
 
@@ -84,9 +85,10 @@ class Handler extends ExceptionHandler
                 [
                     'title' => 'Unauthenticated',
                     'details' => 'You are not authenticated',
-                ]
+                ],
             ]], 403);
         }
+
         return redirect()->guest($exception->redirectTo() ?? route('login'));
     }
 
@@ -97,6 +99,7 @@ class Handler extends ExceptionHandler
         ) {
             $exception = new NotFoundHttpException('Given resource not found');
         }
+
         return parent::render($request, $exception);
     }
 }

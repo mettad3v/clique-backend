@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Task;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\JSONAPIRelationshipRequest;
 use App\Models\Task;
 use App\Models\User;
-use App\Services\JSONAPIService;
-use App\Http\Controllers\Controller;
 use App\Notifications\NotifyNewSupervisors;
-use Illuminate\Support\Facades\Notification;
 use App\Notifications\NotifyRemovedSupervisors;
-use App\Http\Requests\JSONAPIRelationshipRequest;
+use App\Services\JSONAPIService;
+use Illuminate\Support\Facades\Notification;
 
 class TaskUsersRelationshipController extends Controller
 {
     private $service;
+
     public function __construct(JSONAPIService $service)
     {
         $this->service = $service;
@@ -26,8 +27,8 @@ class TaskUsersRelationshipController extends Controller
 
     /**
      * Assign users to a task
-     * 
-     * @param \App\Models\Task $task
+     *
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function update(JSONAPIRelationshipRequest $request, Task $task)
@@ -38,18 +39,16 @@ class TaskUsersRelationshipController extends Controller
         return $this->service->updateManyToManyRelationships($task, 'assignees', $request->input('data.*.id'));
     }
 
-
     /**
      * Make assigned users supervisor
-     * 
-     * @param \App\Models\Task $task
+     *
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function supervisor(JSONAPIRelationshipRequest $request, Task $task)
     {
-
         $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
-            'is_supervisor' => 1
+            'is_supervisor' => 1,
         ]);
 
         $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
@@ -60,15 +59,14 @@ class TaskUsersRelationshipController extends Controller
 
     /**
      * Make assigned users supervisor
-     * 
-     * @param \App\Models\Task $task
+     *
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function remove_supervisor(JSONAPIRelationshipRequest $request, Task $task)
     {
-
         $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
-            'is_supervisor' => 0
+            'is_supervisor' => 0,
         ]);
 
         $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();

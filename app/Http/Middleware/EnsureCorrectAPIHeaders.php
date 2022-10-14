@@ -25,15 +25,16 @@ class EnsureCorrectAPIHeaders
         if ($request->headers->has('content-type') || $request->isMethod('POST') || $request->isMethod('PATCH')) {
             if ($request->header('content-type') !== 'application/vnd.api+json') {
                 return $this->addCorrectContentType(new Response('', 415));
-
             }
         }
+
         return $this->addCorrectContentType($next($request));
     }
 
     private function addCorrectContentType(BaseResponse $response)
     {
         $response->headers->set('content-type', 'application/vnd.api+json');
+
         return $response;
     }
 }

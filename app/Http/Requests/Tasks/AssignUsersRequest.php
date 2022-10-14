@@ -28,7 +28,7 @@ class AssignUsersRequest extends FormRequest
             'data.type' => 'required|in:users',
             'data.attributes' => 'required|array',
             'data.attributes.id' => 'required|array',
-            'data.attributes.user_id' => 'required|integer'
+            'data.attributes.user_id' => 'required|integer',
         ];
     }
 }

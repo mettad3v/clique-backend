@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Project;
-use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Notification;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Notification;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class ProjectsTest extends TestCase
 {
@@ -23,19 +22,19 @@ class ProjectsTest extends TestCase
 
         $this->getJson('/api/v1/projects/1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])
             ->assertStatus(200)
             ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $project->name,
                         'created_at' => $project->created_at->toJSON(),
                         'updated_at' => $project->updated_at->toJSON(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
@@ -51,20 +50,20 @@ class ProjectsTest extends TestCase
             'data' => [
                 [
                     'id' => $users[0]->id,
-                    'type' => 'users'
+                    'type' => 'users',
                 ],
                 [
                     'id' => $users[1]->id,
-                    'type' => 'users'
+                    'type' => 'users',
                 ],
                 [
                     'id' => $users[2]->id,
-                    'type' => 'users'
-                ]
-            ]
+                    'type' => 'users',
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
     }
 
@@ -122,13 +121,13 @@ class ProjectsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 [
-                    'id' => (string)$auth->id,
-                    'type' => 'users'
+                    'id' => (string) $auth->id,
+                    'type' => 'users',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
     }
 
@@ -143,13 +142,13 @@ class ProjectsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 [
-                    'id' => (string)$auth->id,
-                    'type' => 'users'
+                    'id' => (string) $auth->id,
+                    'type' => 'users',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
 
         Notification::fake();
@@ -159,7 +158,6 @@ class ProjectsTest extends TestCase
         );
     }
 
-
     public function test_It_returns_all_projects_as_a_collection_of_resource_objects()
     {
         $projects = Project::factory(3)->create();
@@ -168,7 +166,7 @@ class ProjectsTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/projects', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -180,53 +178,53 @@ class ProjectsTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/projects?page[size]=5&page[number]=1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[0]->name,
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[1]->name,
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[2]->name,
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '4',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '4',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[3]->name,
                         'created_at' => $projects[3]->created_at->toJSON(),
                         'updated_at' => $projects[3]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '5',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '5',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[4]->name,
                         'created_at' => $projects[4]->created_at->toJSON(),
                         'updated_at' => $projects[4]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
             ],
             'links' => [
@@ -234,7 +232,7 @@ class ProjectsTest extends TestCase
                 'last' => route('projects.index', ['page[size]' => 5, 'page[number]' => 2]),
                 'prev' => null,
                 'next' => route('projects.index', ['page[size]' => 5, 'page[number]' => 2]),
-            ]
+            ],
         ]);
     }
 
@@ -256,35 +254,35 @@ class ProjectsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Anna',
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Bertram',
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Claus',
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -306,35 +304,35 @@ class ProjectsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Claus',
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Bertram',
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Anna',
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -363,35 +361,35 @@ class ProjectsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Anna',
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Claus',
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Bertram',
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -420,38 +418,37 @@ class ProjectsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Bertram',
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Anna',
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'Claus',
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
-
 
     public function test_it_can_create_a_project_from_a_resource_object()
     {
@@ -463,23 +460,23 @@ class ProjectsTest extends TestCase
                 'type' => 'projects',
                 'attributes' => [
                     'name' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(201)
             ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => 'John Doe',
                         'user_id' => $user->id,
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                    ]
-                ]
+                    ],
+                ],
             ])->assertHeader('Location', url('/api/v1/projects/1'));
 
         $this->assertDatabaseHas('projects', [
@@ -498,11 +495,11 @@ class ProjectsTest extends TestCase
                 'type' => '',
                 'attributes' => [
                     'name' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -510,14 +507,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.type field is required.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('projects', [
             'id' => 1,
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ]);
     }
 
@@ -533,11 +530,11 @@ class ProjectsTest extends TestCase
                 'type' => '',
                 'attributes' => [
                     'name' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -545,14 +542,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.type field is required.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('projects', [
             'id' => 1,
-            'name' => $project->name
+            'name' => $project->name,
         ]);
     }
 
@@ -566,11 +563,11 @@ class ProjectsTest extends TestCase
                 'type' => 'project',
                 'attributes' => [
                     'name' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -578,14 +575,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The selected data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('projects', [
             'id' => 1,
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ]);
     }
 
@@ -601,11 +598,11 @@ class ProjectsTest extends TestCase
                 'type' => 'project',
                 'attributes' => [
                     'name' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -613,14 +610,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The selected data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('projects', [
             'id' => 1,
-            'name' => $project->name
+            'name' => $project->name,
         ]);
     }
 
@@ -636,10 +633,10 @@ class ProjectsTest extends TestCase
                     'name' => '',
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -647,14 +644,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes.name field is required.',
                     'source' => [
                         'pointer' => '/data/attributes/name',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('projects', [
             'id' => 1,
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ]);
     }
 
@@ -669,10 +666,10 @@ class ProjectsTest extends TestCase
                 'id' => '1',
                 'type' => 'projects',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -680,14 +677,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes field is required.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('projects', [
             'id' => 1,
-            'name' => $project->name
+            'name' => $project->name,
         ]);
     }
 
@@ -703,10 +700,10 @@ class ProjectsTest extends TestCase
                     'name' => 47,
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -714,14 +711,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes.name must be a string.',
                     'source' => [
                         'pointer' => '/data/attributes/name',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('projects', [
             'id' => 1,
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ]);
     }
 
@@ -733,16 +730,16 @@ class ProjectsTest extends TestCase
 
         $this->patchJson('/api/v1/projects/1', [
             'data' => [
-                'id' =>  '1',
+                'id' => '1',
                 'type' => 'projects',
                 'attributes' => [
                     'name' => 47,
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -750,14 +747,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes.name must be a string.',
                     'source' => [
                         'pointer' => '/data/attributes/name',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('projects', [
             'id' => 1,
-            'name' => $project->name
+            'name' => $project->name,
         ]);
     }
 
@@ -773,12 +770,12 @@ class ProjectsTest extends TestCase
                 'type' => 'projects',
                 'attributes' => [
                     'title' => 'Jane Doe',
-                ]
+                ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -786,16 +783,17 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.id must be a string.',
                     'source' => [
                         'pointer' => '/data/id',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('projects', [
             'id' => 1,
-            'name' => $project->name
+            'name' => $project->name,
         ]);
     }
+
     public function test_it_validates_that_the_attributes_member_has_been_given_when_creating_a_project()
     {
         $user = User::factory()->create();
@@ -803,11 +801,11 @@ class ProjectsTest extends TestCase
 
         $this->postJson('/api/v1/projects', [
             'data' => [
-                'type' => 'projects'
-            ]
+                'type' => 'projects',
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -815,14 +813,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes field is required.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('projects', [
             'id' => 1,
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ]);
     }
 
@@ -834,12 +832,12 @@ class ProjectsTest extends TestCase
         $this->postJson('/api/v1/projects', [
             'data' => [
                 'type' => 'projects',
-                'attributes' => 'not an object'
+                'attributes' => 'not an object',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -847,14 +845,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes must be an array.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('projects', [
             'id' => 1,
-            'name' => 'John Doe'
+            'name' => 'John Doe',
         ]);
     }
 
@@ -870,10 +868,10 @@ class ProjectsTest extends TestCase
                 'type' => 'projects',
                 'attributes' => 'not an object',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -881,14 +879,14 @@ class ProjectsTest extends TestCase
                     'details' => 'The data.attributes must be an array.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('projects', [
             'id' => 1,
-            'name' => $project->name
+            'name' => $project->name,
         ]);
     }
 
@@ -903,12 +901,12 @@ class ProjectsTest extends TestCase
                 'id' => '1',
                 'type' => 'projects',
                 'attributes' => [
-                    'name' => 'Jane Doe'
-                ]
-            ]
+                    'name' => 'Jane Doe',
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)
             ->assertJson([
                 'data' => [
@@ -919,7 +917,7 @@ class ProjectsTest extends TestCase
                         // 'created_at' => now()->setMilliseconds(0)->toJSON(),
                         // 'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ],
-                ]
+                ],
             ]);
         $this->assertDatabaseHas('projects', [
             'id' => 1,
@@ -939,11 +937,11 @@ class ProjectsTest extends TestCase
                 'type' => 'projects',
                 'attributes' => [
                     'name' => 'Jane Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)
             ->assertJson([
                 'errors' => [
@@ -952,9 +950,9 @@ class ProjectsTest extends TestCase
                         'details' => 'The data.id field is required.',
                         'source' => [
                             'pointer' => '/data/id',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
         $this->assertDatabaseHas('projects', [
             'id' => 1,

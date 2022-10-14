@@ -19,9 +19,8 @@ class CategoriesTableSeeder extends Seeder
         $allowed = ['backlog', 'todo', 'blocked', 'progress', 'ready', 'done', 'others', 'wontdo', 'blocking'];
 
         foreach ($allowed as $title) {
-            
             Category::create([
-                'title' => $title
+                'title' => $title,
             ]);
         }
     }

@@ -16,7 +16,7 @@ class TasksResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'type' => 'tasks',
             'attributes' => [
                 'title' => $this->title,
@@ -28,7 +28,7 @@ class TasksResource extends JsonResource
                 // 'category_id' => $this->category_id,
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,
-            ]
+            ],
         ];
     }
 }

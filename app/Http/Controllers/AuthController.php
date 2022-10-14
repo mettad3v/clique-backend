@@ -14,15 +14,14 @@ class AuthController extends Controller
 
     public function register(JSONAPIRequest $request)
     {
-
         $user = User::create([
             'name' => $request->input('data.attributes.name'),
             'password' => bcrypt($request->input('data.attributes.password')),
-            'email' => $request->input('data.attributes.email')
+            'email' => $request->input('data.attributes.email'),
         ]);
 
         return $this->success([
-            'token' => $user->createToken('API Token')->plainTextToken
+            'token' => $user->createToken('API Token')->plainTextToken,
         ]);
     }
 
@@ -30,15 +29,15 @@ class AuthController extends Controller
     {
         $attr = $request->validate([
             'email' => 'required|string|email|',
-            'password' => 'required|string|min:6'
+            'password' => 'required|string|min:6',
         ]);
 
-        if (!Auth::attempt($attr)) {
+        if (! Auth::attempt($attr)) {
             return $this->error('Credentials not match', 401);
         }
 
         return $this->success([
-            'token' => auth()->user()->createToken('API Token')->plainTextToken
+            'token' => auth()->user()->createToken('API Token')->plainTextToken,
         ]);
     }
 
@@ -47,7 +46,7 @@ class AuthController extends Controller
         auth()->user()->tokens()->delete();
 
         return [
-            'message' => 'Tokens Revoked'
+            'message' => 'Tokens Revoked',
         ];
     }
 }

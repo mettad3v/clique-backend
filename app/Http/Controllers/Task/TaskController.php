@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Task;
 
-use App\Models\Task;
-use App\Models\User;
-use App\Models\Project;
-use Illuminate\Http\Request;
-use App\Services\JSONAPIService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
+use App\Http\Requests\Tasks\AssignUsersRequest;
+use App\Models\Project;
+use App\Models\Task;
+use App\Models\User;
 use App\Notifications\NotifyAssignedUsers;
 use App\Notifications\NotifyNewSupervisors;
+use App\Services\JSONAPIService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
-use App\Http\Requests\Tasks\AssignUsersRequest;
 
 class TaskController extends Controller
 {
@@ -23,6 +23,7 @@ class TaskController extends Controller
         $this->service = $service;
         // $this->authorizeResource(Task::class, 'task');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -33,7 +34,6 @@ class TaskController extends Controller
         return $this->service->fetchResources(Task::class, 'tasks');
     }
 
-
     /**
      * Store a newly created resource in storage.
      *
@@ -42,15 +42,14 @@ class TaskController extends Controller
      */
     public function store(JSONAPIRequest $request)
     {
-
-        $unique_id = Project::findOrFail((int)$request->input('data.relationships.project.data.id'))->tasks->count() + 1;
+        $unique_id = Project::findOrFail((int) $request->input('data.relationships.project.data.id'))->tasks->count() + 1;
 
         return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),
             'description' => $request->input('data.attributes.description'),
             'deadline' => $request->input('data.attributes.deadline'),
             'user_id' => auth()->user()->id,
-            'unique_id' => 'T-' . (string)$unique_id,
+            'unique_id' => 'T-'.(string) $unique_id,
 
         ], $request->input('data.relationships'));
     }
@@ -63,19 +62,17 @@ class TaskController extends Controller
      */
     public function show($task)
     {
-
         return $this->service->fetchResource(Task::class, $task, 'tasks');
     }
 
     /**
      * Assign users to a task
-     * 
-     * @param \App\Models\Task $task
+     *
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function assign(AssignUsersRequest $request, Task $task)
     {
-
         $task->assignees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
         $assigned_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
@@ -86,15 +83,14 @@ class TaskController extends Controller
 
     /**
      * Make assigned users supervisor
-     * 
-     * @param \App\Models\Task $task
+     *
+     * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function supervisor(AssignUsersRequest $request, Task $task)
     {
-
         $task->assignees()->updateExistingPivot($request->input('data.attributes.id'), [
-            'is_supervisor' => 1
+            'is_supervisor' => 1,
         ]);
 
         $new_supervisors = User::whereIn('id', $request->input('data.attributes.id'))->get();
@@ -115,7 +111,8 @@ class TaskController extends Controller
         if ($request->user()->cannot('update', $task)) {
             abort(403, 'Access Denied');
         }
-        return $this->service->updateResource($task, $request->input('data.attributes'),  $request->input('data.relationships'));
+
+        return $this->service->updateResource($task, $request->input('data.attributes'), $request->input('data.relationships'));
     }
 
     /**
@@ -129,6 +126,7 @@ class TaskController extends Controller
         if ($request->user()->cannot('delete', $task)) {
             abort(403, 'Access Denied');
         }
+
         return $this->service->deleteResource($task);
     }
 }

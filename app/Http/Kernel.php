@@ -43,7 +43,7 @@ class Kernel extends HttpKernel
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            'json.api.headers'
+            'json.api.headers',
         ],
     ];
 
@@ -65,6 +65,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
         'json.api.headers' => \App\Http\Middleware\EnsureCorrectAPIHeaders::class,
-        'invite' => \App\Http\Middleware\EnsureProjectCreatorCanInvite::class
+        'invite' => \App\Http\Middleware\EnsureProjectCreatorCanInvite::class,
     ];
 }

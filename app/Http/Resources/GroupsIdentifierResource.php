@@ -15,7 +15,7 @@ class GroupsIdentifierResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'type' => 'tasks',
         ];
     }

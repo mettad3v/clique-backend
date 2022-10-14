@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\JSONAPIService;
-use App\Http\Controllers\Controller;
-
 
 class UsersProjectsRelationshipController extends Controller
 {

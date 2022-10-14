@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Resources\MissingValue;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\MissingValue;
+use Illuminate\Support\Str;
 
 class JSONAPIResource extends JsonResource
 {
@@ -19,10 +19,10 @@ class JSONAPIResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'type' => $this->type(),
             'attributes' => $this->allowedAttributes(),
-            'relationships' => $this->prepareRelationships()
+            'relationships' => $this->prepareRelationships(),
         ];
     }
 
@@ -65,6 +65,7 @@ class JSONAPIResource extends JsonResource
         if ($this->$relationship() instanceof BelongsTo) {
             return new JSONAPIIdentifierResource($this->$relationship);
         }
+
         return JSONAPIIdentifierResource::collection($this->$relationship);
     }
 
@@ -74,6 +75,7 @@ class JSONAPIResource extends JsonResource
         if ($this->included($request)->isNotEmpty()) {
             $with['included'] = $this->included($request);
         }
+
         return $with;
     }
 
@@ -98,6 +100,7 @@ class JSONAPIResource extends JsonResource
                 if ($modelOrCollection instanceof Model) {
                     $modelOrCollection = collect([new JSONAPIResource($modelOrCollection)]);
                 }
+
                 return JSONAPIResource::collection($modelOrCollection);
             });
     }

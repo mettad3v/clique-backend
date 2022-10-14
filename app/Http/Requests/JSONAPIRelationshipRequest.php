@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class JSONAPIRelationshipRequest extends FormRequest
 {
@@ -31,9 +31,9 @@ class JSONAPIRelationshipRequest extends FormRequest
             'data.type' => [Rule::requiredIf($this->has('data.id')), Rule::in(array_keys(config('jsonapi.resources')))],
             //for collections
             'data.*.id' => [Rule::requiredIf($this->has('data.0')), 'string'],
-            'data.*.type' =>  [
+            'data.*.type' => [
                 Rule::requiredIf($this->has('data.0')),
-                Rule::in(array_keys(config('jsonapi.resources')))
+                Rule::in(array_keys(config('jsonapi.resources'))),
             ],
         ];
     }

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Project;
 
-
+use App\Http\Controllers\Controller;
+use App\Http\Requests\JSONAPIRelationshipRequest;
 use App\Models\Project;
 use App\Services\JSONAPIService;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\JSONAPIRelationshipRequest;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectsUsersRelationshipController extends Controller
 {
     private $service;
+
     public function __construct(JSONAPIService $service)
     {
         $this->service = $service;

@@ -2,18 +2,17 @@
 
 namespace App\Notifications;
 
-use Carbon\Carbon;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class NotifyAssignedUsers extends Notification implements ShouldQueue
 {
     use Queueable;
 
     public $user;
+
     public $task;
 
     /**
@@ -60,12 +59,11 @@ class NotifyAssignedUsers extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
-
         return [
             'data' => [
-                'message' => $this->user->name . ' assigned ' . $this->task->title . ' to you',
-                'received_at' => $notifiable->created_at 
-            ]
+                'message' => $this->user->name.' assigned '.$this->task->title.' to you',
+                'received_at' => $notifiable->created_at,
+            ],
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ProjectsCollection extends ResourceCollection
@@ -17,9 +16,7 @@ class ProjectsCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'included' => $this->mergeIncludedRelations($request)
+            'included' => $this->mergeIncludedRelations($request),
         ];
     }
-
-    
 }

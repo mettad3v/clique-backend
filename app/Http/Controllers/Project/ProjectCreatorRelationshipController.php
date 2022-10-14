@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Project;
 
-use App\Models\User;
-use App\Models\Project;
-use App\Services\JSONAPIService;
 use App\Http\Controllers\Controller;
-use App\Notifications\ProjectOwnerShipChange;
 use App\Http\Requests\JSONAPIRelationshipRequest;
+use App\Models\Project;
+use App\Models\User;
+use App\Notifications\ProjectOwnerShipChange;
+use App\Services\JSONAPIService;
 
 class ProjectCreatorRelationshipController extends Controller
 {
     private $service;
+
     public function __construct(JSONAPIService $service)
     {
         $this->service = $service;
@@ -32,6 +33,7 @@ class ProjectCreatorRelationshipController extends Controller
         if ($user) {
             $user->notify(new ProjectOwnerShipChange($project));
         }
+
         return $this->service->updateToOneRelationship($project, 'creator', $request->input('data.id'));
     }
 }

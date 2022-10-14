@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Group;
 use App\Models\Project;
-use Laravel\Sanctum\Sanctum;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class GroupsTest extends TestCase
 {
@@ -23,7 +23,7 @@ class GroupsTest extends TestCase
 
         $this->getJson('/api/v1/groups/1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -36,7 +36,7 @@ class GroupsTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/groups', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -49,53 +49,53 @@ class GroupsTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/groups?page[size]=5&page[number]=1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => $groups[0]->title,
                         'created_at' => $groups[0]->created_at->toJSON(),
                         'updated_at' => $groups[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => $groups[1]->title,
                         'created_at' => $groups[1]->created_at->toJSON(),
                         'updated_at' => $groups[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => $groups[2]->title,
                         'created_at' => $groups[2]->created_at->toJSON(),
                         'updated_at' => $groups[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '4',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '4',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => $groups[3]->title,
                         'created_at' => $groups[3]->created_at->toJSON(),
                         'updated_at' => $groups[3]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '5',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '5',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => $groups[4]->title,
                         'created_at' => $groups[4]->created_at->toJSON(),
                         'updated_at' => $groups[4]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
             ],
             'links' => [
@@ -103,7 +103,7 @@ class GroupsTest extends TestCase
                 'last' => route('groups.index', ['page[size]' => 5, 'page[number]' => 2]),
                 'prev' => null,
                 'next' => route('groups.index', ['page[size]' => 5, 'page[number]' => 2]),
-            ]
+            ],
         ]);
     }
 
@@ -125,35 +125,35 @@ class GroupsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '3',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $groups[2]->created_at->toJSON(),
                         'updated_at' => $groups[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $groups[0]->created_at->toJSON(),
                         'updated_at' => $groups[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $groups[1]->created_at->toJSON(),
                         'updated_at' => $groups[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -175,40 +175,39 @@ class GroupsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '2',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $groups[1]->created_at->toJSON(),
                         'updated_at' => $groups[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $groups[0]->created_at->toJSON(),
                         'updated_at' => $groups[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $groups[2]->created_at->toJSON(),
                         'updated_at' => $groups[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
     public function test_it_can_sort_groups_by_multiple_sort_params_through_a_sort_query_parameter()
-
     {
         $project = Project::factory()->create();
         $user = User::factory()->create();
@@ -234,35 +233,35 @@ class GroupsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '3',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $groups[2]->created_at->toJSON(),
                         'updated_at' => $groups[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $groups[1]->created_at->toJSON(),
                         'updated_at' => $groups[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $groups[0]->created_at->toJSON(),
                         'updated_at' => $groups[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -292,38 +291,37 @@ class GroupsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $groups[0]->created_at->toJSON(),
                         'updated_at' => $groups[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $groups[2]->created_at->toJSON(),
                         'updated_at' => $groups[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "groups",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'groups',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $groups[1]->created_at->toJSON(),
                         'updated_at' => $groups[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
-
 
     public function test_it_can_create_a_group_from_a_resource_object()
     {
@@ -336,26 +334,26 @@ class GroupsTest extends TestCase
             'data' => [
                 'type' => 'groups',
                 'attributes' => [
-                    'title' => 'test'
+                    'title' => 'test',
                 ],
                 'relationships' => [
                     'project' => [
                         'data' => [
-                            'id' => (string)$project->id,
-                            'type' => 'projects'
-                        ]
+                            'id' => (string) $project->id,
+                            'type' => 'projects',
+                        ],
                     ],
                     'creator' => [
                         'data' => [
-                            'id' => (string)$user->id,
-                            'type' => 'users'
-                        ]
-                    ]
-                ]
-            ]
+                            'id' => (string) $user->id,
+                            'type' => 'users',
+                        ],
+                    ],
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(201)
             ->assertHeader('Location', url('/api/v1/groups/1'));
 
@@ -375,11 +373,11 @@ class GroupsTest extends TestCase
                 'type' => '',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -387,14 +385,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.type field is required.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('groups', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -411,11 +409,11 @@ class GroupsTest extends TestCase
                 'type' => '',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -423,14 +421,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.type field is required.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('groups', [
             'id' => 1,
-            'title' => $group->title
+            'title' => $group->title,
         ]);
     }
 
@@ -444,11 +442,11 @@ class GroupsTest extends TestCase
                 'type' => 'group',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -456,14 +454,14 @@ class GroupsTest extends TestCase
                     'details' => 'The selected data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('groups', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -480,11 +478,11 @@ class GroupsTest extends TestCase
                 'type' => 'group',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -492,14 +490,14 @@ class GroupsTest extends TestCase
                     'details' => 'The selected data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('groups', [
             'id' => 1,
-            'title' => $group->title
+            'title' => $group->title,
         ]);
     }
 
@@ -515,10 +513,10 @@ class GroupsTest extends TestCase
                     'title' => '',
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -526,14 +524,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes.title field is required.',
                     'source' => [
                         'pointer' => '/data/attributes/title',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('groups', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -549,10 +547,10 @@ class GroupsTest extends TestCase
                 'id' => '1',
                 'type' => 'groups',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -560,14 +558,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes field is required.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('groups', [
             'id' => 1,
-            'title' => $group->title
+            'title' => $group->title,
         ]);
     }
 
@@ -583,10 +581,10 @@ class GroupsTest extends TestCase
                     'title' => 47,
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -594,14 +592,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes.title must be a string.',
                     'source' => [
                         'pointer' => '/data/attributes/title',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('groups', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -614,16 +612,16 @@ class GroupsTest extends TestCase
 
         $this->patchJson('/api/v1/groups/1', [
             'data' => [
-                'id' =>  '1',
+                'id' => '1',
                 'type' => 'groups',
                 'attributes' => [
                     'title' => 47,
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -631,14 +629,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes.title must be a string.',
                     'source' => [
                         'pointer' => '/data/attributes/title',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('groups', [
             'id' => 1,
-            'title' => $group->title
+            'title' => $group->title,
         ]);
     }
 
@@ -655,12 +653,12 @@ class GroupsTest extends TestCase
                 'type' => 'groups',
                 'attributes' => [
                     'title' => 'Jane Doe',
-                ]
+                ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -668,16 +666,17 @@ class GroupsTest extends TestCase
                     'details' => 'The data.id must be a string.',
                     'source' => [
                         'pointer' => '/data/id',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('groups', [
             'id' => 1,
-            'title' => $group->title
+            'title' => $group->title,
         ]);
     }
+
     public function test_it_validates_that_the_attributes_member_has_been_given_when_creating_a_group()
     {
         $user = User::factory()->create();
@@ -685,11 +684,11 @@ class GroupsTest extends TestCase
 
         $this->postJson('/api/v1/groups', [
             'data' => [
-                'type' => 'groups'
-            ]
+                'type' => 'groups',
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -697,14 +696,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes field is required.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('groups', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -716,12 +715,12 @@ class GroupsTest extends TestCase
         $this->postJson('/api/v1/groups', [
             'data' => [
                 'type' => 'groups',
-                'attributes' => 'not an object'
+                'attributes' => 'not an object',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -729,14 +728,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes must be an array.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('groups', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -753,10 +752,10 @@ class GroupsTest extends TestCase
                 'type' => 'groups',
                 'attributes' => 'not an object',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -764,14 +763,14 @@ class GroupsTest extends TestCase
                     'details' => 'The data.attributes must be an array.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('groups', [
             'id' => 1,
-            'title' => $group->title
+            'title' => $group->title,
         ]);
     }
 
@@ -787,12 +786,12 @@ class GroupsTest extends TestCase
                 'id' => '1',
                 'type' => 'groups',
                 'attributes' => [
-                    'title' => 'Jane Doe'
-                ]
-            ]
+                    'title' => 'Jane Doe',
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ]);
         $this->assertDatabaseHas('groups', [
             'id' => 1,
@@ -813,11 +812,11 @@ class GroupsTest extends TestCase
                 'type' => 'groups',
                 'attributes' => [
                     'title' => 'Jane Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)
             ->assertJson([
                 'errors' => [
@@ -826,9 +825,9 @@ class GroupsTest extends TestCase
                         'details' => 'The data.id field is required.',
                         'source' => [
                             'pointer' => '/data/id',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
         $this->assertDatabaseHas('groups', [
             'id' => 1,

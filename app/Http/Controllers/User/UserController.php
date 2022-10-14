@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Models\User;
-use App\Services\JSONAPIService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
+use App\Models\User;
+use App\Services\JSONAPIService;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-
     private $service;
 
     public function __construct(JSONAPIService $service)
@@ -59,7 +58,6 @@ class UserController extends Controller
     public function update(JSONAPIRequest $request, User $user)
     {
         if ($request->hasFile('data.attributes.profile_avatar')) {
-
             Storage::delete($user->profile_avatar);
             $profile_avatar = $request->file('data.attributes.profile_avatar')->store('avatars');
         }
@@ -70,7 +68,7 @@ class UserController extends Controller
             'password' => bcrypt($request->input('data.attributes.password')),
             'email' => $request->input('data.attributes.email'),
             'status' => $request->input('data.attributes.status'),
-            'profile_avatar' => $profile_avatar
+            'profile_avatar' => $profile_avatar,
         ]);
     }
 

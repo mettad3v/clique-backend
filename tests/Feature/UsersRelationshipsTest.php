@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\Project;
-use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class UsersRelationshipsTest extends TestCase
 {
@@ -21,7 +20,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->invitations()->sync($projects->pluck('id'));
         Sanctum::actingAs($auth);
 
-        $this->getJson('/api/v1/users/' . $auth->id . '?include=invitations', [
+        $this->getJson('/api/v1/users/'.$auth->id.'?include=invitations', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -34,7 +33,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->projects()->saveMany($projects);
         Sanctum::actingAs($auth);
 
-        $this->getJson('/api/v1/users/' . $auth->id . '?include=projects', [
+        $this->getJson('/api/v1/users/'.$auth->id.'?include=projects', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -47,7 +46,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->tasksAssigned()->sync($tasks->pluck('id'));
         Sanctum::actingAs($auth);
 
-        $this->getJson('/api/v1/users/' . $auth->id . '?include=tasksAssigned', [
+        $this->getJson('/api/v1/users/'.$auth->id.'?include=tasksAssigned', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -59,7 +58,7 @@ class UsersRelationshipsTest extends TestCase
         Sanctum::actingAs($auth);
         $projects = Project::factory(3)->create();
         $auth->invitations()->sync($projects->pluck('id'));
-        $this->getJson('/api/v1/users/' . $auth->id . '/relationships/invitations', [
+        $this->getJson('/api/v1/users/'.$auth->id.'/relationships/invitations', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -78,7 +77,7 @@ class UsersRelationshipsTest extends TestCase
                         'id' => '3',
                         'type' => 'projects',
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -88,13 +87,13 @@ class UsersRelationshipsTest extends TestCase
         $projects = Project::factory(2)->create(['user_id' => $auth->id]);
         $auth->invitations()->attach($projects->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/users/' . $auth->id . '/relationships/invitations', [
+        $this->patchJson('/api/v1/users/'.$auth->id.'/relationships/invitations', [
             'data' => [
                 [
                     'id' => '2',
                     'type' => 'projects',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -112,7 +111,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->invitations()->attach($projects);
 
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/users/' . $auth->id . '/projects', [
+        $this->getJson('/api/v1/users/'.$auth->id.'/projects', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -124,7 +123,7 @@ class UsersRelationshipsTest extends TestCase
         $projects = Project::factory(3)->create();
         $auth->invitations()->attach($projects);
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/users/' . $auth->id . '?include=invitations', [
+        $this->getJson('/api/v1/users/'.$auth->id.'?include=invitations', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -141,50 +140,50 @@ class UsersRelationshipsTest extends TestCase
                             ],
                             'data' => [
                                 [
-                                    'id' => (string)$projects->get(0)->id,
-                                    'type' => 'projects'
+                                    'id' => (string) $projects->get(0)->id,
+                                    'type' => 'projects',
                                 ],
                                 [
-                                    'id' => (string)$projects->get(1)->id,
-                                    'type' => 'projects'
+                                    'id' => (string) $projects->get(1)->id,
+                                    'type' => 'projects',
                                 ],
                                 [
-                                    'id' => (string)$projects->get(2)->id,
-                                    'type' => 'projects'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'id' => (string) $projects->get(2)->id,
+                                    'type' => 'projects',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'included' => [
                     [
-                        "id" => '1',
-                        "type" => "projects",
-                        "attributes" => [
+                        'id' => '1',
+                        'type' => 'projects',
+                        'attributes' => [
                             'name' => $projects[0]->name,
                             'created_at' => $projects[0]->created_at->toJSON(),
                             'updated_at' => $projects[0]->updated_at->toJSON(),
-                        ]
+                        ],
                     ],
                     [
-                        "id" => '2',
-                        "type" => "projects",
-                        "attributes" => [
+                        'id' => '2',
+                        'type' => 'projects',
+                        'attributes' => [
                             'name' => $projects[1]->name,
                             'created_at' => $projects[1]->created_at->toJSON(),
                             'updated_at' => $projects[1]->updated_at->toJSON(),
-                        ]
+                        ],
                     ],
                     [
-                        "id" => '3',
-                        "type" => "projects",
-                        "attributes" => [
+                        'id' => '3',
+                        'type' => 'projects',
+                        'attributes' => [
                             'name' => $projects[2]->name,
                             'created_at' => $projects[2]->created_at->toJSON(),
                             'updated_at' => $projects[2]->updated_at->toJSON(),
-                        ]
+                        ],
                     ],
-                ]
+                ],
             ]);
     }
 }

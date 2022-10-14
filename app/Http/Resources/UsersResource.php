@@ -15,7 +15,7 @@ class UsersResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'type' => 'users',
             'attributes' => [
                 'name' => $this->name,
@@ -26,7 +26,7 @@ class UsersResource extends JsonResource
                 'status' => $this->status,
                 'created_at' => $this->created_at,
                 'updated_at' => $this->updated_at,
-            ]
+            ],
         ];
     }
 }

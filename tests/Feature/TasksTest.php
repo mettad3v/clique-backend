@@ -2,16 +2,14 @@
 
 namespace Tests\Feature;
 
-use Carbon\Carbon;
-use Tests\TestCase;
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
-use App\Models\Project;
-use App\Models\Category;
-use Illuminate\Support\Str;
-use Laravel\Sanctum\Sanctum;
-use Illuminate\Support\Facades\Notification;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Notification;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class TasksTest extends TestCase
 {
@@ -23,9 +21,9 @@ class TasksTest extends TestCase
         $auth = User::factory()->create();
         $project = Project::factory(['user_id' => $auth->id])->create();
         $project->invitees()->sync($users->pluck('id'));
-        $uid =  Project::where('id', $project->id)->withCount('tasks')->get();
+        $uid = Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
+        $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
         Sanctum::actingAs($auth);
 
         // dd($users[0]->invitations()->where('project_id', $project->id)->get());
@@ -36,20 +34,20 @@ class TasksTest extends TestCase
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
     public function test_it_returns_a_task_as_a_resource_object()
     {
         $project = Project::factory()->create();
-        $uid =  Project::where('id', $project->id)->withCount('tasks')->get();
+        $uid = Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
+        $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
         $project->tasks()->save($task);
 
         $user = User::factory()->create();
@@ -57,14 +55,14 @@ class TasksTest extends TestCase
 
         $this->getJson('/api/v1/tasks/1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])
             ->assertStatus(200)
             ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => $task->title,
                         'deadline' => $task->deadline,
                         'unique_id' => $task->unique_id,
@@ -72,14 +70,13 @@ class TasksTest extends TestCase
                         'description' => $task->description,
                         'created_at' => $task->created_at->toJSON(),
                         'updated_at' => $task->updated_at->toJSON(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
     }
 
     public function test_anyone_can_assign_tasks_to_other()
     {
-
         $auth = User::factory()->create();
         $project = Project::factory()->create();
         $user = User::factory(2)->create();
@@ -92,17 +89,17 @@ class TasksTest extends TestCase
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
             'data' => [
                 [
-                    'id' => (string)$user[1]->id,
-                    'type' => 'users'
+                    'id' => (string) $user[1]->id,
+                    'type' => 'users',
                 ],
                 [
-                    'id' => (string)$user[1]->id,
-                    'type' => 'users'
-                ]
-            ]
+                    'id' => (string) $user[1]->id,
+                    'type' => 'users',
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
     }
 
@@ -123,16 +120,16 @@ class TasksTest extends TestCase
             'data' => [
                 [
                     'id' => $users[1]->id,
-                    'type' => 'users'
+                    'type' => 'users',
                 ],
                 [
                     'id' => $users[2]->id,
-                    'type' => 'users'
-                ]
-            ]
+                    'type' => 'users',
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
 
         // Notification::fake();
@@ -150,7 +147,7 @@ class TasksTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/tasks', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
     }
 
@@ -162,58 +159,58 @@ class TasksTest extends TestCase
         Sanctum::actingAs($user);
         $this->get('/api/v1/tasks?page[size]=5&page[number]=1', [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => $tasks[0]->title,
                         'description' => $tasks[0]->description,
                         'created_at' => $tasks[0]->created_at->toJSON(),
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => $tasks[1]->title,
                         'description' => $tasks[1]->description,
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => $tasks[2]->title,
                         'description' => $tasks[2]->description,
                         'created_at' => $tasks[2]->created_at->toJSON(),
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '4',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '4',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => $tasks[3]->title,
                         'description' => $tasks[3]->description,
                         'created_at' => $tasks[3]->created_at->toJSON(),
                         'updated_at' => $tasks[3]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '5',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '5',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => $tasks[4]->title,
                         'description' => $tasks[4]->description,
                         'created_at' => $tasks[4]->created_at->toJSON(),
                         'updated_at' => $tasks[4]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
             ],
             'links' => [
@@ -221,7 +218,7 @@ class TasksTest extends TestCase
                 'last' => route('tasks.index', ['page[size]' => 5, 'page[number]' => 2]),
                 'prev' => null,
                 'next' => route('tasks.index', ['page[size]' => 5, 'page[number]' => 2]),
-            ]
+            ],
         ]);
     }
 
@@ -243,35 +240,35 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '3',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $tasks[2]->created_at->toJSON(),
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $tasks[0]->created_at->toJSON(),
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -293,38 +290,38 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '2',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Claus',
                         'description' => $tasks[1]->description,
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'description' => $tasks[0]->description,
                         'created_at' => $tasks[0]->created_at->toJSON(),
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Anna',
                         'description' => $tasks[2]->description,
                         'created_at' => $tasks[2]->created_at->toJSON(),
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -353,35 +350,35 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '3',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $tasks[2]->created_at->toJSON(),
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $tasks[0]->created_at->toJSON(),
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -410,35 +407,35 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Bertram',
                         'created_at' => $tasks[0]->created_at->toJSON(),
                         'updated_at' => $tasks[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Anna',
                         'created_at' => $tasks[2]->created_at->toJSON(),
                         'updated_at' => $tasks[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "tasks",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'title' => 'Claus',
                         'created_at' => $tasks[1]->created_at->toJSON(),
                         'updated_at' => $tasks[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -457,7 +454,7 @@ class TasksTest extends TestCase
 
         $this->patchJson('/api/v1/tasks/1', [
             'data' => [
-                'id' => (string)$task->id,
+                'id' => (string) $task->id,
                 'type' => 'tasks',
                 'attributes' => [
                     'description' => 'Hello world',
@@ -465,28 +462,28 @@ class TasksTest extends TestCase
                 'relationships' => [
                     'creator' => [
                         'data' => [
-                            'id' => (string)$anotherUser->id,
+                            'id' => (string) $anotherUser->id,
                             'type' => 'users',
-                        ]
+                        ],
                     ],
                     'project' => [
                         'data' => [
-                            'id' => (string)$anotherProject->id,
+                            'id' => (string) $anotherProject->id,
                             'type' => 'projects',
-                        ]
-                    ]
-                ]
-            ]
+                        ],
+                    ],
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
             ->assertStatus(200)
             ->assertJson([
-                "data" => [
-                    "id" => '1',
-                    "type" => 'tasks',
-                    "attributes" => [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'tasks',
+                    'attributes' => [
                         'description' => 'Hello world',
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
@@ -499,8 +496,8 @@ class TasksTest extends TestCase
                             ],
                             'data' => [
                                 'id' => $anotherProject->id,
-                                'type' => 'projects'
-                            ]
+                                'type' => 'projects',
+                            ],
                         ],
                         'creator' => [
                             'links' => [
@@ -510,10 +507,10 @@ class TasksTest extends TestCase
                             'data' => [
                                 'id' => $anotherUser->id,
                                 'type' => 'users',
-                            ]
-                        ]
-                    ]
-                ]
+                            ],
+                        ],
+                    ],
+                ],
             ]);
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
@@ -525,7 +522,6 @@ class TasksTest extends TestCase
 
     public function test_it_validates_relationships_are_given_when_creating_tasks()
     {
-
         $user = User::factory()->create();
         Sanctum::actingAs($user);
         $project = Project::factory()->create();
@@ -537,18 +533,18 @@ class TasksTest extends TestCase
                 'attributes' => [
                     'title' => 'John Doe',
                     'description' => 'John Doe and Jane Doe',
-                    'deadline' => '2022-09-09'
+                    'deadline' => '2022-09-09',
                 ],
                 'relationships' => [
                     'creator' => [],
                     'project' => [
                         'data' => [
                             'id' => $project->id,
-                            'type' => 'random'
-                        ]
-                    ]
-                ]
-            ]
+                            'type' => 'random',
+                        ],
+                    ],
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -559,26 +555,25 @@ class TasksTest extends TestCase
                     'details' => 'The data.relationships.creator.data field is required.',
                     'source' => [
                         'pointer' => '/data/relationships/creator/data',
-                    ]
+                    ],
                 ],
                 [
                     'title' => 'Validation Error',
                     'details' => 'The data.relationships.project.data.id must be a string.',
                     'source' => [
                         'pointer' => '/data/relationships/project/data/id',
-                    ]
+                    ],
                 ],
                 [
                     'title' => 'Validation Error',
                     'details' => 'The selected data.relationships.project.data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/relationships/project/data/type',
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
-
 
     public function test_it_can_create_a_task_from_a_resource_object()
     {
@@ -595,17 +590,17 @@ class TasksTest extends TestCase
                 'attributes' => [
                     'title' => 'John Doe',
                     'description' => 'John Doe and Jane Doe',
-                    'deadline' => '2022-09-09'
+                    'deadline' => '2022-09-09',
                 ],
                 'relationships' => [
                     'project' => [
                         'data' => [
-                            'id' => (string)$project->id,
-                            'type' => 'projects'
-                        ]
-                    ]
-                ]
-            ]
+                            'id' => (string) $project->id,
+                            'type' => 'projects',
+                        ],
+                    ],
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -628,11 +623,11 @@ class TasksTest extends TestCase
                 'type' => '',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -640,14 +635,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.type field is required.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('tasks', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -663,11 +658,11 @@ class TasksTest extends TestCase
                 'type' => '',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -675,14 +670,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.type field is required.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
-            'title' => $task->title
+            'title' => $task->title,
         ]);
     }
 
@@ -696,11 +691,11 @@ class TasksTest extends TestCase
                 'type' => 'task',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -708,14 +703,14 @@ class TasksTest extends TestCase
                     'details' => 'The selected data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('tasks', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -731,11 +726,11 @@ class TasksTest extends TestCase
                 'type' => 'group',
                 'attributes' => [
                     'title' => 'John Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -743,14 +738,14 @@ class TasksTest extends TestCase
                     'details' => 'The selected data.type is invalid.',
                     'source' => [
                         'pointer' => '/data/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
-            'title' => $task->title
+            'title' => $task->title,
         ]);
     }
 
@@ -766,10 +761,10 @@ class TasksTest extends TestCase
                     'title' => '',
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -777,14 +772,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes.title field is required.',
                     'source' => [
                         'pointer' => '/data/attributes/title',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('tasks', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -799,10 +794,10 @@ class TasksTest extends TestCase
                 'id' => '1',
                 'type' => 'tasks',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -810,14 +805,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes field is required.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
-            'title' => $task->title
+            'title' => $task->title,
         ]);
     }
 
@@ -833,10 +828,10 @@ class TasksTest extends TestCase
                     'title' => 47,
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -844,14 +839,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes.title must be a string.',
                     'source' => [
                         'pointer' => '/data/attributes/title',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('tasks', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -863,16 +858,16 @@ class TasksTest extends TestCase
 
         $this->patchJson('/api/v1/tasks/1', [
             'data' => [
-                'id' =>  '1',
+                'id' => '1',
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 47,
                 ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -880,14 +875,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes.title must be a string.',
                     'source' => [
                         'pointer' => '/data/attributes/title',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
-            'title' => $task->title
+            'title' => $task->title,
         ]);
     }
 
@@ -903,12 +898,12 @@ class TasksTest extends TestCase
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'Jane Doe',
-                ]
+                ],
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -916,14 +911,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.id must be a string.',
                     'source' => [
                         'pointer' => '/data/id',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
-            'title' => $task->title
+            'title' => $task->title,
         ]);
     }
 
@@ -934,11 +929,11 @@ class TasksTest extends TestCase
 
         $this->postJson('/api/v1/tasks', [
             'data' => [
-                'type' => 'tasks'
-            ]
+                'type' => 'tasks',
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -946,14 +941,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes field is required.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('tasks', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -965,12 +960,12 @@ class TasksTest extends TestCase
         $this->postJson('/api/v1/tasks', [
             'data' => [
                 'type' => 'tasks',
-                'attributes' => 'not an object'
+                'attributes' => 'not an object',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -978,14 +973,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes must be an array.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseMissing('tasks', [
             'id' => 1,
-            'title' => 'John Doe'
+            'title' => 'John Doe',
         ]);
     }
 
@@ -1001,10 +996,10 @@ class TasksTest extends TestCase
                 'type' => 'tasks',
                 'attributes' => 'not an object',
 
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)->assertJson([
             'errors' => [
                 [
@@ -1012,14 +1007,14 @@ class TasksTest extends TestCase
                     'details' => 'The data.attributes must be an array.',
                     'source' => [
                         'pointer' => '/data/attributes',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
 
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
-            'title' => $task->title
+            'title' => $task->title,
         ]);
     }
 
@@ -1038,12 +1033,12 @@ class TasksTest extends TestCase
                 'attributes' => [
                     'title' => 'Jane Doe',
                     'description' => 'another description',
-                    'user_id' => 1
-                ]
-            ]
+                    'user_id' => 1,
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
 
         $this->assertDatabaseHas('tasks', [
@@ -1064,11 +1059,11 @@ class TasksTest extends TestCase
                 'type' => 'tasks',
                 'attributes' => [
                     'title' => 'Jane Doe',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json'
+            'content-type' => 'application/vnd.api+json',
         ])->assertStatus(422)
             ->assertJson([
                 'errors' => [
@@ -1077,9 +1072,9 @@ class TasksTest extends TestCase
                         'details' => 'The data.id field is required.',
                         'source' => [
                             'pointer' => '/data/id',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
         $this->assertDatabaseHas('tasks', [
             'id' => 1,
@@ -1089,7 +1084,6 @@ class TasksTest extends TestCase
 
     public function test_it_can_delete_a_task_through_a_delete_request()
     {
-
         $user = User::factory()->create();
         $project = Project::factory()->create();
         $project->invitees()->attach($user->id);

@@ -2,14 +2,13 @@
 
 namespace Tests\Unit\Exceptions;
 
-use Tests\TestCase;
 use App\Exceptions\Handler;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Testing\TestResponse;
-use Illuminate\Database\QueryException;
-use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-
+use Tests\TestCase;
 
 class HandlerTest extends TestCase
 {
@@ -32,8 +31,8 @@ class HandlerTest extends TestCase
                 [
                     'title' => 'Exception',
                     'details' => 'Test exception',
-                ]
-            ]
+                ],
+            ],
         ])->assertStatus(500);
     }
 
@@ -51,8 +50,8 @@ class HandlerTest extends TestCase
                 [
                     'title' => 'Http Exception',
                     'details' => 'Not Found',
-                ]
-            ]
+                ],
+            ],
         ])->assertStatus(404);
     }
 
@@ -70,8 +69,8 @@ class HandlerTest extends TestCase
                 [
                     'title' => 'Unauthenticated',
                     'details' => 'You are not authenticated',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -88,8 +87,8 @@ class HandlerTest extends TestCase
                 [
                     'title' => 'Not Found Http Exception',
                     'details' => 'Given resource not found',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 }

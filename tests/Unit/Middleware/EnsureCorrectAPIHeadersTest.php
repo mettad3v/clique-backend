@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Middleware;
 
-use PHPUnit\Framework\TestCase;
-use Illuminate\Http\Request;
 use App\Http\Middleware\EnsureCorrectAPIHeaders;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use PHPUnit\Framework\TestCase;
 
 class EnsureCorrectAPIHeadersTest extends TestCase
 {
@@ -95,7 +95,7 @@ class EnsureCorrectAPIHeadersTest extends TestCase
         $this->assertEquals(200, $response->status());
         $this->assertEquals('application/vnd.api+json', $response->headers->get('content-type'));
     }
-    
+
     public function test_when_aborting_for_a_missing_accept_header_the_correct_content_type_header_is_returned()
     {
         $request = Request::create('/test', 'GET');
@@ -107,7 +107,7 @@ class EnsureCorrectAPIHeadersTest extends TestCase
         $this->assertEquals(406, $response->status());
         $this->assertEquals('application/vnd.api+json', $response->headers->get('content-type'));
     }
-    
+
     public function test_when_aborting_for_a_missing_content_type_header_the_correct_content_type_header_is_returned()
     {
         $request = Request::create('/test', 'POST');

@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use Illuminate\Support\Str;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Http\Resources\JSONAPIResource;
-use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\JSONAPICollection;
-use Illuminate\Support\Facades\Notification;
 use App\Http\Resources\JSONAPIIdentifierResource;
+use App\Http\Resources\JSONAPIResource;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Str;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class JSONAPIService
 {
@@ -23,6 +23,7 @@ class JSONAPIService
         $query = QueryBuilder::for($model::where('id', $id))
             ->allowedIncludes(config("jsonapi.resources.{$type}.allowedIncludes"))
             ->firstOrFail();
+
         return new JSONAPIResource($query);
     }
 
@@ -36,12 +37,13 @@ class JSONAPIService
         return new JSONAPICollection($resource);
     }
 
-    public function createResource(string $modelClass, array $attributes,  array $relationships = null)
+    public function createResource(string $modelClass, array $attributes, array $relationships = null)
     {
         $model = $modelClass::create($attributes);
         if ($relationships) {
             $this->handleRelationship($relationships, $model);
         }
+
         return (new JSONAPIResource($model))
             ->response()
             ->header('Location', route(
@@ -59,12 +61,14 @@ class JSONAPIService
         if ($relationships) {
             $this->handleRelationship($relationships, $model);
         }
+
         return new JSONAPIResource($model);
     }
 
     public function deleteResource($model)
     {
         $model->delete();
+
         return response(null, 204);
     }
 
@@ -73,13 +77,13 @@ class JSONAPIService
         if ($model->$relationship instanceof Model) {
             return new JSONAPIIdentifierResource($model->$relationship);
         }
+
         return JSONAPIIdentifierResource::collection($model->$relationship);
     }
 
     protected function handleRelationship(array $relationships, $model): void
     {
         foreach ($relationships as $relationshipName => $contents) {
-
             if ($model->$relationshipName() instanceof BelongsTo) {
                 $this->updateToOneRelationship(
                     $model,
@@ -108,6 +112,7 @@ class JSONAPIService
             $model->$relationship()->associate($newModel);
         }
         $model->save();
+
         return response(null, 204);
     }
 
@@ -118,8 +123,8 @@ class JSONAPIService
 
         $relatedModel->newQuery()->findOrFail($ids);
 
-        $relatedModel->newQuery()->where($foreignKey, $model->id)->update([$foreignKey => null,]);
-        $relatedModel->newQuery()->whereIn('id', $ids)->update([$foreignKey => $model->id,]);
+        $relatedModel->newQuery()->where($foreignKey, $model->id)->update([$foreignKey => null]);
+        $relatedModel->newQuery()->whereIn('id', $ids)->update([$foreignKey => $model->id]);
 
         return response(null, 204);
     }
@@ -129,6 +134,7 @@ class JSONAPIService
         if ($model->$relationship instanceof Model) {
             return new JSONAPIResource($model->$relationship);
         }
+
         return new JSONAPICollection($model->$relationship);
     }
 
@@ -140,6 +146,7 @@ class JSONAPIService
         $relatedModel->newQuery()->findOrFail($ids);
 
         $model->$relationship()->sync($ids);
+
         return response(null, 204);
     }
 

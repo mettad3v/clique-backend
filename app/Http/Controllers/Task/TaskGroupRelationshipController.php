@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Task;
 
+use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Services\JSONAPIService;
-use App\Http\Controllers\Controller;
 
 class TaskGroupRelationshipController extends Controller
 {
     private $service;
+
     public function __construct(JSONAPIService $service)
     {
         $this->service = $service;

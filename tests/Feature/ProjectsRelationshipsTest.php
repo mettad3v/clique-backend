@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Project;
-use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class ProjectsRelationshipsTest extends TestCase
 {
@@ -23,10 +22,10 @@ class ProjectsRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/creator', [
             'data' => [
                 [
-                    'id' => (string)$users[4]->id,
+                    'id' => (string) $users[4]->id,
                     'type' => 'users',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -50,7 +49,7 @@ class ProjectsRelationshipsTest extends TestCase
                     'id' => '1',
                     'type' => 'projects',
                     'attributes' => [
-                        'name' => $project->name
+                        'name' => $project->name,
                     ],
                     'relationships' => [
                         'invitees' => [
@@ -60,17 +59,17 @@ class ProjectsRelationshipsTest extends TestCase
                             ],
                             'data' => [
                                 [
-                                    'id' => (string)$users[0]->id,
-                                    'type' => 'users'
+                                    'id' => (string) $users[0]->id,
+                                    'type' => 'users',
                                 ],
                                 [
-                                    'id' => (string)$users[1]->id,
-                                    'type' => 'users'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    'id' => (string) $users[1]->id,
+                                    'type' => 'users',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -89,18 +88,18 @@ class ProjectsRelationshipsTest extends TestCase
             ->assertJson([
                 'data' => [
                     [
-                        'id' => (string)$users[0]->id,
+                        'id' => (string) $users[0]->id,
                         'type' => 'users',
                     ],
                     [
-                        'id' => (string)$users[1]->id,
+                        'id' => (string) $users[1]->id,
                         'type' => 'users',
                     ],
                     [
-                        'id' => (string)$users[2]->id,
+                        'id' => (string) $users[2]->id,
                         'type' => 'users',
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -114,23 +113,23 @@ class ProjectsRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
-                    'id' => (string)$users[4]->id,
+                    'id' => (string) $users[4]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => (string)$users[5]->id,
+                    'id' => (string) $users[5]->id,
                     'type' => 'users',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
         $this->assertDatabaseHas('project_user', [
-            'user_id' => (string)$users[4]->id,
+            'user_id' => (string) $users[4]->id,
             'project_id' => 1,
         ])->assertDatabaseHas('project_user', [
-            'user_id' => (string)$users[5]->id,
+            'user_id' => (string) $users[5]->id,
             'project_id' => 1,
         ]);
     }
@@ -145,24 +144,24 @@ class ProjectsRelationshipsTest extends TestCase
         $this->patchJson('/api/v1/projects/1/relationships/invitees', [
             'data' => [
                 [
-                    'id' => (string)$users[0]->id,
+                    'id' => (string) $users[0]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => (string)$users[1]->id,
+                    'id' => (string) $users[1]->id,
                     'type' => 'users',
                 ],
                 [
-                    'id' => (string)$users[2]->id,
+                    'id' => (string) $users[2]->id,
                     'type' => 'users',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
         $this->assertDatabaseMissing('project_user', [
-            'user_id' => (string)$users[3]->id,
+            'user_id' => (string) $users[3]->id,
             'project_id' => 1,
         ]);
     }
@@ -175,7 +174,7 @@ class ProjectsRelationshipsTest extends TestCase
         $project->invitees()->attach($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/projects/1/relationships/invitees', [
-            'data' => []
+            'data' => [],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -208,8 +207,8 @@ class ProjectsRelationshipsTest extends TestCase
                 [
                     'id' => '6',
                     'type' => 'users',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -218,8 +217,8 @@ class ProjectsRelationshipsTest extends TestCase
                 [
                     'title' => 'Not Found Http Exception',
                     'details' => 'Given resource not found',
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -234,7 +233,7 @@ class ProjectsRelationshipsTest extends TestCase
                 [
                     'type' => 'users',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -245,9 +244,9 @@ class ProjectsRelationshipsTest extends TestCase
                     'details' => 'The data.0.id field is required.',
                     'source' => [
                         'pointer' => '/data/0/id',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -263,7 +262,7 @@ class ProjectsRelationshipsTest extends TestCase
                     'id' => 5,
                     'type' => 'users',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -274,9 +273,9 @@ class ProjectsRelationshipsTest extends TestCase
                     'details' => 'The data.0.id must be a string.',
                     'source' => [
                         'pointer' => '/data/0/id',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -291,7 +290,7 @@ class ProjectsRelationshipsTest extends TestCase
                 [
                     'id' => '5',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -302,9 +301,9 @@ class ProjectsRelationshipsTest extends TestCase
                     'details' => 'The data.0.type field is required.',
                     'source' => [
                         'pointer' => '/data/0/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -320,7 +319,7 @@ class ProjectsRelationshipsTest extends TestCase
                     'id' => '5',
                     'type' => 'projects',
                 ],
-            ]
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
@@ -331,9 +330,9 @@ class ProjectsRelationshipsTest extends TestCase
                     'details' => 'The selected data.0.type is invalid.',
                     'source' => [
                         'pointer' => '/data/0/type',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ]);
     }
 
@@ -374,50 +373,50 @@ class ProjectsRelationshipsTest extends TestCase
                             ],
                             'data' => [
                                 [
-                                    'id' => (string)$users->get(0)->id,
-                                    'type' => 'users'
+                                    'id' => (string) $users->get(0)->id,
+                                    'type' => 'users',
                                 ],
                                 [
-                                    'id' => (string)$users->get(1)->id,
-                                    'type' => 'users'
+                                    'id' => (string) $users->get(1)->id,
+                                    'type' => 'users',
                                 ],
                                 [
-                                    'id' => (string)$users->get(2)->id,
-                                    'type' => 'users'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'id' => (string) $users->get(2)->id,
+                                    'type' => 'users',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'included' => [
                     [
-                        "id" => (string)$users->get(0)->id,
-                        "type" => "users",
-                        "attributes" => [
+                        'id' => (string) $users->get(0)->id,
+                        'type' => 'users',
+                        'attributes' => [
                             'name' => $users[0]->name,
                             'created_at' => $users[0]->created_at->toJSON(),
                             'updated_at' => $users[0]->updated_at->toJSON(),
-                        ]
+                        ],
                     ],
                     [
-                        "id" => (string)$users->get(1)->id,
-                        "type" => "users",
-                        "attributes" => [
+                        'id' => (string) $users->get(1)->id,
+                        'type' => 'users',
+                        'attributes' => [
                             'name' => $users[1]->name,
                             'created_at' => $users[1]->created_at->toJSON(),
                             'updated_at' => $users[1]->updated_at->toJSON(),
-                        ]
+                        ],
                     ],
                     [
-                        "id" => (string)$users->get(2)->id,
-                        "type" => "users",
-                        "attributes" => [
+                        'id' => (string) $users->get(2)->id,
+                        'type' => 'users',
+                        'attributes' => [
                             'name' => $users[2]->name,
                             'created_at' => $users[2]->created_at->toJSON(),
                             'updated_at' => $users[2]->updated_at->toJSON(),
-                        ]
+                        ],
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -454,11 +453,11 @@ class ProjectsRelationshipsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[0]->name,
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
@@ -471,25 +470,25 @@ class ProjectsRelationshipsTest extends TestCase
                             ],
                             'data' => [
                                 [
-                                    'id' => (string)$users->get(0)->id,
-                                    'type' => 'users'
+                                    'id' => (string) $users->get(0)->id,
+                                    'type' => 'users',
                                 ],
                                 [
-                                    'id' => (string)$users->get(1)->id,
-                                    'type' => 'users'
+                                    'id' => (string) $users->get(1)->id,
+                                    'type' => 'users',
                                 ],
                                 [
-                                    'id' => (string)$users->get(2)->id,
-                                    'type' => 'users'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'id' => (string) $users->get(2)->id,
+                                    'type' => 'users',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[1]->name,
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
@@ -500,13 +499,13 @@ class ProjectsRelationshipsTest extends TestCase
                                 'self' => route('projects.relationships.invitees', $projects[1]->id),
                                 'related' => route('projects.invitees', $projects[1]->id),
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[2]->name,
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
@@ -517,39 +516,39 @@ class ProjectsRelationshipsTest extends TestCase
                                 'self' => route('projects.relationships.invitees', $projects[2]->id),
                                 'related' => route('projects.invitees', $projects[2]->id),
                             ],
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
             ],
             'included' => [
                 [
-                    "id" => (string)$users->get(0)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => (string) $users->get(0)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[0]->name,
                         'created_at' => $users[0]->created_at->toJSON(),
                         'updated_at' => $users[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => (string)$users->get(1)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => (string) $users->get(1)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[1]->name,
                         'created_at' => $users[1]->created_at->toJSON(),
                         'updated_at' => $users[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => (string)$users->get(2)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => (string) $users->get(2)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[2]->name,
                         'created_at' => $users[2]->created_at->toJSON(),
                         'updated_at' => $users[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 
@@ -581,11 +580,11 @@ class ProjectsRelationshipsTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200)->assertJson([
-            "data" => [
+            'data' => [
                 [
-                    "id" => '1',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '1',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[0]->name,
                         'created_at' => $projects[0]->created_at->toJSON(),
                         'updated_at' => $projects[0]->updated_at->toJSON(),
@@ -599,24 +598,24 @@ class ProjectsRelationshipsTest extends TestCase
                             'data' => [
                                 [
                                     'id' => $users->get(0)->id,
-                                    'type' => 'users'
+                                    'type' => 'users',
                                 ],
                                 [
                                     'id' => $users->get(1)->id,
-                                    'type' => 'users'
+                                    'type' => 'users',
                                 ],
                                 [
                                     'id' => $users->get(2)->id,
-                                    'type' => 'users'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'type' => 'users',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 [
-                    "id" => '2',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '2',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[1]->name,
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
@@ -629,24 +628,24 @@ class ProjectsRelationshipsTest extends TestCase
                             'data' => [
                                 [
                                     'id' => $users->get(0)->id,
-                                    'type' => 'users'
+                                    'type' => 'users',
                                 ],
                                 [
                                     'id' => $users->get(1)->id,
-                                    'type' => 'users'
+                                    'type' => 'users',
                                 ],
                                 [
                                     'id' => $users->get(2)->id,
-                                    'type' => 'users'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'type' => 'users',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 [
-                    "id" => '3',
-                    "type" => "projects",
-                    "attributes" => [
+                    'id' => '3',
+                    'type' => 'projects',
+                    'attributes' => [
                         'name' => $projects[2]->name,
                         'created_at' => $projects[2]->created_at->toJSON(),
                         'updated_at' => $projects[2]->updated_at->toJSON(),
@@ -660,132 +659,132 @@ class ProjectsRelationshipsTest extends TestCase
                             'data' => [
                                 [
                                     'id' => $users->get(0)->id,
-                                    'type' => 'users'
+                                    'type' => 'users',
                                 ],
                                 [
                                     'id' => $users->get(1)->id,
-                                    'type' => 'users'
+                                    'type' => 'users',
                                 ],
                                 [
                                     'id' => $users->get(2)->id,
-                                    'type' => 'users'
-                                ]
-                            ]
-                        ]
-                    ]
+                                    'type' => 'users',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
             ],
             'included' => [
                 [
-                    "id" => $users->get(0)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(0)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[0]->name,
                         'created_at' => $users[0]->created_at->toJSON(),
                         'updated_at' => $users[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ], [
-                    "id" => $users->get(1)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(1)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[1]->name,
                         'created_at' => $users[1]->created_at->toJSON(),
                         'updated_at' => $users[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(2)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(2)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[2]->name,
                         'created_at' => $users[2]->created_at->toJSON(),
                         'updated_at' => $users[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ])->assertJsonMissing([
             'included' => [
                 [
-                    "id" => $users->get(0)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(0)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[0]->name,
                         'created_at' => $users[0]->created_at->toJSON(),
                         'updated_at' => $users[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(1)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(1)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[1]->name,
                         'created_at' => $users[1]->created_at->toJSON(),
                         'updated_at' => $users[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(2)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(2)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[2]->name,
                         'created_at' => $users[2]->created_at->toJSON(),
                         'updated_at' => $users[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(0)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(0)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[0]->name,
                         'created_at' => $users[0]->created_at->toJSON(),
                         'updated_at' => $users[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(1)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(1)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[1]->name,
                         'created_at' => $users[1]->created_at->toJSON(),
                         'updated_at' => $users[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(2)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(2)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[2]->name, 'created_at' => $users[2]->created_at->toJSON(),
                         'updated_at' => $users[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(0)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(0)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[0]->name,
                         'created_at' => $users[0]->created_at->toJSON(),
                         'updated_at' => $users[0]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(1)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(1)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[1]->name,
                         'created_at' => $users[1]->created_at->toJSON(),
                         'updated_at' => $users[1]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
                 [
-                    "id" => $users->get(2)->id,
-                    "type" => "users",
-                    "attributes" => [
+                    'id' => $users->get(2)->id,
+                    'type' => 'users',
+                    'attributes' => [
                         'name' => $users[2]->name,
                         'created_at' => $users[2]->created_at->toJSON(),
                         'updated_at' => $users[2]->updated_at->toJSON(),
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ]);
     }
 }

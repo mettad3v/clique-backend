@@ -4,8 +4,6 @@ namespace App\Models;
 
 use App\AbstractAPIModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Group;
 
 class Task extends AbstractAPIModel
 {
@@ -27,6 +25,7 @@ class Task extends AbstractAPIModel
     {
         return $this->belongsTo(Category::class);
     }
+
     public function group()
     {
         return $this->belongsTo(Group::class);

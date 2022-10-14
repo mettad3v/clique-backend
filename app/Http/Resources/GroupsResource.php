@@ -15,7 +15,7 @@ class GroupsResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string)$this->id,
+            'id' => (string) $this->id,
             'type' => 'groups',
             'attributes' => [
                 'title' => $this->title,
@@ -31,7 +31,7 @@ class GroupsResource extends JsonResource
                     ],
                     'data' => GroupsIdentifierResource::collection($this->tasks),
                 ],
-            ]
+            ],
         ];
     }
 }

@@ -43,7 +43,6 @@ class SetupDevEnvironment extends Command
         $user = $this->CreateJohnDoeUser();
         $this->CreatePersonalAccessToken($user);
 
-
         $this->info('All done. Bye!');
     }
 
@@ -52,6 +51,7 @@ class SetupDevEnvironment extends Command
         $this->call('migrate:fresh');
         $this->call('db:seed');
     }
+
     public function CreateJohnDoeUser()
     {
         $this->info('Creating John Doe user');
@@ -71,7 +71,7 @@ class SetupDevEnvironment extends Command
     {
         $token = $user->createToken('API Token')->plainTextToken;
         $this->info('Personal access token created successfully.');
-        $this->warn("Personal access token:");
+        $this->warn('Personal access token:');
         $this->line($token);
     }
 }

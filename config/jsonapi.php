@@ -6,18 +6,18 @@ return  [
             'allowedSorts' => [
                 'name',
                 'created_at',
-                'updated_at'
+                'updated_at',
             ],
             'allowedIncludes' => [
                 'invitations',
                 'projects',
-                'tasksAssigned'
+                'tasksAssigned',
             ],
             'validationRules' => [
                 'create' => [
                     'data.attributes.name' => 'required|string|max:255',
                     'data.attributes.email' => 'required|string|email|unique:users,email',
-                    'data.attributes.password' => 'required|string|min:6|confirmed'
+                    'data.attributes.password' => 'required|string|min:6|confirmed',
                 ],
                 'update' => [
                     'data.attributes.name' => 'sometimes|string',
@@ -43,33 +43,33 @@ return  [
                 [
                     'type' => 'tasks',
                     'method' => 'tasksAssigned',
-                ]
-            ]
+                ],
+            ],
         ],
         'categories' => [
             'allowedSorts' => [
                 'title',
-                'created_at'
+                'created_at',
             ],
             'allowedIncludes' => [
                 'tasks',
             ],
             'validationRules' => [
                 'create' => [],
-                'update' => []
+                'update' => [],
             ],
             'relationships' => [
                 [
                     'type' => 'tasks',
                     'method' => 'tasks',
-                ]
-            ]
+                ],
+            ],
         ],
         'projects' => [
             'allowedSorts' => [
                 'name',
                 'created_at',
-                'updated_at'
+                'updated_at',
             ],
             'allowedIncludes' => [
                 'invitees',
@@ -83,7 +83,7 @@ return  [
                 'update' => [
                     'data.attributes.name' => 'required|string|unique:projects,name',
 
-                ]
+                ],
             ],
             'relationships' => [
                 [
@@ -97,17 +97,17 @@ return  [
                 [
                     'type' => 'users',
                     'method' => 'creator',
-                ]
-            ]
+                ],
+            ],
         ],
         'tasks' => [
             'allowedSorts' => [
                 'title',
                 'created_at',
-                'updated_at'
+                'updated_at',
             ],
             'allowedIncludes' => [
-                'assignees'
+                'assignees',
             ],
             'validationRules' => [
                 'create' => [
@@ -136,19 +136,19 @@ return  [
                 ],
                 [
                     'type' => 'projects',
-                    'method' => 'project'
+                    'method' => 'project',
                 ],
                 [
                     'type' => 'groups',
-                    'method' => 'group'
-                ]
-            ]
+                    'method' => 'group',
+                ],
+            ],
         ],
         'groups' => [
             'allowedSorts' => [
                 'title',
                 'created_at',
-                'updated_at'
+                'updated_at',
             ],
             'allowedIncludes' => [
                 'tasks',
@@ -163,7 +163,7 @@ return  [
                 'update' => [
                     'data.attributes.title' => 'sometimes|required|string|unique:groups,title',
                     'data.attributes.relationships' => 'sometimes|required',
-                ]
+                ],
             ],
             'relationships' => [
                 [
@@ -173,9 +173,9 @@ return  [
                 [
                     'type' => 'users',
                     'method' => 'creator',
-                ]
-            ]
+                ],
+            ],
         ],
-    ]
+    ],
 
 ];

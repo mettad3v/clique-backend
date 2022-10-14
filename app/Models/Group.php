@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\AbstractAPIModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class Group extends AbstractAPIModel
 {

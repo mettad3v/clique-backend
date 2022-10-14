@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Project;
 
-use App\Models\Project;
-use Illuminate\Http\Request;
-use App\Services\JSONAPIService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
+use App\Models\Project;
+use App\Services\JSONAPIService;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -64,6 +64,7 @@ class ProjectController extends Controller
         if ($request->user()->cannot('update', $project)) {
             abort(403, 'Access Denied');
         }
+
         return $this->service->updateResource($project, $request->input('data.attributes'), $request->input('data.relationships'));
     }
 

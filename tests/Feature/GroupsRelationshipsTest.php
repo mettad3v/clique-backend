@@ -2,18 +2,18 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\Task;
-use App\Models\User;
 use App\Models\Group;
 use App\Models\Project;
-use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
+use App\Models\Task;
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Laravel\Sanctum\Sanctum;
+use Tests\TestCase;
 
 class GroupsRelationshipsTest extends TestCase
 {
     use DatabaseMigrations;
+
     /**
      * A basic feature test example.
      *
@@ -26,7 +26,6 @@ class GroupsRelationshipsTest extends TestCase
         $tasks = Task::factory(3)->create();
         $group = Group::factory()->create();
         $group->tasks()->saveMany($tasks);
-
 
         Sanctum::actingAs($user);
 
@@ -48,27 +47,25 @@ class GroupsRelationshipsTest extends TestCase
                             'data' => [
                                 [
                                     'id' => $tasks->get(0)->id,
-                                    'type' => 'tasks'
+                                    'type' => 'tasks',
                                 ],
                                 [
                                     'id' => $tasks->get(1)->id,
-                                    'type' => 'tasks'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    'type' => 'tasks',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]);
     }
 
     public function test_a_relationship_link_to_tasks_returns_all_related_tasks_as_resource_id_ob()
     {
-
         $project = Project::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(3)->create();
         $group->tasks()->saveMany($tasks);
-
 
         $user = User::factory()->create();
         Sanctum::actingAs($user);
@@ -92,7 +89,7 @@ class GroupsRelationshipsTest extends TestCase
                         'id' => '3',
                         'type' => 'tasks',
                     ],
-                ]
+                ],
             ]);
     }
 
@@ -115,13 +112,12 @@ class GroupsRelationshipsTest extends TestCase
                 [
                     'id' => '6',
                     'type' => 'tasks',
-                ]
-            ]
+                ],
+            ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(204);
-
 
         // dd($group->tasks);
         $this->assertDatabaseHas('tasks', [

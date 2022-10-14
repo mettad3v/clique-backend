@@ -22,6 +22,7 @@ class EnsureProjectCreatorCanInvite
         // }
 
         dd($request);
+
         return $next($request);
     }
 }

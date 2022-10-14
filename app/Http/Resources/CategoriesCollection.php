@@ -14,8 +14,8 @@ class CategoriesCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-       return [
+        return [
             'data' => $this->collection,
-       ];
+        ];
     }
 }

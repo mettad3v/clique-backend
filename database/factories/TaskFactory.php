@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Task;
-use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class TaskFactory extends Factory
@@ -28,7 +27,7 @@ class TaskFactory extends Factory
             'deadline' => '2022-09-09 09:09:09',
             'project_id' => 1,
             'unique_id' => 'T-11',
-            'user_id' => '1f0955c5-7313-4536-8361-caddb186f6b5'
+            'user_id' => '1f0955c5-7313-4536-8361-caddb186f6b5',
         ];
     }
 }

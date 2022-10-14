@@ -12,6 +12,7 @@ class NotifyRemovedSupervisors extends Notification implements ShouldQueue
     use Queueable;
 
     public $task;
+
     public $user;
 
     /**
@@ -60,9 +61,9 @@ class NotifyRemovedSupervisors extends Notification implements ShouldQueue
     {
         return [
             'data' => [
-                'message' => $this->user->name . ' removed you as Supervisor on Task: ' . $this->task->title,
-                'received_at' => $notifiable->created_at 
-            ]
+                'message' => $this->user->name.' removed you as Supervisor on Task: '.$this->task->title,
+                'received_at' => $notifiable->created_at,
+            ],
         ];
     }
 }

@@ -15,7 +15,7 @@ class TasksCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection
+            'data' => $this->collection,
         ];
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\Project;
-use Illuminate\Auth\Access\Response;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
@@ -61,7 +61,6 @@ class ProjectPolicy
             : Response::deny('You do not own this project.');
     }
 
-
     /**
      * Determine whether the user can view the model.
      *
@@ -98,6 +97,7 @@ class ProjectPolicy
     public function update(User $user, Project $project)
     {
         $result = $project->invitees()->where('user_id', $user->id)->get();
+
         return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
     }
 

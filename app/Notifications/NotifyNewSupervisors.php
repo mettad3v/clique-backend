@@ -2,17 +2,17 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class NotifyNewSupervisors extends Notification implements ShouldQueue
 {
     use Queueable;
 
     public $task;
+
     public $user;
 
     /**
@@ -59,12 +59,11 @@ class NotifyNewSupervisors extends Notification implements ShouldQueue
      */
     public function toArray($notifiable)
     {
-
         return [
             'data' => [
-                'message' => $this->user->name . ' made you a supervisor in ' . $this->task->title,
-                'received_at' => $notifiable->created_at 
-            ]
+                'message' => $this->user->name.' made you a supervisor in '.$this->task->title,
+                'received_at' => $notifiable->created_at,
+            ],
         ];
     }
 }

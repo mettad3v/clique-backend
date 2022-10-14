@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class UsersCollection extends ResourceCollection
 {
     public $collects = JSONAPIResource::class;
+
     /**
      * Transform the resource collection into an array.
      *
@@ -16,7 +17,7 @@ class UsersCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection
+            'data' => $this->collection,
         ];
     }
 }
