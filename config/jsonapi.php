@@ -39,6 +39,10 @@ return  [
                 [
                     'type' => 'tasks',
                     'method' => 'tasks',
+                ],
+                [
+                    'type' => 'tasks',
+                    'method' => 'tasksAssigned',
                 ]
             ]
         ],
@@ -115,8 +119,7 @@ return  [
                 'update' => [
                     'data.attributes.title' => 'sometimes|required|string|unique:tasks,title',
                     'data.attributes.description' => 'sometimes|string',
-                    'data.attributes.project_id' => 'sometimes|required|integer',
-                    'data.attributes.category_id' => 'sometimes|required|integer',
+                    'data.attributes.relationships' => 'sometimes|required|array',
                     'data.attributes.group_id' => 'sometimes|required|integer',
                     'data.attributes.deadline' => 'sometimes|date_format:Y-m-d',
                 ],
@@ -149,16 +152,17 @@ return  [
             ],
             'allowedIncludes' => [
                 'tasks',
-                'creator'
+                'creator',
             ],
             'validationRules' => [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:groups,title',
-                    'data.attributes.project_id' => 'required|integer',
+                    'data.relationships.project' => 'required',
+                    'data.relationships.creator' => 'required',
                 ],
                 'update' => [
                     'data.attributes.title' => 'sometimes|required|string|unique:groups,title',
-                    'data.attributes.project_id' => 'sometimes|required|integer',
+                    'data.attributes.relationships' => 'sometimes|required',
                 ]
             ],
             'relationships' => [

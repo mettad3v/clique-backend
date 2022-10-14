@@ -38,8 +38,7 @@ class GroupController extends Controller
         return $this->service->createResource(Group::class, [
             'title' => $request->input('data.attributes.title'),
             'user_id' => auth()->user()->id,
-            'project_id' => $request->input('data.attributes.project_id'),
-        ]);
+        ], $request->input('data.relationships'));
     }
 
     /**
@@ -62,7 +61,7 @@ class GroupController extends Controller
      */
     public function update(JSONAPIRequest $request, Group $group)
     {
-        $this->service->updateResource($group, $request->input('data.attributes'));
+        $this->service->updateResource($group, $request->input('data.attributes'), $request->input('data.relationships'));
     }
 
     /**

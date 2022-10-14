@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRelationshipRequest;
 
 
-class UsersTasksRelationshipController extends Controller
+class UsersTasksAssignedRelationshipController extends Controller
 {
     /**
      * var JSONAPIService
@@ -22,13 +22,13 @@ class UsersTasksRelationshipController extends Controller
 
     public function index(User $user)
     {
-        return $this->service->fetchRelationship($user, 'tasks');
+        return $this->service->fetchRelationship($user, 'tasksAssigned');
     }
 
     public function update(JSONAPIRelationshipRequest $request, User $user)
     {
 
-        $user->tasks()->detach($request->input('data.*.id'));
+        $user->tasksAssigned()->detach($request->input('data.*.id'));
         return response(null, 204);
     }
 }

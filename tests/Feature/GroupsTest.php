@@ -336,8 +336,21 @@ class GroupsTest extends TestCase
             'data' => [
                 'type' => 'groups',
                 'attributes' => [
-                    'title' => 'test',
-                    'project_id' => $project->id,
+                    'title' => 'test'
+                ],
+                'relationships' => [
+                    'project' => [
+                        'data' => [
+                            'id' => (string)$project->id,
+                            'type' => 'projects'
+                        ]
+                    ],
+                    'creator' => [
+                        'data' => [
+                            'id' => (string)$user->id,
+                            'type' => 'users'
+                        ]
+                    ]
                 ]
             ]
         ], [
