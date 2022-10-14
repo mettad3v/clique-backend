@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Task;
 
 use App\Models\Task;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 
-class TaskCreatorRelationshipController extends Controller
+class TaskProjectRelationshipController extends Controller
 {
     private $service;
     public function __construct(JSONAPIService $service)
@@ -16,6 +16,6 @@ class TaskCreatorRelationshipController extends Controller
 
     public function index(Task $task)
     {
-        return $this->service->fetchRelationship($task, 'creator');
+        return $this->service->fetchRelationship($task, 'project');
     }
 }

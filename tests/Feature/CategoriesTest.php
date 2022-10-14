@@ -18,7 +18,6 @@ class CategoriesTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        // dd($category->title);
         $this->getJson('/api/v1/categories/1', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'

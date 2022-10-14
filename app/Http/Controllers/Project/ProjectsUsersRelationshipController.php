@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
-use App\Models\User;
+
 use App\Models\Project;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
-use App\Http\Requests\JSONAPIRequest;
-use App\Notifications\NotifyInvitedUsers;
-use App\Notifications\NotifyRevokedUsers;
-use Illuminate\Support\Facades\Notification;
 use App\Http\Requests\JSONAPIRelationshipRequest;
 use Illuminate\Auth\Access\AuthorizationException;
 

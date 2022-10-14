@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Task;
 
 use App\Models\Task;
 use App\Models\User;
 use App\Models\Project;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
-use App\Http\Resources\JSONAPIResource;
 use App\Notifications\NotifyAssignedUsers;
 use App\Notifications\NotifyNewSupervisors;
 use Illuminate\Support\Facades\Notification;
@@ -130,6 +129,6 @@ class TaskController extends Controller
         if ($request->user()->cannot('delete', $task)) {
             abort(403, 'Access Denied');
         }
-        return $task;
+        return $this->service->deleteResource($task);
     }
 }

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRelationshipRequest;
 
 class UsersInvitationsRelationshipController extends Controller
 {
-     /**
+    /**
      * var JSONAPIService
      */
     private $service;
@@ -26,7 +26,7 @@ class UsersInvitationsRelationshipController extends Controller
 
     public function update(JSONAPIRelationshipRequest $request, User $user)
     {
-        
+
         $user->invitations()->detach($request->input('data.*.id'));
         return response(null, 204);
     }

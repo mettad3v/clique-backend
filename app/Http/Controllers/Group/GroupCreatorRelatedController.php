@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Group;
 
 use App\Models\Group;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 
 class GroupCreatorRelatedController extends Controller
 {

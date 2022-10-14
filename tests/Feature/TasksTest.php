@@ -10,6 +10,7 @@ use App\Models\Project;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class TasksTest extends TestCase
@@ -138,6 +139,12 @@ class TasksTest extends TestCase
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json'
         ])->assertStatus(204);
+
+        // Notification::fake();
+        // Notification::assertNotSentTo(
+        //     [$users[1], $users[2]],
+        //     NotifyNewSupervisors::class
+        // );
     }
 
     public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
@@ -1024,7 +1031,9 @@ class TasksTest extends TestCase
     public function test_it_can_update_a_task_from_a_resource_object()
     {
         $user = User::factory()->create();
-        $task = Task::factory()->create();
+        $project = Project::factory()->create();
+        $project->invitees()->attach($user->id);
+        $task = Task::factory(['project_id' => 1])->create();
         Sanctum::actingAs($user);
 
         $this->patchJson('/api/v1/tasks/1', [
@@ -1085,8 +1094,12 @@ class TasksTest extends TestCase
 
     public function test_it_can_delete_a_task_through_a_delete_request()
     {
+
         $user = User::factory()->create();
-        $task = Task::factory()->create();
+        $project = Project::factory()->create();
+        $project->invitees()->attach($user->id);
+        $task = Task::factory(['project_id' => 1])->create();
+
         Sanctum::actingAs($user);
 
         $this->delete('/api/v1/tasks/1', [], [

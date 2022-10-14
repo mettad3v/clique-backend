@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controller\Project;
 
 use App\Models\Project;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 
-class ProjectCreatorRelatedController extends Controller
+class ProjectsTasksRelationshipController extends Controller
 {
     private $service;
     public function __construct(JSONAPIService $service)
     {
         $this->service = $service;
     }
+
     public function index(Project $project)
     {
-        return $this->service->fetchRelated($project, 'creator');
+        return $this->service->fetchRelationship($project, 'tasks');
     }
 }

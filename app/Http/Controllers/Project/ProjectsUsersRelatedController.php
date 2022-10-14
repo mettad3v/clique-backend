@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
 use App\Models\Project;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 
-class ProjectsTasksRelatedController extends Controller
+class ProjectsUsersRelatedController extends Controller
 {
     private $service;
     public function __construct(JSONAPIService $service)
@@ -15,6 +15,6 @@ class ProjectsTasksRelatedController extends Controller
     }
     public function index(Project $project)
     {
-        return $this->service->fetchRelated($project, 'tasks');
+        return $this->service->fetchRelated($project, 'invitees');
     }
 }

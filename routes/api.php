@@ -31,6 +31,8 @@ use App\Http\Controllers\UsersProjectsRelationshipController;
 use App\Http\Controllers\UsersInvitationsRelationshipController;
 use App\Http\Controllers\UsersInvitationsRelatedController;
 use App\Http\Controllers\UsersTasksRelatedController;
+use App\Http\Controllers\CategoriesTasksRelatedController;
+use App\Http\Controllers\CategoriesTasksRelationshipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,4 +113,6 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/tasks/{task}/group', [TaskGroupRelatedController::class, 'index'])->name('tasks.group');
 
     Route::apiResource('categories', CategoryController::class);
+    Route::get('/categories/{category}/tasks', [CategoriesTasksRelatedController::class, 'index'])->name('categories.tasks');
+    Route::get('/categories/{category}/relationships/tasks', [CategoriesTasksRelationshipController::class, 'index'])->name('categories.relationships.tasks');
 });

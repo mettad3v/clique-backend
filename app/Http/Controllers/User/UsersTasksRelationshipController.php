@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use App\Http\Requests\JSONAPIRelationshipRequest;
+use App\Http\Controllers\Controller;
+
 
 class UsersTasksRelationshipController extends Controller
 {
@@ -23,11 +23,4 @@ class UsersTasksRelationshipController extends Controller
     {
         return $this->service->fetchRelationship($user, 'tasksAssigned');
     }
-
-    // public function update(JSONAPIRelationshipRequest $request, User $user)
-    // {
-        
-    //     $user->tasksAssigned()->detach($request->input('data.*.id'));
-    //     return response(null, 204);
-    // }
 }

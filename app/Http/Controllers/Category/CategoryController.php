@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Category;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 
 class CategoryController extends Controller
 {
@@ -54,7 +55,6 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         return $this->service->fetchResource($category, 'categories');
-
     }
 
     /**

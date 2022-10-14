@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Group;
 
 use App\Models\Task;
 use App\Models\Group;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use App\Http\Resources\GroupsIdentifierResource;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRelationshipRequest;
-use Illuminate\Support\Facades\DB;
 
 class GroupsTasksRelationshipController extends Controller
 {
@@ -21,10 +19,7 @@ class GroupsTasksRelationshipController extends Controller
     {
         return $this->service->fetchRelated($group, 'tasks');
     }
-    // public function index(Group $group)
-    // {
-    //     return GroupsIdentifierResource::collection($group->tasks);
-    // }
+
 
     public function update(JSONAPIRelationshipRequest $request, Group $group)
     {

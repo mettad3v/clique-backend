@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\User;
 
 use App\Models\User;
-use App\Models\Project;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use App\Http\Requests\JSONAPIRelationshipRequest;
+use App\Http\Controllers\Controller;
+
 
 class UsersProjectsRelationshipController extends Controller
 {
@@ -28,7 +27,7 @@ class UsersProjectsRelationshipController extends Controller
     //you should be able to delete your projects and also change project ownership
     // public function update(JSONAPIRelationshipRequest $request, User $user)
     // {
-        
+
     //     $user->projects()->detach($request->input('data.*.id'));
     //     return response(null, 204);
     // }

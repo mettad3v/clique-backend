@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Task;
 
 use App\Models\Task;
 use App\Models\User;
 use App\Services\JSONAPIService;
-use App\Notifications\NotifyAssignedUsers;
+use App\Http\Controllers\Controller;
 use App\Notifications\NotifyNewSupervisors;
-use App\Notifications\NotifyUnassignedUsers;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NotifyRemovedSupervisors;
 use App\Http\Requests\JSONAPIRelationshipRequest;

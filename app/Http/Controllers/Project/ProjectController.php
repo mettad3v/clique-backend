@@ -1,19 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
-use App\Http\Requests\JSONAPIRequest;
-use App\Models\User;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
-use App\Http\Resources\JSONAPIResource;
-use App\Notifications\NotifyInvitedUsers;
-use App\Notifications\NotifyRevokedUsers;
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\ProjectOwnerShipChange;
-use App\Http\Requests\Projects\InviteUserRequest;
-use App\Http\Requests\Projects\ChangeProjectOwnershipRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\JSONAPIRequest;
 
 class ProjectController extends Controller
 {

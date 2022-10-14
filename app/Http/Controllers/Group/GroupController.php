@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Group;
 
 use App\Models\Group;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
-use Spatie\QueryBuilder\QueryBuilder;
-use App\Http\Resources\JSONAPIResource;
-use App\Http\Resources\JSONAPICollection;
 
 class GroupController extends Controller
 {

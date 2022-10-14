@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Group;
 
 use App\Models\Group;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRelationshipRequest;
+
 
 class GroupCreatorRelationshipController extends Controller
 {

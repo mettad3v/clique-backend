@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Project;
 
 use App\Models\User;
 use App\Models\Project;
-use Illuminate\Http\Request;
 use App\Services\JSONAPIService;
+use App\Http\Controllers\Controller;
 use App\Notifications\ProjectOwnerShipChange;
 use App\Http\Requests\JSONAPIRelationshipRequest;
 
