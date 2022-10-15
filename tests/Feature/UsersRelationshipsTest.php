@@ -20,7 +20,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->invitations()->sync($projects->pluck('id'));
         Sanctum::actingAs($auth);
 
-        $this->getJson('/api/v1/users/'.$auth->id.'?include=invitations', [
+        $this->getJson('/api/v1/users/' . $auth->id . '?include=invitations', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -33,7 +33,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->projects()->saveMany($projects);
         Sanctum::actingAs($auth);
 
-        $this->getJson('/api/v1/users/'.$auth->id.'?include=projects', [
+        $this->getJson('/api/v1/users/' . $auth->id . '?include=projects', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -46,7 +46,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->tasksAssigned()->sync($tasks->pluck('id'));
         Sanctum::actingAs($auth);
 
-        $this->getJson('/api/v1/users/'.$auth->id.'?include=tasksAssigned', [
+        $this->getJson('/api/v1/users/' . $auth->id . '?include=tasksAssigned', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -58,7 +58,7 @@ class UsersRelationshipsTest extends TestCase
         Sanctum::actingAs($auth);
         $projects = Project::factory(3)->create();
         $auth->invitations()->sync($projects->pluck('id'));
-        $this->getJson('/api/v1/users/'.$auth->id.'/relationships/invitations', [
+        $this->getJson('/api/v1/users/' . $auth->id . '/relationships/invitations', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -87,7 +87,7 @@ class UsersRelationshipsTest extends TestCase
         $projects = Project::factory(2)->create(['user_id' => $auth->id]);
         $auth->invitations()->attach($projects->pluck('id'));
         Sanctum::actingAs($auth);
-        $this->patchJson('/api/v1/users/'.$auth->id.'/relationships/invitations', [
+        $this->patchJson('/api/v1/users/' . $auth->id . '/relationships/invitations', [
             'data' => [
                 [
                     'id' => '2',
@@ -111,7 +111,7 @@ class UsersRelationshipsTest extends TestCase
         $auth->invitations()->attach($projects);
 
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/users/'.$auth->id.'/projects', [
+        $this->getJson('/api/v1/users/' . $auth->id . '/projects', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])->assertStatus(200);
@@ -123,7 +123,7 @@ class UsersRelationshipsTest extends TestCase
         $projects = Project::factory(3)->create();
         $auth->invitations()->attach($projects);
         Sanctum::actingAs($auth);
-        $this->getJson('/api/v1/users/'.$auth->id.'?include=invitations', [
+        $this->getJson('/api/v1/users/' . $auth->id . '?include=invitations', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -133,10 +133,10 @@ class UsersRelationshipsTest extends TestCase
                     'id' => $auth->id,
                     'type' => 'users',
                     'relationships' => [
-                        'projects' => [
+                        'invitations' => [
                             'links' => [
-                                'self' => route('users.relationships.projects', $auth->id),
-                                'related' => route('users.projects', $auth->id),
+                                'self' => route('users.relationships.invitations', $auth->id),
+                                'related' => route('users.invitations', $auth->id),
                             ],
                             'data' => [
                                 [

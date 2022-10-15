@@ -9,7 +9,9 @@ class Task extends AbstractAPIModel
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'unique_id', 'user_id', 'category_id'];
+    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'unique_id', 'user_id', 'category_id', 'group_id'];
+
+    protected $hidden = ['project_id', 'user_id', 'category_id', 'group_id'];
 
     public function project()
     {

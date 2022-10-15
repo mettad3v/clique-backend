@@ -108,6 +108,9 @@ return  [
             ],
             'allowedIncludes' => [
                 'assignees',
+                'creator',
+                'project',
+                'project.creator',
             ],
             'validationRules' => [
                 'create' => [
@@ -120,7 +123,6 @@ return  [
                     'data.attributes.title' => 'sometimes|required|string|unique:tasks,title',
                     'data.attributes.description' => 'sometimes|string',
                     'data.attributes.relationships' => 'sometimes|required|array',
-                    'data.attributes.group_id' => 'sometimes|required|integer',
                     'data.attributes.deadline' => 'sometimes|date_format:Y-m-d',
                 ],
 
@@ -138,10 +140,7 @@ return  [
                     'type' => 'projects',
                     'method' => 'project',
                 ],
-                [
-                    'type' => 'groups',
-                    'method' => 'group',
-                ],
+
             ],
         ],
         'groups' => [

@@ -47,9 +47,8 @@ class TaskUsersRelationshipController extends Controller
      */
     public function supervisor(JSONAPIRelationshipRequest $request, Task $task)
     {
-        $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
-            'is_supervisor' => 1,
-        ]);
+
+        $task->asignees()->syncWithPivotValues($request->input('data.*.id'), ['is_supervisor' => 1]);
 
         $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
         Notification::send($new_supervisors, new NotifyNewSupervisors(auth()->user(), $task));
@@ -57,21 +56,21 @@ class TaskUsersRelationshipController extends Controller
         return response(null, 204);
     }
 
-    /**
-     * Make assigned users supervisor
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function remove_supervisor(JSONAPIRelationshipRequest $request, Task $task)
-    {
-        $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
-            'is_supervisor' => 0,
-        ]);
+    // /**
+    //  * Make assigned users supervisor
+    //  *
+    //  * @param  \App\Models\Task  $task
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function remove_supervisor(JSONAPIRelationshipRequest $request, Task $task)
+    // {
+    //     $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
+    //         'is_supervisor' => 0,
+    //     ]);
 
-        $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
-        Notification::send($new_supervisors, new NotifyRemovedSupervisors(auth()->user(), $task));
+    //     $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
+    //     Notification::send($new_supervisors, new NotifyRemovedSupervisors(auth()->user(), $task));
 
-        return response(null, 204);
-    }
+    //     return response(null, 204);
+    // }
 }

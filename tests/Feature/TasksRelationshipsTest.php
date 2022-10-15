@@ -310,7 +310,7 @@ class TasksRelationshipsTest extends TestCase
                     'id' => '1',
                     'type' => 'tasks',
                     'relationships' => [
-                        'users' => [
+                        'assignees' => [
                             'links' => [
                                 'self' => route('tasks.relationships.assignees', $project->id),
                                 'related' => route('tasks.assignees', $project->id),

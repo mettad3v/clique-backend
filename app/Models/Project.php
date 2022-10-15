@@ -10,6 +10,7 @@ class Project extends AbstractAPIModel
     use HasFactory;
 
     protected $fillable = ['name', 'user_id'];
+    protected $hidden = ['user_id'];
 
     public function creator()
     {

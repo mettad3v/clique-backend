@@ -366,7 +366,7 @@ class ProjectsRelationshipsTest extends TestCase
                     'id' => '1',
                     'type' => 'projects',
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $project->id),
                                 'related' => route('projects.invitees', $project->id),
@@ -463,7 +463,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'updated_at' => $projects[0]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $projects[0]->id),
                                 'related' => route('projects.invitees', $projects[0]->id),
@@ -494,7 +494,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'updated_at' => $projects[1]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $projects[1]->id),
                                 'related' => route('projects.invitees', $projects[1]->id),
@@ -511,7 +511,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'updated_at' => $projects[2]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $projects[2]->id),
                                 'related' => route('projects.invitees', $projects[2]->id),
@@ -590,7 +590,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'updated_at' => $projects[0]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $projects[0]->id),
                                 'related' => route('projects.invitees', $projects[0]->id),
@@ -620,7 +620,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'created_at' => $projects[1]->created_at->toJSON(),
                         'updated_at' => $projects[1]->updated_at->toJSON(),
                     ], 'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $projects[1]->id),
                                 'related' => route('projects.invitees', $projects[1]->id),
@@ -651,7 +651,7 @@ class ProjectsRelationshipsTest extends TestCase
                         'updated_at' => $projects[2]->updated_at->toJSON(),
                     ],
                     'relationships' => [
-                        'users' => [
+                        'invitees' => [
                             'links' => [
                                 'self' => route('projects.relationships.invitees', $projects[2]->id),
                                 'related' => route('projects.invitees', $projects[2]->id),

@@ -49,7 +49,7 @@ class TaskController extends Controller
             'description' => $request->input('data.attributes.description'),
             'deadline' => $request->input('data.attributes.deadline'),
             'user_id' => auth()->user()->id,
-            'unique_id' => 'T-'.(string) $unique_id,
+            'unique_id' => 'T-' . (string) $unique_id,
 
         ], $request->input('data.relationships'));
     }
@@ -65,39 +65,7 @@ class TaskController extends Controller
         return $this->service->fetchResource(Task::class, $task, 'tasks');
     }
 
-    /**
-     * Assign users to a task
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function assign(AssignUsersRequest $request, Task $task)
-    {
-        $task->assignees()->syncWithoutDetaching($request->input('data.attributes.id'));
 
-        $assigned_users = User::whereIn('id', $request->input('data.attributes.id'))->get();
-        Notification::send($assigned_users, new NotifyAssignedUsers(auth()->user()->id, $task));
-
-        return response(null, 200);
-    }
-
-    /**
-     * Make assigned users supervisor
-     *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
-     */
-    public function supervisor(AssignUsersRequest $request, Task $task)
-    {
-        $task->assignees()->updateExistingPivot($request->input('data.attributes.id'), [
-            'is_supervisor' => 1,
-        ]);
-
-        $new_supervisors = User::whereIn('id', $request->input('data.attributes.id'))->get();
-        Notification::send($new_supervisors, new NotifyNewSupervisors($request->input('data.attributes.user_id'), $task));
-
-        return response(null, 200);
-    }
 
     /**
      * Update the specified resource in storage.

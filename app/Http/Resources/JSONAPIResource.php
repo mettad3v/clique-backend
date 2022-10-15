@@ -2,11 +2,12 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Http\Resources\MissingValue;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Resources\MissingValue;
+use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\JSONAPIIdentifierResource;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class JSONAPIResource extends JsonResource
 {
@@ -18,29 +19,31 @@ class JSONAPIResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'id' => (string) $this->id,
             'type' => $this->type(),
-            'attributes' => $this->allowedAttributes(),
+            'attributes' => $this->prepareAttributes(),
             'relationships' => $this->prepareRelationships(),
         ];
     }
-
+    private function prepareAttributes()
+    {
+        $new = $this->whenPivotLoaded(
+            'task_user',
+            fn () => $this->allowedAttributes()->put('is_supervisor', $this->pivot->is_supervisor)
+        );
+        if ($new instanceof MissingValue) {
+            $new = $this->allowedAttributes();
+        }
+        return $new;
+    }
     private function prepareRelationships()
     {
         $collection = collect(config("jsonapi.resources.{$this->type()}.relationships"))
             ->flatMap(function ($related) {
                 $relationship = $related['method'];
                 $relatedType = $related['type'];
-                $relatedType2 = $related['type'];
-
-                //check if given val for relationship is equal to its singluar form
-                if ($this->$relationship() instanceof BelongsTo) {
-                    $relatedType2 = Str::singular($related['type']);
-                    // dd($relationship, $relatedType2);
-                    // $relatedType = Str::plural($related['type']);
-                }
-                // dd($relatedType2);
 
                 return [
                     $relationship => [
@@ -53,15 +56,17 @@ class JSONAPIResource extends JsonResource
                 ];
             });
 
-        //remove the relationships member if the included query param is not used in uri
         return $collection->count() > 0 ? $collection : new MissingValue();
     }
 
     private function prepareRelationshipData($relatedType, $relationship)
     {
+        // return $this->relationship;
+        // $relationship = 'assignees';
         if ($this->whenLoaded($relationship) instanceof MissingValue) {
             return new MissingValue();
         }
+
         if ($this->$relationship() instanceof BelongsTo) {
             return new JSONAPIIdentifierResource($this->$relationship);
         }
@@ -85,9 +90,7 @@ class JSONAPIResource extends JsonResource
             ->filter(function ($resource) {
                 return $resource->collection !== null;
             })
-            ->flatMap(function ($resource) use ($request) {
-                return $resource->toArray($request);
-            });
+            ->flatMap(fn ($resource) =>  $resource->toArray($request));
     }
 
     private function relations()

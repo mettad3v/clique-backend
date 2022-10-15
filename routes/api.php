@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/tasks/{task}/relationships/project', [TaskProjectRelationshipController::class, 'index'])->name('tasks.relationships.project');
     Route::get('/tasks/{task}/project', [TaskProjectRelatedController::class, 'index'])->name('tasks.project');
     Route::patch('/tasks/{task}/relationships/supervisor', [TaskUsersRelationshipController::class, 'supervisor']);
-    Route::patch('/tasks/{task}/relationships/remove-supervisor', [TaskUsersRelationshipController::class, 'remove_supervisor']);
+    // Route::patch('/tasks/{task}/relationships/remove-supervisor', [TaskUsersRelationshipController::class, 'remove_supervisor']);
 
     Route::get('/tasks/{task}/creator', [TaskCreatorRelatedController::class, 'index'])->name('tasks.creator');
     Route::get('/tasks/{task}/relationships/creator', [TaskCreatorRelationshipController::class, 'index'])->name('tasks.relationships.creator');

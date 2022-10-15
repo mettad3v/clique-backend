@@ -10,6 +10,7 @@ class Group extends AbstractAPIModel
     use HasFactory;
 
     protected $fillable = ['title', 'user_id', 'project_id'];
+    protected $hidden = ['user_id', 'project_id'];
 
     public function tasks()
     {
