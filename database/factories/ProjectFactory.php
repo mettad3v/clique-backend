@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,9 +22,10 @@ class ProjectFactory extends Factory
      */
     public function definition()
     {
+
         return [
             'name' => $this->faker->word(),
-            'user_id' => '1f0955c5-7313-4536-8361-caddb186f6b5',
+            'user_id' => User::factory()->make()->id,
         ];
     }
 }

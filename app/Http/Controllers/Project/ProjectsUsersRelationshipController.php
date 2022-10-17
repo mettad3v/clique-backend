@@ -29,7 +29,7 @@ class ProjectsUsersRelationshipController extends Controller
             throw new AuthorizationException('This action is unauthorized.');
         }
 
-        // $this->service->notificationHandler($request, $project, 'invitees', NotifyInvitedUsers::class, NotifyRevokedUsers::class, auth()->user());
+        // $this->service->notificationHandler($request, $project, 'invitees', );
         return $this->service->updateManyToManyRelationships($project, 'invitees', $request->input('data.*.id'));
     }
 }

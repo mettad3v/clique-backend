@@ -461,6 +461,14 @@ class ProjectsTest extends TestCase
                 'attributes' => [
                     'name' => 'John Doe',
                 ],
+                'relationships' => [
+                    'creator' => [
+                        'data' => [
+                            'id' => (string) $user->id,
+                            'type' => 'users',
+                        ],
+                    ],
+                ]
             ],
         ], [
             'accept' => 'application/vnd.api+json',
@@ -472,10 +480,10 @@ class ProjectsTest extends TestCase
                     'type' => 'projects',
                     'attributes' => [
                         'name' => 'John Doe',
-                        'user_id' => $user->id,
                         'created_at' => now()->setMilliseconds(0)->toJSON(),
                         'updated_at' => now()->setMilliseconds(0)->toJSON(),
                     ],
+
                 ],
             ])->assertHeader('Location', url('/api/v1/projects/1'));
 

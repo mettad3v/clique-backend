@@ -53,9 +53,9 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show($category)
     {
-        return $this->service->fetchResource($category, 'categories');
+        return $this->service->fetchResource(Category::class, $category, 'categories');
     }
 
     /**

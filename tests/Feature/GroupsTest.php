@@ -43,7 +43,7 @@ class GroupsTest extends TestCase
     public function test_It_can_paginate_groups_through_a_page_query_parameter()
     {
         $project = Project::factory()->create();
-        $groups = Group::factory(10)->create();
+        $groups = Group::factory(6)->create();
         $user = User::factory()->create();
 
         Sanctum::actingAs($user);

@@ -32,7 +32,7 @@ class TasksRelationshipsTest extends TestCase
                     'type' => 'tasks',
                     'attributes' => [
                         'title' => $task->title,
-                        'project_id' => $project->id,
+
                     ],
                     'relationships' => [
                         'assignees' => [

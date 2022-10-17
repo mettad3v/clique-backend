@@ -12,7 +12,6 @@ class NotifyNewSupervisors extends Notification implements ShouldQueue
     use Queueable;
 
     public $task;
-
     public $user;
 
     /**
@@ -46,9 +45,9 @@ class NotifyNewSupervisors extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->line('The introduction to the notification.')
+            ->action('Notification Action', url('/'))
+            ->line('Thank you for using our application!');
     }
 
     /**
@@ -61,7 +60,7 @@ class NotifyNewSupervisors extends Notification implements ShouldQueue
     {
         return [
             'data' => [
-                'message' => $this->user->name.' made you a supervisor in '.$this->task->title,
+                'message' => $this->user . ' made you a supervisor in ' . $this->task->title,
                 'received_at' => $notifiable->created_at,
             ],
         ];

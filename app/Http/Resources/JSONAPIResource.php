@@ -19,7 +19,6 @@ class JSONAPIResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'id' => (string) $this->id,
             'type' => $this->type(),
@@ -29,14 +28,14 @@ class JSONAPIResource extends JsonResource
     }
     private function prepareAttributes()
     {
-        $new = $this->whenPivotLoaded(
+        $attributes = $this->whenPivotLoaded(
             'task_user',
             fn () => $this->allowedAttributes()->put('is_supervisor', $this->pivot->is_supervisor)
         );
-        if ($new instanceof MissingValue) {
-            $new = $this->allowedAttributes();
+        if ($attributes instanceof MissingValue) {
+            return $this->allowedAttributes();
         }
-        return $new;
+        return $attributes;
     }
     private function prepareRelationships()
     {
@@ -44,6 +43,10 @@ class JSONAPIResource extends JsonResource
             ->flatMap(function ($related) {
                 $relationship = $related['method'];
                 $relatedType = $related['type'];
+
+                if ($this->whenLoaded($relationship) instanceof MissingValue) {
+                    return new MissingValue();
+                }
 
                 return [
                     $relationship => [
@@ -61,8 +64,7 @@ class JSONAPIResource extends JsonResource
 
     private function prepareRelationshipData($relatedType, $relationship)
     {
-        // return $this->relationship;
-        // $relationship = 'assignees';
+
         if ($this->whenLoaded($relationship) instanceof MissingValue) {
             return new MissingValue();
         }

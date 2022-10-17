@@ -33,44 +33,30 @@ class TaskUsersRelationshipController extends Controller
      */
     public function update(JSONAPIRelationshipRequest $request, Task $task)
     {
-        // return response(null, 204);
-        // $this->service->notificationHandler($request, $task, 'assignees', NotifyAssignedUsers::class, NotifyUnassignedUsers::class, auth()->user());
 
         return $this->service->updateManyToManyRelationships($task, 'assignees', $request->input('data.*.id'));
     }
 
     /**
-     * Make assigned users supervisor
+     * Make or remove assigned users as supervisor
      *
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function supervisor(JSONAPIRelationshipRequest $request, Task $task)
     {
+        if (empty($request->input('data.*.id'))) {
+            $task->assignees()->newPivotStatement()->where('task_id', '=', $task->id)
+                ->update(array('is_supervisor' => 0));
 
-        $task->asignees()->syncWithPivotValues($request->input('data.*.id'), ['is_supervisor' => 1]);
+            return response(null, 204);
+        }
 
-        $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
-        Notification::send($new_supervisors, new NotifyNewSupervisors(auth()->user(), $task));
+        $task->assignees()->syncWithPivotValues($request->input('data.*.id'), ['is_supervisor' => 1]);
+
+        // $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
+        // Notification::send($new_supervisors, new NotifyNewSupervisors(auth()->user()->name, $task));
 
         return response(null, 204);
     }
-
-    // /**
-    //  * Make assigned users supervisor
-    //  *
-    //  * @param  \App\Models\Task  $task
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function remove_supervisor(JSONAPIRelationshipRequest $request, Task $task)
-    // {
-    //     $task->assignees()->updateExistingPivot($request->input('data.*.id'), [
-    //         'is_supervisor' => 0,
-    //     ]);
-
-    //     $new_supervisors = User::whereIn('id', $request->input('data.*.id'))->get();
-    //     Notification::send($new_supervisors, new NotifyRemovedSupervisors(auth()->user(), $task));
-
-    //     return response(null, 204);
-    // }
 }

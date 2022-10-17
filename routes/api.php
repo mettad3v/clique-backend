@@ -1,40 +1,41 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Category\CategoriesTasksRelatedController;
-use App\Http\Controllers\Category\CategoriesTasksRelationshipController;
-use App\Http\Controllers\Category\CategoryController;
-use App\Http\Controllers\Group\GroupController;
-use App\Http\Controllers\Group\GroupCreatorRelatedController;
-use App\Http\Controllers\Group\GroupCreatorRelationshipController;
-use App\Http\Controllers\Group\GroupsTasksRelationshipController;
-use App\Http\Controllers\Project\ProjectController;
-use App\Http\Controllers\Project\ProjectCreatorRelatedController;
-use App\Http\Controllers\Project\ProjectCreatorRelationshipController;
-use App\Http\Controllers\Project\ProjectsTasksRelatedController;
-use App\Http\Controllers\Project\ProjectsTasksRelationshipController;
-use App\Http\Controllers\Project\ProjectsUsersRelatedController;
-use App\Http\Controllers\Project\ProjectsUsersRelationshipController;
-use App\Http\Controllers\Task\TaskController;
-use App\Http\Controllers\Task\TaskCreatorRelatedController;
-use App\Http\Controllers\Task\TaskCreatorRelationshipController;
-use App\Http\Controllers\Task\TaskGroupRelatedController;
-use App\Http\Controllers\Task\TaskGroupRelationshipController;
-use App\Http\Controllers\Task\TaskProjectRelatedController;
-use App\Http\Controllers\Task\TaskProjectRelationshipController;
-use App\Http\Controllers\Task\TaskUsersRelatedController;
-use App\Http\Controllers\Task\TaskUsersRelationshipController;
-use App\Http\Controllers\User\UserController;
-use App\Http\Controllers\User\UsersInvitationsRelatedController;
-use App\Http\Controllers\User\UsersInvitationsRelationshipController;
-use App\Http\Controllers\User\UsersProjectsRelatedController;
-use App\Http\Controllers\User\UsersProjectsRelationshipController;
-use App\Http\Controllers\User\UsersTasksAssignedRelatedController;
-use App\Http\Controllers\User\UsersTasksAssignedRelationshipController;
-use App\Http\Controllers\User\UsersTasksRelatedController;
-use App\Http\Controllers\User\UsersTasksRelationshipController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Task\TaskController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Group\GroupController;
+use App\Http\Controllers\Project\ProjectController;
+use App\Http\Controllers\Category\CategoryController;
+use App\Http\Controllers\Task\TaskGroupRelatedController;
+use App\Http\Controllers\Task\TaskUsersRelatedController;
+use App\Http\Controllers\User\UsersTasksRelatedController;
+use App\Http\Controllers\Task\TaskCreatorRelatedController;
+use App\Http\Controllers\Task\TaskProjectRelatedController;
+use App\Http\Controllers\Group\GroupCreatorRelatedController;
+use App\Http\Controllers\User\UsersProjectsRelatedController;
+use App\Http\Controllers\Task\TaskGroupRelationshipController;
+use App\Http\Controllers\Task\TaskUsersRelationshipController;
+use App\Http\Controllers\User\UsersTasksRelationshipController;
+use App\Http\Controllers\Project\ProjectsTasksRelatedController;
+use App\Http\Controllers\Project\ProjectCreatorRelatedController;
+use App\Http\Controllers\Project\ProjectsUsersRelatedController;
+use App\Http\Controllers\Task\TaskCreatorRelationshipController;
+use App\Http\Controllers\Task\TaskProjectRelationshipController;
+use App\Http\Controllers\User\UsersInvitationsRelatedController;
+use App\Http\Controllers\Group\GroupsTasksRelationshipController;
+use App\Http\Controllers\Group\GroupCreatorRelationshipController;
+use App\Http\Controllers\User\CurrentAuthenticatedUserController;
+use App\Http\Controllers\User\UsersProjectsRelationshipController;
+use App\Http\Controllers\User\UsersTasksAssignedRelatedController;
+use App\Http\Controllers\Category\CategoriesTasksRelatedController;
+use App\Http\Controllers\Project\ProjectsTasksRelationshipController;
+use App\Http\Controllers\Project\ProjectsUsersRelationshipController;
+use App\Http\Controllers\User\UsersInvitationsRelationshipController;
+use App\Http\Controllers\Project\ProjectCreatorRelationshipController;
+use App\Http\Controllers\User\UsersTasksAssignedRelationshipController;
+use App\Http\Controllers\Category\CategoriesTasksRelationshipController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,18 +48,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::get('/users/current', function (Request $request) {
-        return request()->user();
-    });
+    Route::get('/users/current', [CurrentAuthenticatedUserController::class, 'show']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
     Route::apiResource('users', UserController::class);

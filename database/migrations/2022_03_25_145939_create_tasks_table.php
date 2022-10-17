@@ -18,6 +18,7 @@ class CreateTasksTable extends Migration
             $table->string('title');
             $table->string('unique_id');
             $table->text('description')->nullable();
+            $table->enum('status', ['backlog', 'todo', 'blocked', 'progress', 'ready', 'done', 'others', 'wontdo', 'blocking', 'archived'])->default('todo');
             $table->uuid('user_id')->nullable()->constrained('users');
             $table->foreignId('project_id')->nullable();
             $table->foreignId('group_id')->nullable();

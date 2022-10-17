@@ -23,7 +23,7 @@ class TasksTest extends TestCase
         $project->invitees()->sync($users->pluck('id'));
         $uid = Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
+        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
         Sanctum::actingAs($auth);
 
         // dd($users[0]->invitations()->where('project_id', $project->id)->get());
@@ -47,7 +47,7 @@ class TasksTest extends TestCase
         $project = Project::factory()->create();
         $uid = Project::where('id', $project->id)->withCount('tasks')->get();
         $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-'.$unique]);
+        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
         $project->tasks()->save($task);
 
         $user = User::factory()->create();
@@ -66,7 +66,6 @@ class TasksTest extends TestCase
                         'title' => $task->title,
                         'deadline' => $task->deadline,
                         'unique_id' => $task->unique_id,
-                        'project_id' => $project->id,
                         'description' => $task->description,
                         'created_at' => $task->created_at->toJSON(),
                         'updated_at' => $task->updated_at->toJSON(),
@@ -105,6 +104,7 @@ class TasksTest extends TestCase
 
     public function test_it_can_make_assigned_users_supervisor()
     {
+        $this->withExceptionHandling();
         $auth = User::factory()->create();
         $project = Project::factory()->create();
         $users = User::factory(3)->create();

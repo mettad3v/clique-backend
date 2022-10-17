@@ -13,6 +13,7 @@ return  [
                 'projects',
                 'tasksAssigned',
             ],
+            'allowedFilters' => [],
             'validationRules' => [
                 'create' => [
                     'data.attributes.name' => 'required|string|max:255',
@@ -46,25 +47,6 @@ return  [
                 ],
             ],
         ],
-        'categories' => [
-            'allowedSorts' => [
-                'title',
-                'created_at',
-            ],
-            'allowedIncludes' => [
-                'tasks',
-            ],
-            'validationRules' => [
-                'create' => [],
-                'update' => [],
-            ],
-            'relationships' => [
-                [
-                    'type' => 'tasks',
-                    'method' => 'tasks',
-                ],
-            ],
-        ],
         'projects' => [
             'allowedSorts' => [
                 'name',
@@ -76,9 +58,13 @@ return  [
                 'creator',
                 'tasks',
             ],
+            'allowedFilters' => [],
             'validationRules' => [
                 'create' => [
                     'data.attributes.name' => 'required|string|unique:projects,name',
+                    'data.relationships.creator.data' => 'required|array',
+                    'data.relationships.creator.data.id' => 'required|string',
+                    'data.relationships.creator.data.type' => 'required|string',
                 ],
                 'update' => [
                     'data.attributes.name' => 'required|string|unique:projects,name',
@@ -106,11 +92,16 @@ return  [
                 'created_at',
                 'updated_at',
             ],
+            'allowedFilters' => [
+                'status',
+            ],
             'allowedIncludes' => [
                 'assignees',
                 'creator',
                 'project',
                 'project.creator',
+                'creator.projects',
+
             ],
             'validationRules' => [
                 'create' => [
@@ -141,6 +132,7 @@ return  [
                     'method' => 'project',
                 ],
 
+
             ],
         ],
         'groups' => [
@@ -149,6 +141,7 @@ return  [
                 'created_at',
                 'updated_at',
             ],
+            'allowedFilters' => [],
             'allowedIncludes' => [
                 'tasks',
                 'creator',
