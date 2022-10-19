@@ -15,64 +15,6 @@ class TasksTest extends TestCase
 {
     use DatabaseMigrations;
 
-    public function test_only_owners_or_users_invited_to_the_parent_project_can_modify_task()
-    {
-        $users = User::factory(2)->create();
-        $auth = User::factory()->create();
-        $project = Project::factory(['user_id' => $auth->id])->create();
-        $project->invitees()->sync($users->pluck('id'));
-        $uid = Project::where('id', $project->id)->withCount('tasks')->get();
-        $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
-        Sanctum::actingAs($auth);
-
-        // dd($users[0]->invitations()->where('project_id', $project->id)->get());
-
-        $this->patchJson('/api/v1/tasks/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'tasks',
-                'attributes' => [
-                    'title' => 'John Doe',
-                ],
-            ],
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(200);
-    }
-
-    public function test_it_returns_a_task_as_a_resource_object()
-    {
-        $project = Project::factory()->create();
-        $uid = Project::where('id', $project->id)->withCount('tasks')->get();
-        $unique = $uid[0]->tasks_count + 1;
-        $task = Task::factory()->create(['unique_id' => 'T-' . $unique]);
-        $project->tasks()->save($task);
-
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
-        $this->getJson('/api/v1/tasks/1', [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'id' => '1',
-                    'type' => 'tasks',
-                    'attributes' => [
-                        'title' => $task->title,
-                        'deadline' => $task->deadline,
-                        'unique_id' => $task->unique_id,
-                        'description' => $task->description,
-                        'created_at' => $task->created_at->toJSON(),
-                        'updated_at' => $task->updated_at->toJSON(),
-                    ],
-                ],
-            ]);
-    }
 
     public function test_anyone_can_assign_tasks_to_other()
     {
@@ -141,8 +83,8 @@ class TasksTest extends TestCase
 
     public function test_It_returns_all_tasks_as_a_collection_of_resource_objects()
     {
-        $tasks = Task::factory(3)->create();
         $user = User::factory()->create();
+        $tasks = Task::factory(3)->create();
 
         Sanctum::actingAs($user);
         $this->get('/api/v1/tasks', [
@@ -153,8 +95,8 @@ class TasksTest extends TestCase
 
     public function test_It_can_paginate_tasks_through_a_page_query_parameter()
     {
-        $tasks = Task::factory(10)->create();
         $user = User::factory()->create();
+        $tasks = Task::factory(10)->create();
 
         Sanctum::actingAs($user);
         $this->get('/api/v1/tasks?page[size]=5&page[number]=1', [
@@ -439,179 +381,8 @@ class TasksTest extends TestCase
         ]);
     }
 
-    public function test_when_updating_a_task_it_can_also_update_relationships()
-    {
-        // $this->withExceptionHandling();
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $project = Project::factory(['user_id' => $user->id])->create();
-        $user->invitations()->save($project);
-        $task = Task::factory()->create();
-        $project->tasks()->save($task);
 
-        $anotherUser = User::factory()->create();
-        $anotherProject = Project::factory()->create();
 
-        $this->patchJson('/api/v1/tasks/1', [
-            'data' => [
-                'id' => (string) $task->id,
-                'type' => 'tasks',
-                'attributes' => [
-                    'description' => 'Hello world',
-                ],
-                'relationships' => [
-                    'creator' => [
-                        'data' => [
-                            'id' => (string) $anotherUser->id,
-                            'type' => 'users',
-                        ],
-                    ],
-                    'project' => [
-                        'data' => [
-                            'id' => (string) $anotherProject->id,
-                            'type' => 'projects',
-                        ],
-                    ],
-                ],
-            ],
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])
-            ->assertStatus(200)
-            ->assertJson([
-                'data' => [
-                    'id' => '1',
-                    'type' => 'tasks',
-                    'attributes' => [
-                        'description' => 'Hello world',
-                        'created_at' => now()->setMilliseconds(0)->toJSON(),
-                        'updated_at' => now()->setMilliseconds(0)->toJSON(),
-                    ],
-                    'relationships' => [
-                        'project' => [
-                            'links' => [
-                                'self' => route('tasks.relationships.project', $task->id),
-                                'related' => route('tasks.project', $task->id),
-                            ],
-                            'data' => [
-                                'id' => $anotherProject->id,
-                                'type' => 'projects',
-                            ],
-                        ],
-                        'creator' => [
-                            'links' => [
-                                'self' => route('tasks.relationships.creator', $task->id),
-                                'related' => route('tasks.creator', $task->id),
-                            ],
-                            'data' => [
-                                'id' => $anotherUser->id,
-                                'type' => 'users',
-                            ],
-                        ],
-                    ],
-                ],
-            ]);
-        $this->assertDatabaseHas('tasks', [
-            'id' => 1,
-            'description' => 'Hello world',
-            'user_id' => $anotherUser->id,
-            'project_id' => $anotherProject->id,
-        ]);
-    }
-
-    public function test_it_validates_relationships_are_given_when_creating_tasks()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $project = Project::factory()->create();
-        // $task = Task::factory(['project_id' => $project->id])->create();
-
-        $this->postJson('/api/v1/tasks', [
-            'data' => [
-                'type' => 'tasks',
-                'attributes' => [
-                    'title' => 'John Doe',
-                    'description' => 'John Doe and Jane Doe',
-                    'deadline' => '2022-09-09',
-                ],
-                'relationships' => [
-                    'creator' => [],
-                    'project' => [
-                        'data' => [
-                            'id' => $project->id,
-                            'type' => 'random',
-                        ],
-                    ],
-                ],
-            ],
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(422)->assertJson([
-            'errors' => [
-                [
-                    'title' => 'Validation Error',
-                    'details' => 'The data.relationships.creator.data field is required.',
-                    'source' => [
-                        'pointer' => '/data/relationships/creator/data',
-                    ],
-                ],
-                [
-                    'title' => 'Validation Error',
-                    'details' => 'The data.relationships.project.data.id must be a string.',
-                    'source' => [
-                        'pointer' => '/data/relationships/project/data/id',
-                    ],
-                ],
-                [
-                    'title' => 'Validation Error',
-                    'details' => 'The selected data.relationships.project.data.type is invalid.',
-                    'source' => [
-                        'pointer' => '/data/relationships/project/data/type',
-                    ],
-                ],
-            ],
-        ]);
-    }
-
-    public function test_it_can_create_a_task_from_a_resource_object()
-    {
-        // dd(Carbon::parse('2022-09-09 09:09:09')->diffForHumans());
-        $project = Project::factory()->create();
-        // $task = Task::factory()->create();
-
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
-        $this->postJson('/api/v1/tasks', [
-            'data' => [
-                'type' => 'tasks',
-                'attributes' => [
-                    'title' => 'John Doe',
-                    'description' => 'John Doe and Jane Doe',
-                    'deadline' => '2022-09-09',
-                ],
-                'relationships' => [
-                    'project' => [
-                        'data' => [
-                            'id' => (string) $project->id,
-                            'type' => 'projects',
-                        ],
-                    ],
-                ],
-            ],
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(201)
-            ->assertHeader('Location', url('/api/v1/tasks/1'));
-
-        $this->assertDatabaseHas('tasks', [
-            'id' => 1,
-            'title' => 'John Doe',
-        ]);
-    }
 
     public function test_it_validates_that_the_type_member_is_given_when_creating_a_task()
     {
@@ -1018,35 +789,6 @@ class TasksTest extends TestCase
         ]);
     }
 
-    public function test_it_can_update_a_task_from_a_resource_object()
-    {
-        $user = User::factory()->create();
-        $project = Project::factory()->create();
-        $project->invitees()->attach($user->id);
-        $task = Task::factory(['project_id' => 1])->create();
-        Sanctum::actingAs($user);
-
-        $this->patchJson('/api/v1/tasks/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'tasks',
-                'attributes' => [
-                    'title' => 'Jane Doe',
-                    'description' => 'another description',
-                    'user_id' => 1,
-                ],
-            ],
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(200);
-
-        $this->assertDatabaseHas('tasks', [
-            'id' => 1,
-            'title' => 'Jane Doe',
-
-        ]);
-    }
 
     public function test_it_validates_that_an_id_member_is_given_when_updating_a_task()
     {
@@ -1077,26 +819,6 @@ class TasksTest extends TestCase
                 ],
             ]);
         $this->assertDatabaseHas('tasks', [
-            'id' => 1,
-            'title' => $task->title,
-        ]);
-    }
-
-    public function test_it_can_delete_a_task_through_a_delete_request()
-    {
-        $user = User::factory()->create();
-        $project = Project::factory()->create();
-        $project->invitees()->attach($user->id);
-        $task = Task::factory(['project_id' => 1])->create();
-
-        Sanctum::actingAs($user);
-
-        $this->delete('/api/v1/tasks/1', [], [
-            'Accept' => 'application/vnd.api+json',
-            'Content-Type' => 'application/vnd.api+json',
-        ])->assertStatus(204);
-
-        $this->assertDatabaseMissing('tasks', [
             'id' => 1,
             'title' => $task->title,
         ]);

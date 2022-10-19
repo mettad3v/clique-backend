@@ -15,8 +15,8 @@ class ProjectsTest extends TestCase
 
     public function test_it_returns_a_project_as_a_resource_object()
     {
-        $project = Project::factory()->create();
         $user = User::factory()->create();
+        $project = Project::factory()->create();
 
         Sanctum::actingAs($user);
 
@@ -77,7 +77,7 @@ class ProjectsTest extends TestCase
         $this->delete('/api/v1/projects/1', [], [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
-        ])->assertStatus(403);
+        ])->assertStatus(204);
     }
 
     // public function test_a_project_creator_can_revoke_other_users_access_to_a_project()
@@ -160,8 +160,8 @@ class ProjectsTest extends TestCase
 
     public function test_It_returns_all_projects_as_a_collection_of_resource_objects()
     {
-        $projects = Project::factory(3)->create();
         $user = User::factory()->create();
+        $projects = Project::factory(3)->create();
 
         Sanctum::actingAs($user);
         $this->get('/api/v1/projects', [
@@ -172,8 +172,8 @@ class ProjectsTest extends TestCase
 
     public function test_It_can_paginate_projects_through_a_page_query_parameter()
     {
-        $projects = Project::factory(10)->create();
         $user = User::factory()->create();
+        $projects = Project::factory(10)->create();
 
         Sanctum::actingAs($user);
         $this->get('/api/v1/projects?page[size]=5&page[number]=1', [

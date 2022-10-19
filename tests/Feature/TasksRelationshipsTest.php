@@ -18,7 +18,7 @@ class TasksRelationshipsTest extends TestCase
         $auth = User::factory()->create();
         $users = User::factory(2)->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->getJson('/api/v1/tasks/1?include=assignees', [
@@ -61,7 +61,7 @@ class TasksRelationshipsTest extends TestCase
         $auth = User::factory()->create();
         $users = User::factory(3)->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->getJson('/api/v1/tasks/1/relationships/assignees', [
@@ -92,7 +92,7 @@ class TasksRelationshipsTest extends TestCase
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
@@ -124,7 +124,7 @@ class TasksRelationshipsTest extends TestCase
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
@@ -169,7 +169,7 @@ class TasksRelationshipsTest extends TestCase
         $users = User::factory(10)->create();
         $auth = User::factory()->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
@@ -194,7 +194,7 @@ class TasksRelationshipsTest extends TestCase
     {
         $users = User::factory(5)->create();
         $project = Project::factory()->create();
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
@@ -223,7 +223,7 @@ class TasksRelationshipsTest extends TestCase
     {
         $users = User::factory(5)->create();
         $project = Project::factory()->create();
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
@@ -253,7 +253,7 @@ class TasksRelationshipsTest extends TestCase
     {
         $users = User::factory(5)->create();
         $project = Project::factory()->create();
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
         $this->patchJson('/api/v1/tasks/1/relationships/assignees', [
@@ -283,7 +283,7 @@ class TasksRelationshipsTest extends TestCase
         $auth = User::factory()->create();
         $users = User::factory(3)->create();
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         Sanctum::actingAs($auth);
         $this->getJson('/api/v1/tasks/1/relationships/assignees', [
@@ -298,7 +298,7 @@ class TasksRelationshipsTest extends TestCase
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
         $project = Project::factory()->create(['user_id' => $auth->id]);
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         $task->assignees()->sync($users->pluck('id'));
         $this->getJson('/api/v1/tasks/1?include=assignees', [
             'accept' => 'application/vnd.api+json',
@@ -369,7 +369,7 @@ class TasksRelationshipsTest extends TestCase
         $this->withoutExceptionHandling();
         $user = User::factory()->create();
         $project = Project::factory()->create();
-        $task = Task::factory()->create(['project_id' => $project->id]);
+        $task = Task::factory()->create();
         Sanctum::actingAs($user);
         $this->getJson('/api/v1/tasks/1', [
             'accept' => 'application/vnd.api+json',
@@ -496,9 +496,9 @@ class TasksRelationshipsTest extends TestCase
 
     public function test_it_does_not_include_related_resource_objects_for_a_collection_when_an_include_param_is_not_given()
     {
-        $project = Project::factory()->create();
-        $task = Task::factory()->create(['project_id' => $project->id]);
         $user = User::factory()->create();
+        $project = Project::factory()->create();
+        $task = Task::factory()->create();
         Sanctum::actingAs($user);
         $this->get('/api/v1/tasks', [
             'accept' => 'application/vnd.api+json',

@@ -29,9 +29,9 @@ class GroupsTest extends TestCase
 
     public function test_It_returns_all_groups_as_a_collection_of_resource_objects()
     {
+        $user = User::factory()->create();
         $project = Project::factory()->create();
         $groups = Group::factory(3)->create();
-        $user = User::factory()->create();
 
         Sanctum::actingAs($user);
         $this->get('/api/v1/groups', [
@@ -42,9 +42,9 @@ class GroupsTest extends TestCase
 
     public function test_It_can_paginate_groups_through_a_page_query_parameter()
     {
+        $user = User::factory()->create();
         $project = Project::factory()->create();
         $groups = Group::factory(6)->create();
-        $user = User::factory()->create();
 
         Sanctum::actingAs($user);
         $this->get('/api/v1/groups?page[size]=5&page[number]=1', [
@@ -209,8 +209,8 @@ class GroupsTest extends TestCase
 
     public function test_it_can_sort_groups_by_multiple_sort_params_through_a_sort_query_parameter()
     {
-        $project = Project::factory()->create();
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         Sanctum::actingAs($user);
 
         $groups = collect([
@@ -267,8 +267,8 @@ class GroupsTest extends TestCase
 
     public function test_it_can_sort_groups_by_multiple_sort_params_including_in_descending_order_through_a_sort_query_parameter()
     {
-        $project = Project::factory()->create();
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         Sanctum::actingAs($user);
 
         $groups = collect([

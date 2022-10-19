@@ -62,12 +62,12 @@ class GroupsRelationshipsTest extends TestCase
 
     public function test_a_relationship_link_to_tasks_returns_all_related_tasks_as_resource_id_ob()
     {
+        $user = User::factory()->create();
         $project = Project::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(3)->create();
         $group->tasks()->saveMany($tasks);
 
-        $user = User::factory()->create();
         Sanctum::actingAs($user);
 
         $this->getJson("/api/v1/groups/{$group->id}/relationships/tasks", [
@@ -96,10 +96,10 @@ class GroupsRelationshipsTest extends TestCase
     public function test_it_can_modify_relationships_to_groups_and_add_new_relationships()
     {
         // $this->withoutExceptionHandling();
+        $user = User::factory()->create();
         $project = Project::factory()->create();
         $group = Group::factory()->create();
         $tasks = Task::factory(10)->create();
-        $user = User::factory()->create();
         // dd($group->tasks);
         Sanctum::actingAs($user);
 

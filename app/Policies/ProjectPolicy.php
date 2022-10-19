@@ -34,11 +34,7 @@ class ProjectPolicy
             ->where('user_id', $user->id)
             ->first();
 
-        if (!$user_invited) {
-            return false;
-        }
-
-        return $user->id === $project->user_id | $user_invited->pivot->is_admin;
+        return $user->id === $project->user_id | $user_invited?->pivot->is_admin;
     }
 
     /**

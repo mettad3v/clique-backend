@@ -33,7 +33,6 @@ class UsersTest extends TestCase
                         'name' => $user->name,
                         'email' => $user->email,
                         'username' => $user->username,
-                        'role' => $user->role,
                         'profile_avatar' => $user->profile_avatar,
                         'status' => $user->status,
                         'created_at' => $user->created_at->toJSON(),

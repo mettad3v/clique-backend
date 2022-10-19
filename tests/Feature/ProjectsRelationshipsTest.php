@@ -351,8 +351,8 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_includes_related_resource_objects_when_an_include_query_param_is_given()
     {
-        $project = Project::factory()->create();
         $users = User::factory(3)->create();
+        $project = Project::factory()->create();
         $project->invitees()->sync($users->pluck('id'));
         $auth = User::factory()->create();
         Sanctum::actingAs($auth);
@@ -422,9 +422,9 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_does_not_include_related_resource_objects_when_an_include_query_param_is_not_given()
     {
-        $this->withoutExceptionHandling();
-        $project = Project::factory()->create();
+
         $user = User::factory()->create();
+        $project = Project::factory()->create();
         Sanctum::actingAs($user);
         $this->getJson('/api/v1/projects/1', [
             'accept' => 'application/vnd.api+json',
@@ -438,8 +438,8 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_includes_related_resource_objects_for_a_collection_when_an_include_query_param_is_given()
     {
-        $projects = Project::factory(3)->create();
         $users = User::factory(3)->create();
+        $projects = Project::factory(3)->create();
 
         $projects->each(function ($project, $key) use ($users) {
             if ($key === 0) {
@@ -554,8 +554,8 @@ class ProjectsRelationshipsTest extends TestCase
 
     public function test_it_does_not_include_related_resource_objects_for_a_collection_when_an_include_param_is_not_given()
     {
-        $projects = Project::factory()->create();
         $user = User::factory()->create();
+        $projects = Project::factory()->create();
         Sanctum::actingAs($user);
         $this->get('/api/v1/projects', [
             'accept' => 'application/vnd.api+json',
