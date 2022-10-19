@@ -2,7 +2,7 @@
 
 ## About Clique
 
-Inspired by https://height.app/. Clique is a tool made to help teams collaborate and manage tasks and projects in a seamless, stress-free manner. Clique's codebase follows design principles and conventions discussed in Wacky Studio's Build an API with Laravel. 
+Inspired by https://height.app/. Clique is a tool made to help teams collaborate and manage tasks and projects in a seamless, stress-free manner.
 
 --Features--
 
