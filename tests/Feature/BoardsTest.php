@@ -17,7 +17,7 @@ class BoardsTest extends TestCase
     {
         $user = User::factory()->create();
         $project = Project::factory()->create();
-        $board = Board::factory()->create(['title' => 'test', 'project_id' => 1]);
+        // $board = Board::factory()->create(['title' => 'test', 'project_id' => 1]);
         Sanctum::actingAs($user);
 
         // dd($group);
@@ -33,19 +33,13 @@ class BoardsTest extends TestCase
                             'id' => (string) $project->id,
                             'type' => 'projects',
                         ],
-                    ],
-                    'creator' => [
-                        'data' => [
-                            'id' => (string) $user->id,
-                            'type' => 'users',
-                        ],
-                    ],
+                    ]
                 ],
             ],
         ], [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
-        ])->assertStatus(200);
+        ])->assertStatus(201);
 
         $this->assertDatabaseMissing('boards', [
             'id' => 2,
