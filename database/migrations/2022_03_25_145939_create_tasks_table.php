@@ -20,7 +20,7 @@ class CreateTasksTable extends Migration
             $table->text('description')->nullable();
             $table->enum('status', ['backlog', 'todo', 'blocked', 'progress', 'ready', 'done', 'others', 'wontdo', 'blocking', 'archived'])->default('todo');
             $table->uuid('user_id')->nullable()->constrained('users');
-            $table->foreignId('board_id')->nullable()->constrained('boards');
+            $table->foreignId('board_id')->nullable();
             $table->foreignId('group_id')->nullable();
             $table->timestamp('deadline')->nullable();
             $table->timestamps();
