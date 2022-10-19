@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateProjectUserTable extends Migration
+class CreateBoardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateProjectUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('project_user', function (Blueprint $table) {
+        Schema::create('boards', function (Blueprint $table) {
             $table->id();
-            $table->uuid('user_id')->constrained('users');
-            $table->foreignId('project_id')->constrained('projects');
-            $table->boolean('is_admin')->default(0);
+            $table->string('title');
+            $table->uuid('user_id')->nullable()->constrained('users');
+            $table->foreignId('project_id')->nullable()->constrained('projects');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateProjectUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('project_user');
+        Schema::dropIfExists('boards');
     }
 }

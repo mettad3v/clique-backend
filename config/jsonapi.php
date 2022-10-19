@@ -1,5 +1,7 @@
 <?php
 
+use App\Rules\ConditionalUniqueBoard;
+
 return  [
     'resources' => [
         'users' => [
@@ -56,15 +58,12 @@ return  [
             'allowedIncludes' => [
                 'invitees',
                 'creator',
-                'tasks',
+                'boards',
             ],
             'allowedFilters' => [],
             'validationRules' => [
                 'create' => [
                     'data.attributes.name' => 'required|string|unique:projects,name',
-                    'data.relationships.creator.data' => 'required|array',
-                    'data.relationships.creator.data.id' => 'required|string',
-                    'data.relationships.creator.data.type' => 'required|string',
                 ],
                 'update' => [
                     'data.attributes.name' => 'required|string|unique:projects,name',
@@ -77,12 +76,51 @@ return  [
                     'method' => 'invitees',
                 ],
                 [
+                    'type' => 'boards',
+                    'method' => 'boards',
+                ],
+                [
+                    'type' => 'users',
+                    'method' => 'creator',
+                ],
+            ],
+        ],
+        'boards' => [
+            'allowedSorts' => [
+                'title',
+                'created_at',
+                'updated_at',
+            ],
+            'allowedIncludes' => [
+                'tasks',
+                'creator'
+            ],
+            'allowedFilters' => [],
+            'validationRules' => [
+                'create' => [
+
+                    'data.relationships.project.data' => 'required|array',
+                    'data.relationships.project.data.id' => 'required|string',
+                    'data.relationships.project.data.type' => 'required|string',
+                    'data.attributes.title' => ['required', 'string', new ConditionalUniqueBoard],
+                ],
+                'update' => [
+                    'data.attributes.title' => 'required|string',
+
+                ],
+            ],
+            'relationships' => [
+                [
                     'type' => 'tasks',
                     'method' => 'tasks',
                 ],
                 [
                     'type' => 'users',
                     'method' => 'creator',
+                ],
+                [
+                    'type' => 'projects',
+                    'method' => 'project',
                 ],
             ],
         ],
@@ -98,8 +136,8 @@ return  [
             'allowedIncludes' => [
                 'assignees',
                 'creator',
-                'project',
-                'project.creator',
+                'board',
+                'board.creator',
                 'creator.projects',
 
             ],
@@ -107,7 +145,7 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:tasks,title',
                     'data.attributes.description' => 'string',
-                    'data.relationships.project' => 'required',
+                    'data.relationships.board' => 'required',
                     'data.attributes.deadline' => 'date_format:Y-m-d',
                 ],
                 'update' => [
@@ -128,8 +166,8 @@ return  [
                     'method' => 'creator',
                 ],
                 [
-                    'type' => 'projects',
-                    'method' => 'project',
+                    'type' => 'boards',
+                    'method' => 'board',
                 ],
 
 
@@ -150,7 +188,6 @@ return  [
                 'create' => [
                     'data.attributes.title' => 'required|string|unique:groups,title',
                     'data.relationships.project' => 'required',
-                    'data.relationships.creator' => 'required',
                 ],
                 'update' => [
                     'data.attributes.title' => 'sometimes|required|string|unique:groups,title',

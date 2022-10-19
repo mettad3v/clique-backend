@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Task;
 use App\Services\JSONAPIService;
 
-class TaskProjectRelatedController extends Controller
+class TaskBoardRelationshipController extends Controller
 {
     private $service;
 
@@ -17,6 +17,6 @@ class TaskProjectRelatedController extends Controller
 
     public function index(Task $task)
     {
-        return $this->service->fetchRelated($task, 'project');
+        return $this->service->fetchRelationship($task, 'board');
     }
 }

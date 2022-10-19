@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Task;
 use App\Models\User;
+use App\Models\Project;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TaskPolicy
@@ -51,10 +52,30 @@ class TaskPolicy
      */
     public function update(User $user, Task $task)
     {
-        $project = $task->project;
+        $project = $task->board->project;
         $result = $user->invitations()->where('project_id', $project->id)->get();
 
         return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
+    }
+
+    /**
+     * Determine whether the user make other users supervisor on a task.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Task  $task
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function supervisor(User $user, Task $task)
+    {
+        $user_assigned = Project::find($task->project_id)->invitees()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$user_assigned) {
+            return false;
+        }
+
+        return $user->id === $task->project->user_id | $user_assigned->pivot->is_admin;
     }
 
     /**

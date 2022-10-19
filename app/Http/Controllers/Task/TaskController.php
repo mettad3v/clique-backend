@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Task;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\JSONAPIRequest;
 use App\Http\Requests\Tasks\AssignUsersRequest;
+use App\Models\Board;
 use App\Models\Project;
 use App\Models\Task;
 use App\Models\User;
@@ -42,7 +43,8 @@ class TaskController extends Controller
      */
     public function store(JSONAPIRequest $request)
     {
-        $unique_id = Project::findOrFail((int) $request->input('data.relationships.project.data.id'))->tasks->count() + 1;
+
+        $unique_id = Board::findOrFail((int) $request->input('data.relationships.board.data.id'))->tasks->count() + 1;
 
         return $this->service->createResource(Task::class, [
             'title' => $request->input('data.attributes.title'),

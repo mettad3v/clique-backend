@@ -55,7 +55,7 @@ class Handler extends ExceptionHandler
                     'title' => 'Validation Error',
                     'details' => $error[0],
                     'source' => [
-                        'pointer' => '/'.str_replace('.', '/', $key),
+                        'pointer' => '/' . str_replace('.', '/', $key),
                     ],
                 ];
             })
@@ -94,9 +94,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        if (
-            $exception instanceof QueryException || $exception instanceof ModelNotFoundException
-        ) {
+        if ($exception instanceof QueryException || $exception instanceof ModelNotFoundException) {
             $exception = new NotFoundHttpException('Given resource not found');
         }
 

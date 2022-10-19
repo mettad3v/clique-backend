@@ -37,7 +37,7 @@ class ProjectController extends Controller
     {
         return $this->service->createResource(Project::class, [
             'name' => $request->input('data.attributes.name'),
-            'user_id' => auth()->user()->id,
+            'user_id' => $request->user()->id
         ], $request->input('data.relationships'));
     }
 

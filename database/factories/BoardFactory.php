@@ -2,17 +2,18 @@
 
 namespace Database\Factories;
 
-use App\Models\Category;
+use App\Models\User;
+use App\Models\Board;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class CategoryFactory extends Factory
+class BoardFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Category::class;
+    protected $model = Board::class;
 
     /**
      * Define the model's default state.
@@ -22,7 +23,9 @@ class CategoryFactory extends Factory
     public function definition()
     {
         return [
-            'title' => $this->faker->randomElement(['backlog', 'todo', 'blocked', 'progress', 'ready', 'done', 'others', 'wontdo', 'blocking', 'archived']),
+            'title' => $this->faker->word(),
+            'user_id' => User::first()->id,
+            'project_id' => 1,
         ];
     }
 }

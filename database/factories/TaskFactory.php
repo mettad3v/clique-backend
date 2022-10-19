@@ -26,7 +26,7 @@ class TaskFactory extends Factory
             'title' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'deadline' => '2022-09-09 09:09:09',
-            'project_id' => 1,
+            'board_id' => 1,
             'unique_id' => 'T-11',
             'user_id' => User::first()->id,
         ];

@@ -461,14 +461,6 @@ class ProjectsTest extends TestCase
                 'attributes' => [
                     'name' => 'John Doe',
                 ],
-                'relationships' => [
-                    'creator' => [
-                        'data' => [
-                            'id' => (string) $user->id,
-                            'type' => 'users',
-                        ],
-                    ],
-                ]
             ],
         ], [
             'accept' => 'application/vnd.api+json',

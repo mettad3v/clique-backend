@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('username')->nullable()->unique();
             $table->string('profile_avatar')->nullable();
             $table->boolean('status')->default(1);
-            $table->enum('role', ['guest', 'admin'])->default('guest');
+            // $table->enum('role', ['guest', 'admin'])->default('guest');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

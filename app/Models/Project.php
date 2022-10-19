@@ -19,12 +19,12 @@ class Project extends AbstractAPIModel
 
     public function invitees()
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('is_admin')->withTimestamps();
     }
 
-    public function tasks()
+    public function boards()
     {
-        return $this->HasMany(Task::class);
+        return $this->HasMany(Board::class);
     }
 
     public function groups()

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Board\BoardController;
 use App\Http\Controllers\Group\GroupController;
 use App\Http\Controllers\Project\ProjectController;
 use App\Http\Controllers\Category\CategoryController;
@@ -12,28 +13,32 @@ use App\Http\Controllers\Task\TaskGroupRelatedController;
 use App\Http\Controllers\Task\TaskUsersRelatedController;
 use App\Http\Controllers\User\UsersTasksRelatedController;
 use App\Http\Controllers\Task\TaskCreatorRelatedController;
-use App\Http\Controllers\Task\TaskProjectRelatedController;
+use App\Http\Controllers\Task\TaskBoardRelatedController;
 use App\Http\Controllers\Group\GroupCreatorRelatedController;
 use App\Http\Controllers\User\UsersProjectsRelatedController;
 use App\Http\Controllers\Task\TaskGroupRelationshipController;
 use App\Http\Controllers\Task\TaskUsersRelationshipController;
 use App\Http\Controllers\User\UsersTasksRelationshipController;
-use App\Http\Controllers\Project\ProjectsTasksRelatedController;
-use App\Http\Controllers\Project\ProjectCreatorRelatedController;
+use App\Http\Controllers\Board\BoardsTasksRelatedController;
 use App\Http\Controllers\Project\ProjectsUsersRelatedController;
 use App\Http\Controllers\Task\TaskCreatorRelationshipController;
-use App\Http\Controllers\Task\TaskProjectRelationshipController;
+use App\Http\Controllers\Task\TaskBoardRelationshipController;
 use App\Http\Controllers\User\UsersInvitationsRelatedController;
 use App\Http\Controllers\Group\GroupsTasksRelationshipController;
-use App\Http\Controllers\Group\GroupCreatorRelationshipController;
+use App\Http\Controllers\Project\ProjectCreatorRelatedController;
+use App\Http\Controllers\Board\BoardCreatorRelatedController;
 use App\Http\Controllers\User\CurrentAuthenticatedUserController;
+use App\Http\Controllers\Group\GroupCreatorRelationshipController;
 use App\Http\Controllers\User\UsersProjectsRelationshipController;
 use App\Http\Controllers\User\UsersTasksAssignedRelatedController;
 use App\Http\Controllers\Category\CategoriesTasksRelatedController;
-use App\Http\Controllers\Project\ProjectsTasksRelationshipController;
+use App\Http\Controllers\Board\BoardsTasksRelationshipController;
 use App\Http\Controllers\Project\ProjectsUsersRelationshipController;
 use App\Http\Controllers\User\UsersInvitationsRelationshipController;
 use App\Http\Controllers\Project\ProjectCreatorRelationshipController;
+use App\Http\Controllers\Board\BoardCreatorRelationshipController;
+use App\Http\Controllers\Board\BoardProjectRelationshipController;
+use App\Http\Controllers\Board\BoardProjectRelatedController;
 use App\Http\Controllers\User\UsersTasksAssignedRelationshipController;
 use App\Http\Controllers\Category\CategoriesTasksRelationshipController;
 
@@ -88,22 +93,36 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/projects/{project}/relationships/invitees', [ProjectsUsersRelationshipController::class, 'index'])->name('projects.relationships.invitees');
     Route::patch('/projects/{project}/relationships/invitees', [ProjectsUsersRelationshipController::class, 'update']);
     Route::get('/projects/{project}/invitees', [ProjectsUsersRelatedController::class, 'index'])->name('projects.invitees');
+    Route::patch('/projects/{project}/relationships/admin', [ProjectsUsersRelationshipController::class, 'admin']);
 
     // Route::patch('/projects/{project}/relationships/users/change-ownership', [ProjectCreatorRelationshipController::class, 'change_ownership']);
     Route::get('/projects/{project}/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
     Route::patch('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'update']);
     Route::get('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
 
-    Route::get('/projects/{project}/tasks', [ProjectsTasksRelatedController::class, 'index'])->name('projects.tasks');
-    Route::get('/projects/{project}/relationships/tasks', [ProjectsTasksRelationshipController::class, 'index'])->name('projects.relationships.tasks');
+    // Route::get('/projects/{project}/tasks', [ProjectsTasksRelatedController::class, 'index'])->name('projects.tasks');
+    // Route::get('/projects/{project}/relationships/tasks', [ProjectsTasksRelationshipController::class, 'index'])->name('projects.relationships.tasks');
+
+    Route::apiResource('boards', BoardController::class);
+    Route::get('/boards/{board}/tasks', [BoardsTasksRelatedController::class, 'index'])->name('boards.tasks');
+    Route::get('/boards/{board}/relationships/tasks', [BoardsTasksRelationshipController::class, 'index'])->name('boards.relationships.tasks');
+
+    Route::get('/boards/{board}/creator', [BoardCreatorRelatedController::class, 'index'])->name('boards.creator');
+    Route::patch('/boards/{board}/relationships/creator', [BoardCreatorRelationshipController::class, 'update']);
+    Route::get('/boards/{board}/relationships/creator', [BoardCreatorRelationshipController::class, 'index'])->name('boards.relationships.creator');
+
+    Route::get('/boards/{board}/project', [BoardProjectRelatedController::class, 'index'])->name('boards.project');
+    Route::patch('/boards/{board}/relationships/project', [BoardProjectRelationshipController::class, 'update']);
+    Route::get('/boards/{board}/relationships/project', [BoardProjectRelationshipController::class, 'index'])->name('boards.relationships.project');
+    Route::get('/boards/{board}/relationships/project', [BoardProjectRelationshipController::class, 'index'])->name('boards.relationships.project');
 
     Route::apiResource('tasks', TaskController::class);
     Route::get('/tasks/{task}/relationships/assignees', [TaskUsersRelationshipController::class, 'index'])->name('tasks.relationships.assignees');
     Route::patch('/tasks/{task}/relationships/assignees', [TaskUsersRelationshipController::class, 'update']);
     Route::get('/tasks/{task}/assignees', [TaskUsersRelatedController::class, 'index'])->name('tasks.assignees');
 
-    Route::get('/tasks/{task}/relationships/project', [TaskProjectRelationshipController::class, 'index'])->name('tasks.relationships.project');
-    Route::get('/tasks/{task}/project', [TaskProjectRelatedController::class, 'index'])->name('tasks.project');
+    Route::get('/tasks/{task}/relationships/board', [TaskBoardRelationshipController::class, 'index'])->name('tasks.relationships.board');
+    Route::get('/tasks/{task}/board', [TaskBoardRelatedController::class, 'index'])->name('tasks.board');
     Route::patch('/tasks/{task}/relationships/supervisor', [TaskUsersRelationshipController::class, 'supervisor']);
     // Route::patch('/tasks/{task}/relationships/remove-supervisor', [TaskUsersRelationshipController::class, 'remove_supervisor']);
 

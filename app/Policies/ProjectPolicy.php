@@ -30,9 +30,15 @@ class ProjectPolicy
      */
     public function invite(User $user, Project $project)
     {
-        return $user->id === $project->user_id
-            ? Response::allow()
-            : Response::deny('You do not own this project.');
+        $user_invited = Project::find($project->id)->invitees()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$user_invited) {
+            return false;
+        }
+
+        return $user->id === $project->user_id | $user_invited->pivot->is_admin;
     }
 
     /**
@@ -43,13 +49,32 @@ class ProjectPolicy
      */
     public function revoke(User $user, Project $project)
     {
+        $user_invited = Project::find($project->id)->invitees()
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (!$user_invited) {
+            return false;
+        }
+
+        return $user->id === $project->user_id | $user_invited->pivot->is_admin;
+    }
+
+    /**
+     * Determine whether the user can revoke other users.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function make_admin(User $user, Project $project)
+    {
         return $user->id === $project->user_id
             ? Response::allow()
             : Response::deny('You do not own this project.');
     }
 
     /**
-     * Determine whether the user can revoke other users.
+     * Determine whether the user can make invitees admin.
      *
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
@@ -96,9 +121,7 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project)
     {
-        $result = $project->invitees()->where('user_id', $user->id)->get();
-
-        return $project->user_id === $user->id || $result->isNotEmpty() ? true : false;
+        return $project->user_id === $user->id;
     }
 
     /**

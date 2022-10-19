@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 
 class SetupDevEnvironment extends Command
 {
@@ -40,10 +41,22 @@ class SetupDevEnvironment extends Command
     {
         $this->info('Setting up development environment');
         $this->MigrateAndSeedDatabase();
-        $user = $this->CreateJohnDoeUser();
-        $this->CreatePersonalAccessToken($user);
+
+        $this->createUser('John Doe', 'john@example.com', 'admin');
+        $this->createUser('Jane Doe', 'jane@example.com');
 
         $this->info('All done. Bye!');
+    }
+
+    /**
+     * @param User $user
+     */
+    public function createPersonalAccessTokenForUser(User $user): void
+    {
+        $this->info(PHP_EOL);
+        $this->info("Creating personal access client and token for {$user->name}");
+        $this->CreatePersonalAccessToken($user);
+        $this->info(PHP_EOL);
     }
 
     public function MigrateAndSeedDatabase()
@@ -52,26 +65,26 @@ class SetupDevEnvironment extends Command
         $this->call('db:seed');
     }
 
-    public function CreateJohnDoeUser()
+    public function createUser($name, $email, $password = 'secret')
     {
-        $this->info('Creating John Doe user');
-        $user = User::factory()->make([
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => bcrypt('secret'),
+        $this->info(PHP_EOL);
+        $this->info("Creating {$name} ");
+        $user =  User::factory()->make([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
         ]);
-        $this->info('John Doe created');
-        $this->warn('Email: john@example.com');
-        $this->warn('Password: secret');
+        $user->save();
 
-        return $user;
+        $this->createPersonalAccessTokenForUser($user);
+        $this->info("Done");
     }
 
     public function CreatePersonalAccessToken($user)
     {
-        $token = $user->createToken('API Token')->plainTextToken;
+        $token = $user->createToken('Development Token');
         $this->info('Personal access token created successfully.');
-        $this->warn('Personal access token:');
-        $this->line($token);
+        $this->warn("Personal access token:");
+        $this->line($token->plainTextToken);
     }
 }

@@ -9,14 +9,14 @@ class Task extends AbstractAPIModel
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'deadline', 'description', 'project_id', 'unique_id', 'user_id', 'category_id', 'group_id'];
+    protected $fillable = ['title', 'deadline', 'description', 'unique_id', 'user_id', 'category_id', 'group_id'];
 
-    protected $hidden = ['project_id', 'user_id', 'category_id', 'group_id'];
+    protected $hidden = ['user_id', 'category_id', 'group_id'];
 
-    public function project()
-    {
-        return $this->belongsTo(Project::class);
-    }
+    // public function project()
+    // {
+    //     return $this->belongsTo(Project::class);
+    // }
 
     public function creator()
     {
@@ -26,6 +26,11 @@ class Task extends AbstractAPIModel
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function board()
+    {
+        return $this->belongsTo(Board::class);
     }
 
     public function group()
