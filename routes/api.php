@@ -100,9 +100,6 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::patch('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'update']);
     Route::get('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
 
-    // Route::get('/projects/{project}/tasks', [ProjectsTasksRelatedController::class, 'index'])->name('projects.tasks');
-    // Route::get('/projects/{project}/relationships/tasks', [ProjectsTasksRelationshipController::class, 'index'])->name('projects.relationships.tasks');
-
     Route::apiResource('boards', BoardController::class);
     Route::get('/boards/{board}/tasks', [BoardsTasksRelatedController::class, 'index'])->name('boards.tasks');
     Route::get('/boards/{board}/relationships/tasks', [BoardsTasksRelationshipController::class, 'index'])->name('boards.relationships.tasks');
