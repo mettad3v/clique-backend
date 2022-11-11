@@ -18,6 +18,7 @@ class CreateBoardsTable extends Migration
             $table->string('title');
             $table->uuid('user_id')->nullable()->constrained('users');
             $table->foreignId('project_id')->nullable()->constrained('projects');
+            $table->timestamp('deadline')->nullable();
             $table->timestamps();
         });
     }

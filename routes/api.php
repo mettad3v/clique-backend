@@ -26,6 +26,8 @@ use App\Http\Controllers\Task\TaskBoardRelationshipController;
 use App\Http\Controllers\User\UsersInvitationsRelatedController;
 use App\Http\Controllers\Group\GroupsTasksRelationshipController;
 use App\Http\Controllers\Project\ProjectCreatorRelatedController;
+use App\Http\Controllers\Project\ProjectBoardsRelatedController;
+use App\Http\Controllers\Project\ProjectBoardsRelationshipController;
 use App\Http\Controllers\Board\BoardCreatorRelatedController;
 use App\Http\Controllers\User\CurrentAuthenticatedUserController;
 use App\Http\Controllers\Group\GroupCreatorRelationshipController;
@@ -94,6 +96,10 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::patch('/projects/{project}/relationships/invitees', [ProjectsUsersRelationshipController::class, 'update']);
     Route::get('/projects/{project}/invitees', [ProjectsUsersRelatedController::class, 'index'])->name('projects.invitees');
     Route::patch('/projects/{project}/relationships/admin', [ProjectsUsersRelationshipController::class, 'admin']);
+
+    Route::get('/projects/{project}/relationships/boards', [ProjectBoardsRelationshipController::class, 'index'])->name('projects.relationships.boards');
+    Route::patch('/projects/{project}/relationships/boards', [ProjectBoardsRelationshipController::class, 'update']);
+    Route::get('/projects/{project}/boards', [ProjectBoardsRelatedController::class, 'index'])->name('projects.boards');
 
     // Route::patch('/projects/{project}/relationships/users/change-ownership', [ProjectCreatorRelationshipController::class, 'change_ownership']);
     Route::get('/projects/{project}/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
