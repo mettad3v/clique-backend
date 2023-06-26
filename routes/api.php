@@ -26,6 +26,8 @@ use App\Http\Controllers\Task\TaskBoardRelationshipController;
 use App\Http\Controllers\User\UsersInvitationsRelatedController;
 use App\Http\Controllers\Group\GroupsTasksRelationshipController;
 use App\Http\Controllers\Project\ProjectCreatorRelatedController;
+use App\Http\Controllers\Project\ProjectBoardsRelatedController;
+use App\Http\Controllers\Project\ProjectBoardsRelationshipController;
 use App\Http\Controllers\Board\BoardCreatorRelatedController;
 use App\Http\Controllers\User\CurrentAuthenticatedUserController;
 use App\Http\Controllers\Group\GroupCreatorRelationshipController;
@@ -95,13 +97,14 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
     Route::get('/projects/{project}/invitees', [ProjectsUsersRelatedController::class, 'index'])->name('projects.invitees');
     Route::patch('/projects/{project}/relationships/admin', [ProjectsUsersRelationshipController::class, 'admin']);
 
+    Route::get('/projects/{project}/relationships/boards', [ProjectBoardsRelationshipController::class, 'index'])->name('projects.relationships.boards');
+    Route::patch('/projects/{project}/relationships/boards', [ProjectBoardsRelationshipController::class, 'update']);
+    Route::get('/projects/{project}/boards', [ProjectBoardsRelatedController::class, 'index'])->name('projects.boards');
+
     // Route::patch('/projects/{project}/relationships/users/change-ownership', [ProjectCreatorRelationshipController::class, 'change_ownership']);
     Route::get('/projects/{project}/creator', [ProjectCreatorRelatedController::class, 'index'])->name('projects.creator');
     Route::patch('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'update']);
     Route::get('/projects/{project}/relationships/creator', [ProjectCreatorRelationshipController::class, 'index'])->name('projects.relationships.creator');
-
-    // Route::get('/projects/{project}/tasks', [ProjectsTasksRelatedController::class, 'index'])->name('projects.tasks');
-    // Route::get('/projects/{project}/relationships/tasks', [ProjectsTasksRelationshipController::class, 'index'])->name('projects.relationships.tasks');
 
     Route::apiResource('boards', BoardController::class);
     Route::get('/boards/{board}/tasks', [BoardsTasksRelatedController::class, 'index'])->name('boards.tasks');
